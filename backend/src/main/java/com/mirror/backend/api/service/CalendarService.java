@@ -1,5 +1,7 @@
 package com.mirror.backend.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mirror.backend.api.dto.Event;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -31,7 +33,7 @@ public class CalendarService {
         }
     }
 
-    public String getMyCalendar(String accessToken, String calendarId) {
+    public Event getMyCalendar(String accessToken, String calendarId) {
         try {
             String jsonData = "";
 
@@ -43,9 +45,14 @@ public class CalendarService {
                 jsonData+=line;
             }
 
-            return jsonData;
+            System.out.println("jsonData = " + jsonData);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Event event = objectMapper.readValue(jsonData, Event.class);
+//            System.out.println("event.toString() = " + event.toString());
+            return event;
         } catch(Exception e) {
-            return "error";
+            e.printStackTrace();
+            return null;
         }
     }
 }
