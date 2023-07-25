@@ -5,19 +5,17 @@ import Col from 'react-bootstrap/Col'
 
 function Weather(props) {
   return (
-    <Container>
-      <Col>
+    <>
+      <div>
         <p>날씨 아이콘</p>
-      </Col>
-      <Col>
-        <Row>
+      </div>
+      <div>
+        <div>
           <h3>현재 기온</h3>
-        </Row>
-        <Row>
           <h4>강수 확률</h4>
-        </Row>
-      </Col>
-    </Container>
+        </div>
+      </div>
+    </>
   );
 }
 
