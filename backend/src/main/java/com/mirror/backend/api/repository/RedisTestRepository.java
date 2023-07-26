@@ -1,5 +1,6 @@
-package com.mirror.backend.api.dto;
+package com.mirror.backend.api.repository;
 
+import com.mirror.backend.api.dto.RedisTest;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -22,13 +22,12 @@ repositories {
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.26'
 
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
-
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     // swagger 설정
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
@@ -41,6 +40,11 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20230227'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
 
     // Security
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -64,7 +68,9 @@ dependencies {
 
 
     //Junit
+
 }
+
 tasks.named('test') {
     useJUnitPlatform()
 }

@@ -1,15 +1,11 @@
 package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.RedisTest;
-import com.mirror.backend.api.dto.RedisTestRepository;
+import com.mirror.backend.api.repository.RedisTestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 

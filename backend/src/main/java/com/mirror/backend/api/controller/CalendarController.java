@@ -39,7 +39,7 @@ public class CalendarController {
         RestJsonService restJsonService = new RestJsonService();
         String accessTokenData = null;
         try {
-            accessTokenData = restJsonService.getAccessTokenJsonData(code, CLIENT_ID, CLIENT_SECRET);
+            accessTokenData = restJsonService.getAccessTokenJsonData(code, CLIENT_ID, CLIENT_SECRET, 0);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -47,34 +47,27 @@ public class CalendarController {
         JSONObject accessTokenjsonObject = new JSONObject(accessTokenData);
 
         String accessToken = accessTokenjsonObject.get("access_token").toString();
-
+        System.out.println("accessToken = " + accessToken);
         // access_token을 받는다면 이 전 코드는 삭제
         Event resData = calendarService.getMyCalendar(accessToken, "primary");
-        System.out.println("resData.getKind() = " + resData.toString());
         return success(resData);
     }
 
     @GetMapping("/today")
-    @Operation(summary = "회원 캘린더 오늘 날짜 조회", description = "회원 login시 받는 code를 이용하여 회원의 오늘 날짜 캘린더 일정을 조회합니다.")
-    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestParam("code") String code) {
-        RestJsonService restJsonService = new RestJsonService();
-        String accessTokenData = null;
-        try {
-            accessTokenData = restJsonService.getAccessTokenJsonData(code, CLIENT_ID, CLIENT_SECRET);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        JSONObject accessTokenjsonObject = new JSONObject(accessTokenData);
-
-        String accessToken = accessTokenjsonObject.get("access_token").toString();
-
-        // access_token을 받는다면 이 전 코드는 삭제
+    @Operation(summary = "회원 캘린더 오늘 날짜 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정을 조회합니다.")
+    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestParam("accessToken") String accessToken) {
         Event event = calendarService.getMyCalendar(accessToken, "primary");
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar);
     }
 
+    @GetMapping("/today/count")
+    @Operation(summary = "회원 캘린더 오늘 날짜 개수 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정의 개수를 조회합니다.")
+    public ApiUtils.ApiResult<Integer> getScheduleNowCount(@RequestParam("accessToken") String accessToken) {
+        Event event = calendarService.getMyCalendar(accessToken, "primary");
+        List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
+        return success(myNowCalendar.size());
+    }
 }
 
 

@@ -1,17 +1,11 @@
 package com.mirror.backend.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mirror.backend.api.dto.Event;
-import com.mirror.backend.api.dto.User;
-import com.mirror.backend.api.service.CalendarService;
-import com.mirror.backend.api.service.RestJsonService;
+import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
