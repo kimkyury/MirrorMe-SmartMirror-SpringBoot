@@ -17,16 +17,18 @@ public class RestJsonService {
 
     public RestJsonService() {}
 
-    public String getAccessTokenJsonData(String code, String CLIENT_ID, String CLIENT_SECRET) throws JsonProcessingException {
+    public String getAccessTokenJsonData(String code, String CLIENT_ID, String CLIENT_SECRET, int who) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, Object> params = new HashMap<>();
         params.put("code", code);
         params.put("client_id", CLIENT_ID);
         params.put("client_secret", CLIENT_SECRET);
-        params.put("redirect_uri", REDIRECT_URI);
+        if(who == 1) params.put("redirect_uri", REDIRECT_URI + "/today");
+        else params.put("redirect_uri", REDIRECT_URI);
         params.put("grant_type", GRANT_TYPE);
 
+        System.out.println("params.get(\"redirect_uri\") = " + params.get("redirect_uri"));
         ResponseEntity<String> responseEntity =
                 restTemplate.postForEntity(TOKEN_URL, params, String.class); // POST 방식으로 전송
         
