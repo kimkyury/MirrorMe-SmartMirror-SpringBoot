@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 public class CalendarService {
 
-    private final String HTTP_REQUEST = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
     private final String HTTP_REQUEST_PRE = "https://www.googleapis.com/calendar/v3/calendars/";
     private final String HTTP_REQUEST_POST = "/events";
 
