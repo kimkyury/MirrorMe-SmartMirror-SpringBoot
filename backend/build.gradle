@@ -54,10 +54,11 @@ dependencies {
     // Oauth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-
     // DB 설정
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    // implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 tasks.named('test') {
     useJUnitPlatform()
