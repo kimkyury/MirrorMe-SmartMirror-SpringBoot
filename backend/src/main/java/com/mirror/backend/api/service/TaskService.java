@@ -1,13 +1,11 @@
 package com.mirror.backend.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.dto.Task;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
@@ -25,7 +23,6 @@ public class TaskService {
             while((line = bf.readLine()) != null){
                 jsonData+=line;
             }
-            System.out.println("itemData = " + jsonData);
             ObjectMapper objectMapper = new ObjectMapper();
             Task task = objectMapper.readValue(jsonData, Task.class);
             return task;
@@ -46,7 +43,6 @@ public class TaskService {
             while((line = bf.readLine()) != null){
                 jsonData+=line;
             }
-            System.out.println("jsonData = " + jsonData);
             ObjectMapper objectMapper = new ObjectMapper();
             Task task = objectMapper.readValue(jsonData, Task.class);
             return task;
