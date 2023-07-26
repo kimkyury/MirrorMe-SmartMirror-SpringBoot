@@ -1,8 +1,33 @@
 .App {
   text-align: center;
+  border: 5px solid black;
+  margin: 10px;
 }
 
+.bordered {
+  margin: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
 
+.CurrentDate {
+  width: 33%;
+  padding: 10px;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
 
 .App-logo {
   height: 40vmin;
