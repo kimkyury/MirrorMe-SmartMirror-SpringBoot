@@ -16,12 +16,14 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <div className="bordered">
+        <div className="weather bordered">
           <Weather></Weather>
         </div>
         <div className="CurrentDate bordered">
           <CurrentDate></CurrentDate>
         </div>
+      </div>
+      <div className="mirror-area">
       </div>
       <div className="bordered">
         <ToDoList></ToDoList>
