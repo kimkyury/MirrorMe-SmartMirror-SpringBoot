@@ -6,13 +6,13 @@ import Col from 'react-bootstrap/Col'
 function Weather(props) {
   return (
     <>
-      <div>
+      <div className="weather-icon">
         <p>날씨 아이콘</p>
       </div>
       <div>
-        <div>
-          <h3>현재 기온</h3>
-          <h4>강수 확률</h4>
+        <div className="weather-right">
+          <h3 className="temperture">현재 기온</h3>
+          <h4 className="chance-of-rain">강수 확률</h4>
         </div>
       </div>
     </>
