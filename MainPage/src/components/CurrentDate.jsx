@@ -38,12 +38,12 @@ function CurrentDate(props) {
 
   return (
     <div>
-      <p>
-        {year}년 {month}월 {date}일 {dayOfWeek}요일
-      </p>
-      <p>
+      <h1>
         {blink ? `${ampm} ${paddedHour}:${paddedMinute}` : `${ampm} ${paddedHour} ${paddedMinute}`}
-      </p>
+      </h1>
+      <h4>
+        {year}년 {month}월 {date}일 {dayOfWeek}요일
+      </h4>
     </div>
   );
 }
