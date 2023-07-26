@@ -1,7 +1,7 @@
 package com.mirror.backend.api.service;
 
-import com.mirror.backend.api.dto.User;
-import com.mirror.backend.api.dto.UserRepository;
+import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
