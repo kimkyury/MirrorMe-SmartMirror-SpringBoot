@@ -15,12 +15,26 @@ import Character from './components/Character';
 function App() {
   return (
     <div className="App">
-      <Weather className="Weather"></Weather>
-      <CurrentDate className="CurrentDate"></CurrentDate>
-      <ToDoList></ToDoList>
-      <VideoMessage></VideoMessage>
-      <FavoriteNews></FavoriteNews>
-      <Character></Character>
+      <div className="container">
+        <div className="bordered">
+          <Weather></Weather>
+        </div>
+        <div className="CurrentDate bordered">
+          <CurrentDate></CurrentDate>
+        </div>
+      </div>
+      <div className="bordered">
+        <ToDoList></ToDoList>
+      </div>
+      <div className="bordered">
+        <VideoMessage></VideoMessage>
+      </div>
+      <div className="bordered">
+        <FavoriteNews></FavoriteNews>
+      </div>
+      <div className="bordered">
+        <Character></Character>
+      </div>
     </div>
   );
 }
