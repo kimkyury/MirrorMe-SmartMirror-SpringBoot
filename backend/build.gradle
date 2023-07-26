@@ -41,6 +41,34 @@ dependencies {
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+
+    // Security
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
+
+    // Oauth
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // DB 설정
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
+    //Junit
+
 }
 
 tasks.named('test') {
