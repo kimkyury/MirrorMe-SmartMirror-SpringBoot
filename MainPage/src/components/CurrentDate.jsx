@@ -24,11 +24,15 @@ function CurrentDate(props) {
   const month = currentTime.getMonth() + 1;
   const date = currentTime.getDate();
   const week = ['일', '월', '화', '수', '목', '금', '토'];
-  const dayOfWeek = week[currentTime.getDay()]
+  const dayOfWeek = week[currentTime.getDay()];
 
   const hour = currentTime.getHours();
-  const hour24 = hour > 12 ? hour - 12 : hour
+
+  // 시계를 hh:mm 형태로 변환
+  const hour24 = hour > 12 ? hour - 12 : hour;
+  const paddedHour = hour24.toString().padStart(2, '0');
   const minute = currentTime.getMinutes();
+  const paddedMinute = minute.toString().padStart(2, '0');
 
   const ampm = hour >= 12 ? 'PM' : 'AM';
 
@@ -38,7 +42,7 @@ function CurrentDate(props) {
         {year}년 {month}월 {date}일 {dayOfWeek}요일
       </p>
       <p>
-        {blink ? `${ampm} ${hour24}:${minute}` : `${ampm} ${hour24} ${minute}`}
+        {blink ? `${ampm} ${paddedHour}:${paddedMinute}` : `${ampm} ${paddedHour} ${paddedMinute}`}
       </p>
     </div>
   );
