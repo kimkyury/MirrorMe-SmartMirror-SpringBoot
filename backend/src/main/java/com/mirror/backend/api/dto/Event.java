@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.api.services.calendar.model.ConferenceSolution;
 import com.google.api.services.calendar.model.ConferenceSolutionKey;
 import com.google.api.services.calendar.model.EntryPoint;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
@@ -34,6 +32,10 @@ public class Event {
     @JsonProperty("items")
     private List<Item> items;
 
+    public List<Item> getItems() {
+        return items;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -47,6 +49,7 @@ public class Event {
                 ", nextSyncToken='" + nextSyncToken + '\'' +
                 ", items=" + items +
                 '}';
+
     }
 
     @NoArgsConstructor
@@ -58,7 +61,6 @@ public class Event {
         private int minutes;
     }
 
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Item {
@@ -96,9 +98,16 @@ public class Event {
         private String hangoutLink;
         @JsonProperty("eventType")
         private String eventType;
+
+        public StartEndDateTime getStart() {
+            return start;
+        }
+
+        public StartEndDateTime getEnd() {
+            return end;
+        }
     }
 
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Organizer {
@@ -106,7 +115,6 @@ public class Event {
         private String email;
     }
 
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StartEndDateTime {
@@ -114,8 +122,11 @@ public class Event {
         private String dateTime;
         @JsonProperty("timeZone")
         private String timeZone;
+
+        public String getDateTime() {
+            return dateTime;
+        }
     }
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Attendee {
@@ -128,7 +139,6 @@ public class Event {
         @JsonProperty("responseStatus")
         private String responseStatus;
     }
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ConferenceData {
@@ -141,7 +151,6 @@ public class Event {
         @JsonProperty("conferenceId")
         private String conferenceId;
     }
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CreateRequest {
@@ -152,7 +161,6 @@ public class Event {
         @JsonProperty("status")
         private Status status;
     }
-    @Getter
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Creator {
