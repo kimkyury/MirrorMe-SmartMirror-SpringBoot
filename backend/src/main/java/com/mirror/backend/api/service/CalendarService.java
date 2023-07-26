@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CalendarService {
@@ -48,11 +50,22 @@ public class CalendarService {
             System.out.println("jsonData = " + jsonData);
             ObjectMapper objectMapper = new ObjectMapper();
             Event event = objectMapper.readValue(jsonData, Event.class);
-//            System.out.println("event.toString() = " + event.toString());
+            System.out.println("event.toString() = " + event.toString());
             return event;
         } catch(Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<Event.Item> getMyNowCalendar(Event event) {
+
+//        for( Event.Item item: event.getItems()) {
+//            item.getStart().getDateTime();
+//            Event.StartEndDateTime end = item.getEnd();
+//        }
+
+        List<Event.Item> items = new ArrayList<>();
+        return items;
     }
 }
