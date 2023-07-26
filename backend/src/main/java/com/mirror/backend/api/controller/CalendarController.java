@@ -50,7 +50,7 @@ public class CalendarController {
 
         // access_token을 받는다면 이 전 코드는 삭제
         Event resData = calendarService.getMyCalendar(accessToken, "primary");
-//        System.out.println("resData.getKind() = " + resData.toString());
+        System.out.println("resData.getKind() = " + resData.toString());
         return success(resData);
     }
 
@@ -75,11 +75,6 @@ public class CalendarController {
         return success(myNowCalendar);
     }
 
-
-    @GetMapping("/test")
-    public ApiUtils.ApiResult<String> test() {
-        return success("test");
-    }
 }
 
 

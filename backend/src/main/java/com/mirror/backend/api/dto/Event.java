@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.api.services.calendar.model.ConferenceSolution;
 import com.google.api.services.calendar.model.ConferenceSolutionKey;
 import com.google.api.services.calendar.model.EntryPoint;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
     @JsonProperty("kind")
@@ -48,19 +49,7 @@ public class Event {
                 '}';
     }
 
-    @Builder
-    public Event(String kind, String etag, String summary, String updated, String timeZone, String accessRole, List<Reminder> defaultReminders, String nextSyncToken, List<Item> items) {
-        this.kind = kind;
-        this.etag = etag;
-        this.summary = summary;
-        this.updated = updated;
-        this.timeZone = timeZone;
-        this.accessRole = accessRole;
-        this.defaultReminders = defaultReminders;
-        this.nextSyncToken = nextSyncToken;
-        this.items = items;
-    }
-
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Reminder {
         @JsonProperty("method")
@@ -70,6 +59,7 @@ public class Event {
     }
 
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Item {
         @JsonProperty("kind")
@@ -109,6 +99,7 @@ public class Event {
     }
 
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Organizer {
         @JsonProperty("email")
@@ -116,6 +107,7 @@ public class Event {
     }
 
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StartEndDateTime {
         @JsonProperty("dateTime")
@@ -124,6 +116,7 @@ public class Event {
         private String timeZone;
     }
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Attendee {
         @JsonProperty("email")
@@ -136,6 +129,7 @@ public class Event {
         private String responseStatus;
     }
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ConferenceData {
         @JsonProperty("createRequest")
@@ -148,6 +142,7 @@ public class Event {
         private String conferenceId;
     }
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CreateRequest {
         @JsonProperty("requestId")
@@ -158,6 +153,7 @@ public class Event {
         private Status status;
     }
     @Getter
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Creator {
         @JsonProperty("email")
