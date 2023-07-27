@@ -1,6 +1,7 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.service.VideoService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -33,11 +35,17 @@ public class VideoController {
 
     @PostMapping
     public ApiUtils.ApiResult<Integer> postMessage(MultipartFile videoFile, MultipartFile voiceFile) {
-        int userId = 1;
         String videoPath = videoService.transferFile(videoFile, filePath);
         String voicePath = videoService.transferFile(voiceFile, filePath);
 
         videoService.saveVideo(videoPath, voicePath);
         return success(1);
     }
+
+    @GetMapping
+    public ApiUtils.ApiResult<List<VideoMessage>> getMessage(@RequestParam int userId) {
+
+        return success(null);
+    }
+
 }
