@@ -16,7 +16,7 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name="users", description = "유저 정보 API")
+@Tag(name = "users", description = "유저 정보 API")
 public class UserController {
 
     @Autowired
