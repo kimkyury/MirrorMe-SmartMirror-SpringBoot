@@ -1,4 +1,3 @@
-/*
 #pragma comment (lib, "wldap32.lib")
 #pragma comment (lib, "ws2_32.lib")
 
@@ -9,149 +8,28 @@
 #endif
 
 #define CURL_STATICLIB
-*/
 
 #include <iostream>
-#include <stdio.h>
 #include <string>
 #include <fstream>
-// #include <curl/curl.h>
 
-// opencv 460
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/core.hpp>
-// Serial
-#include <Windows.h>
-#include <atlstr.h>
+// curl
+#include <curl/curl.h>
 
 using namespace std;
-using namespace cv;
 
-#define RECORDINGTIME 120;
-#define BUFFER_SIZE 128;
+extern void recoding_message();
+extern int face_recognition();
 
-void recoding_message() {
-	VideoCapture inputVideo(0);
-
-	if (!inputVideo.isOpened()) {
-
-		cout << "Can not open capture!!" << endl;
-
-		return;
-
-	}
-
-	Size size = Size((int)inputVideo.get(CAP_PROP_FRAME_WIDTH), (int)inputVideo.get(CAP_PROP_FRAME_HEIGHT));
-
-	cout << "Size = " << size << endl;
-
-	int fourcc = VideoWriter::fourcc('D', 'X', '5', '0');
-
-	double fps = 24;
-
-	bool isColor = true;
-
-	VideoWriter outputVideo("videomessage.avi", fourcc, fps, size, isColor);
-
-	if (!outputVideo.isOpened()) {
-
-		cout << "Can not do!!" << endl;
-
-		return;
-
-	}
-
-	if (fourcc != -1) {
-
-		imshow("frame", NULL);
-
-		waitKey(100);
-
-	}
-
-	int delay = 1000 / fps;
-
-	Mat frame;
-
-	int cnt = RECORDINGTIME;
-	while (cnt--) {
-
-		inputVideo >> frame;
-
-		if (frame.empty()) break;
-
-		outputVideo << frame;
-
-		imshow("frame", frame);
-	}
-
-	return;
-}
-
-int face_recognition() {
-	VideoCapture cap(0, CAP_DSHOW);
-
-	/*
-	cap.set(CAP_PROP_FRAME_WIDTH, 1920);
-	cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
-	*/
-
-	if (!cap.isOpened())
-	{
-		printf("Can't open the camera");
-		return -1;
-	}
-
-	Mat img;
-
-	while (1)
-	{
-		cap >> img;
-		flip(img, img, 1);
-
-		Mat grayImg;
-		cvtColor(img, grayImg, COLOR_BGR2GRAY);		// ì •í™•ë„ë¥¼ ë†’íˆê¸° ìœ„í•´ gray ì´ë¯¸ì§€ë¡œ ë³€ê²½
-
-		std::vector<Rect> faceRect, sidefaceRect;
-		CascadeClassifier face, sideface;
-
-		face.load("./opencv/sources/data/haarcascades/haarcascade_frontalface_default.xml");	// ì–¼êµ´ íƒì§€ cascade load
-		if (!face.empty())
-			face.detectMultiScale(grayImg, faceRect, 1.05, 10, 0, Size(50, 50)); 
-
-
-		sideface.load("./opencv/sources/data/haarcascades/haarcascade_profileface.xml");		// ì˜† ëª¨ìŠµ íƒì§€ cascade load
-		if (!sideface.empty())
-			sideface.detectMultiScale(grayImg, sidefaceRect, 1.05, 5, 0, Size(15, 15));
-
-		for (int i = 0; i < faceRect.size(); i++)
-			rectangle(img, Rect(faceRect[i]), Scalar(50, 0, 200), 2);	// ì–¼êµ´ ì˜ì—­ ê·¸ë¦¬ê¸°
-
-
-		for (int i = 0; i < sidefaceRect.size(); i++)
-			rectangle(img, Rect(sidefaceRect[i]), Scalar(200, 0, 50), 2);
-
-
-		imshow("camera img", img);
-		if (waitKey(1) == 27)
-			break;
-	}
-
-	/*
-	Mat img = imread("./faceimg/temp.jpg", 1);
-	imshow("img", img);
-	waitKey(0);
-	*/
-	return 0;
+void send_message() {
+	CURL* curl;
+	curl = curl_easy_init();
 }
 
 string STT_Streaming(int x) {
-	string str1 = "ì—„ë§ˆí•œí…Œ ì˜ìƒë©”ì„¸ì§€ ë³´ë‚´ê³  ì‹¶ì–´";
-	string str2 = "ì–´ë¨¸ë‹ˆí•œí…Œ ì˜ìƒë©”ì„¸ì§€ ë³´ë‚¼ë˜";
-	string str3 = "ë¶€ëª¨ë‹˜í•œí…Œ ì˜ìƒë©”ì„¸ì§€";
+	string str1 = "¾ö¸¶ÇÑÅ× ¿µ»ó¸Ş¼¼Áö º¸³»°í ½Í¾î";
+	string str2 = "¾î¸Ó´ÏÇÑÅ× ¿µ»ó¸Ş¼¼Áö º¸³¾·¡";
+	string str3 = "ºÎ¸ğ´ÔÇÑÅ× ¿µ»ó¸Ş¼¼Áö";
 	if (x == 1) {
 		return str1;
 	}
@@ -186,22 +64,24 @@ int get() {
 		curl_easy_cleanup(curl);
 	}
 	*/
-	return 2;
-
+	return 1;
 }
 
 void setup() {
-
 }
 
 void loop() {
 	while (true) {
-		string str = "ì—„ë§ˆí•œí…Œ ì˜ìƒë©”ì„¸ì§€ ë³´ë‚´ê³  ì‹¶ì–´";
+		string str = "¾ö¸¶ÇÑÅ× ¿µ»ó¸Ş¼¼Áö º¸³»°í ½Í¾î";
 		switch (get()) {
 		case 1:
 			recoding_message();
+			break;
 		case 2:
 			face_recognition();
+			break;
+		case 3:
+			break;
 		}
 		return;
 	}
@@ -212,3 +92,4 @@ int main() {
 	loop();
 	return 0;
 }
+
