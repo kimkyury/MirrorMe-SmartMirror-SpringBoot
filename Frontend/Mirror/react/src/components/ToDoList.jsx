@@ -3,15 +3,25 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function ToDoList(props) {
-  const [schedule, setSchedule] = useState("");
+  const [schedules, setSchedules] = useState("");
+  const [schedulesCount, setSchedulesCount] = useState(0)
 
   useEffect(() => {
-    const accessToken = 'ya29.a0AbVbY6Pb7osab39m486LDiX1GSXzMuJTFH3RnXeQfe_pVjZDa-kog1X7olqnE6bkm7L8oAFS-KNwSO62RtyTz2kxPn9zyvFTSt70XM0ZNfjPsDEPhYtMjYSk1H_4yvs77dpVmnVMIJNIOqKecP4hl0O_z_RdaCgYKAYwSARMSFQFWKvPlkq4dLzwToy7XMYHfccyilA0163';
+    const accessToken = 'ya29.a0AbVbY6PB-FKVCkj_YoVM-R1PnLzzs8uFk3UlaoZl6wR7OwQE8RKkiXPxNjiB6yq13nbv-bStmchQKjFB0QeyackaElRPuEW1DlyUj8imbzubzmwbA-gLTuTWQ_BC7TPFM-wG9T_jP_wCNtWweLOfl0tur2UCaCgYKAbUSARMSFQFWKvPlLpo13NlY6diPLx2K5rjQbg0163';
 
-    axios.get("http://192.168.30.158:8080/schedule/today", {
+    axios.get("http://192.168.0.31:8080/schedule/today", {
       params: { accessToken : accessToken },
     }).then((res) => {
-      console.log(res.data);
+      setSchedules(res.data.response)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+    axios.get("http://192.168.0.31:8080/schedule/today/count", {
+      params: { accessToken : accessToken },
+    }).then((res) => {
+      setSchedulesCount(res.data.response)
     })
     .catch((error) => {
       console.log(error);
@@ -20,7 +30,14 @@ function ToDoList(props) {
 
   return (
     <>
-      <h3>오늘의 일정</h3>
+      <div>
+        <h3>오늘의 일정</h3>
+        { schedulesCount >= 4 ? <div><p>+ { schedulesCount - 3 }</p></div> : null }
+      </div>
+      <hr />
+      {/* { schedules.map((schedule, index) => {
+        return <li>{ schedule.summary }</li>
+      })} */}
     </>
   );
 }
