@@ -1,4 +1,5 @@
 import React from 'react';
+import './Entrance.css';
 
 function Entrance(props) {
   return (

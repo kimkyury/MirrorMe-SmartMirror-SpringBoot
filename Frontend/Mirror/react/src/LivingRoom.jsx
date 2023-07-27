@@ -1,4 +1,5 @@
 import React from 'react';
+import './LivingRoom.css';
 
 function LivingRoom(props) {
   return (
