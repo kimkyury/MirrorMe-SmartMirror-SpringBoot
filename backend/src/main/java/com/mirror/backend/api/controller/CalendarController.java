@@ -57,6 +57,7 @@ public class CalendarController {
     @Operation(summary = "회원 캘린더 오늘 날짜 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정을 조회합니다.")
     public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestParam("accessToken") String accessToken) {
         Event event = calendarService.getMyCalendar(accessToken, "primary");
+        System.out.println("event.getItems() = " + event.getItems());
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar);
     }
