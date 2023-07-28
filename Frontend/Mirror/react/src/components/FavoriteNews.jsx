@@ -12,7 +12,7 @@ function FavoriteNews(props) {
     <div>
       <h3>관심 뉴스</h3>
       { news.map((item, index) => {
-        return <li>{ item }</li>
+        return <li key={index}>{ item }</li>
       })}
     </div>
   );
