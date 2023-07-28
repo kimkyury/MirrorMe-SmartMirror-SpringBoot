@@ -18,4 +18,11 @@ public class UserService {
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
+
+
+    public void saveUserAccessToken(String code) {
+        // redis에 저장
+
+
+    }
 }

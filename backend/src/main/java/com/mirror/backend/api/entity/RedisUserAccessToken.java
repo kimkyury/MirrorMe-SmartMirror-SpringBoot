@@ -8,16 +8,15 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @Setter
-@RedisHash("refreshToken")
-public class RedisUserRefreshToken {
+@RedisHash("accessToken")
+public class RedisUserAccessToken {
 
     @Id
     private String userId;
-    private String refreshToken;
+    private String accessToken;
 
-    public RedisUserRefreshToken(String userId, String refreshToken) {
+    public RedisUserAccessToken(String userId, String accessToken) {
         this.userId = userId;
-        this.refreshToken = refreshToken;
+        this.accessToken = accessToken;
     }
-
 }
