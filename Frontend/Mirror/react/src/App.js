@@ -17,7 +17,7 @@ function App() {
   const [isVideoMessageVisible, setVideoMessageVisible] = useState(false);
   const [isLivingRoomVisible, setLivingRoomVisible] = useState(false);
 
-  const [user, setUser] = useState('123');
+  const [user, setUser] = useState('이소정');
 
   // Open Living Room Modal
   const openVideoMessageModal = () => {
