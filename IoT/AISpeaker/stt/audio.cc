@@ -48,7 +48,7 @@ int main() {
     snd_pcm_hw_params_free(params);
 
     // Allocate a buffer to hold the captured data (캡처된 데이터를 저장할 버퍼 할당)
-    const int buffer_size = rate * 10;
+    const int buffer_size = rate * 5;
     std::vector<short> buffer(buffer_size);
 
     // Capture audio from the microphone (마이크로부터 오디오 캡처)
