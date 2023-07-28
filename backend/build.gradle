@@ -21,12 +21,10 @@ repositories {
 
 dependencies {
 
-<<<<<<< HEAD
 
-=======
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
->>>>>>> 13bb6ecd2c68508fb5b799b4c653aa6c5511bdb7
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -44,7 +42,6 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20230227'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-<<<<<<< HEAD
 
     implementation 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok:1.18.20'
@@ -53,9 +50,8 @@ dependencies {
 
     // Security & Oauth
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.springframework.boot:spring-boot-starter-validation'
 //    testImplementation 'org.springframework.security:spring-security-test'
-
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
@@ -65,19 +61,15 @@ dependencies {
 //    implementation 'com.nimbusds:nimbus-jose-jwt'
 //    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.6.6'
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
+//    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
 
     // DB 설정
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.querydsl:querydsl-jpa:5.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-
-    //Junit
-
-=======
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
->>>>>>> 13bb6ecd2c68508fb5b799b4c653aa6c5511bdb7
+
 }
 
 tasks.named('test') {
