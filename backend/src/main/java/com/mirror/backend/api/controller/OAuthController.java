@@ -31,7 +31,7 @@ public class OAuthController {
     public ApiUtils.ApiResult<String> registerGoogle(HttpServletResponse response) throws Exception {
 
         String endpoint = googleOAuth.getGoogleEndPoint();
-        String redirectUri = googleOAuth.getGoogleRedirectUri();
+        String redirectUri = googleOAuth.getGoogleRedirectUriCode();
         String client_id = googleOAuth.getGoogleClientId();
         String response_type = "code";
 
@@ -70,7 +70,7 @@ public class OAuthController {
         String clientSecret = googleOAuth.getGoogleClientSecret();
         String approveCode = code;
         String grantType = "authorization_code";
-        String redirectUri = googleOAuth.getGoogleRedirectUri();
+        String redirectUri = googleOAuth.getGoogleRedirectUriToken();
 
         StringBuilder requestUrl = new StringBuilder();
         requestUrl.append(endPoint)

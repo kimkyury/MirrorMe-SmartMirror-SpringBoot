@@ -17,8 +17,15 @@ public class GoogleOAuth {
     @Value("${google.client-id}")
     private String googleClientId;
 
-    @Value("${google.redirect-uri}")
-    private String googleRedirectUri;
+    @Value("${google.redirect-uri-oauth}")
+    private String googleRedirectUriOauth;
+
+    @Value("${google.redirect-uri-token}")
+    private String googleRedirectUriToken;
+
+    @Value("${google.redirect-uri-code}")
+    private String googleRedirectUriCode;
+
 
     @Value("${google.client-secret}")
     private String googleClientSecret;
