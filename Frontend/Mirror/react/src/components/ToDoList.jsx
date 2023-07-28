@@ -7,9 +7,9 @@ function ToDoList(props) {
   const [schedulesCount, setSchedulesCount] = useState(0)
 
   useEffect(() => {
-    const accessToken = 'ya29.a0AbVbY6PHpl7nnM5onPZwn3cDbXBqeUIHkb27rtCTp-v6swhKRpr-Agxt7soOI_iJPJqkszFjF21vH-qFOsa8XlUbKsIj3FjK2T54wYXupkUwMDQhql6OIzcyyjS5bvxgPQ9yhlwQKYnmIq5zcX_V3RrFUQMbaCgYKAfESARMSFQFWKvPlIxvv4-uSXbi-StD_tTCjfw0163';
+    const accessToken = 'ya29.a0AbVbY6Nv9yn4eUt2_oMXx4vht3BP716dGrO3_n2-p5_DyGMacdFM0jbs5Ru5uJ0BYPeqB686m9UM_cNnNOWnrJSg1ZQ9X_9lp5FzXJl4XFQ9YBWG8CbpN4eF-l-bEoFu9QRFdC7zlMXSbDW2BOolrhGG7xMmaCgYKAQgSARMSFQFWKvPl_QrKgMFIFDCOfviplZ13Jg0163';
 
-    axios.get("schedule/today", {
+    axios.get("/tasks", {
       params: { accessToken : accessToken },
     }).then((res) => {
       console.log(res.data.response)
@@ -19,7 +19,7 @@ function ToDoList(props) {
       console.log(error);
     });
 
-    axios.get("schedule/today/count", {
+    axios.get("/tasks/count", {
       params: { accessToken : accessToken },
     }).then((res) => {
       console.log(res.data.response)
