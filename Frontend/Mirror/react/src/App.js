@@ -9,7 +9,7 @@ import './App.css';
 import Weather from './components/Weather';
 import CurrentDate from './components/CurrentDate';
 import ToDoList from './components/ToDoList';
-import VideoMessage from './VideoMessage';
+// import VideoMessage from './VideoMessage';
 import FavoriteNews from './components/FavoriteNews';
 import Character from './components/Character';
 
@@ -47,8 +47,8 @@ function App() {
       {/* <div className="bordered">
         {isVideoMessageVisible && <VideoMessage isVisible={true} onClose={closeVideoModal} />}
       </div> */}
-      <button onClick={openVideoMessageModal}>Open Video Message Modal</button>
-      {isVideoMessageVisible && <VideoMessage onClose={closeVideoMessageModal} />}
+      {/* <button onClick={openVideoMessageModal}>Open Video Message Modal</button>
+      {isVideoMessageVisible && <VideoMessage onClose={closeVideoMessageModal} />} */}
       <div className="bordered">
         <FavoriteNews></FavoriteNews>
       </div>
