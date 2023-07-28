@@ -46,6 +46,9 @@ public class OAuthController {
                 .encode(scopeGoogleCalendar + " " + scopeGoogleTask, "UTF-8")
                 .replaceAll("\\+", "%20");
 
+        System.out.println(sendRedirectUrl);
+        response.sendRedirect(sendRedirectUrl);
+
         return success("Oauth 로그인 페이지 전송 성공, Calendar, Task 요청 예정");
     }
 
