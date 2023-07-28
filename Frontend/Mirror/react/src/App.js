@@ -9,11 +9,9 @@ import './App.css';
 import Weather from './components/Weather';
 import CurrentDate from './components/CurrentDate';
 import ToDoList from './components/ToDoList';
-import VideoMessage from './components/VideoMessage';
+import VideoMessage from './VideoMessage';
 import FavoriteNews from './components/FavoriteNews';
 import Character from './components/Character';
-
-import LivingRoom from './LivingRoom';
 
 function App() {
   const [isVideoMessageVisible, setVideoMessageVisible] = useState(false);
@@ -22,13 +20,13 @@ function App() {
   const [user, setUser] = useState('123');
 
   // Open Living Room Modal
-  const openLivingRoomModal = () => {
-    setLivingRoomVisible(true);
+  const openVideoMessageModal = () => {
+    setVideoMessageVisible(true);
   };
 
   // Close Living Room Modal
-  const closeLivingRoomModal = () => {
-    setLivingRoomVisible(false);
+  const closeVideoMessageModal = () => {
+    setVideoMessageVisible(false);
   };
   
   return (
@@ -49,8 +47,8 @@ function App() {
       {/* <div className="bordered">
         {isVideoMessageVisible && <VideoMessage isVisible={true} onClose={closeVideoModal} />}
       </div> */}
-      <button onClick={openLivingRoomModal}>Open Living Room Modal</button>
-      {isLivingRoomVisible && <LivingRoom onClose={closeLivingRoomModal} />}
+      <button onClick={openVideoMessageModal}>Open Video Message Modal</button>
+      {isVideoMessageVisible && <VideoMessage onClose={closeVideoMessageModal} />}
       <div className="bordered">
         <FavoriteNews></FavoriteNews>
       </div>
