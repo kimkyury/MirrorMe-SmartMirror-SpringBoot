@@ -2,16 +2,12 @@ package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.CreateUserRequestDto;
 import com.mirror.backend.api.entity.User;
-import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
@@ -23,38 +19,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private GoogleOAuth googleOAuth;
-
-
-    @GetMapping("/oauth")
-    public void registerGoogle(HttpServletResponse response) throws Exception {
-
-        String endpoint = googleOAuth.getGoogleEndPoint();
-        String redirectUri = googleOAuth.getGoogleRedirectUri();
-        String client_id = googleOAuth.getGoogleClientId();
-        String response_type = "code";
-
-        String scopeGoogleCalendar = "https://www.googleapis.com/auth/calendar.events.readonly";
-        String scopeGoogleTask = "https://www.googleapis.com/auth/tasks.readonly";
-
-        String sendRedirectUrl = endpoint + "?" +
-                "&redirect_uri=" + redirectUri +
-                "&client_id=" + client_id +
-                "&response_type=" + response_type +
-                "&scope=" + URLEncoder.encode(scopeGoogleCalendar + " " + scopeGoogleTask, "UTF-8").replaceAll("\\+", "%20");
-
-        System.out.println(sendRedirectUrl);
-
-        response.sendRedirect(sendRedirectUrl);
-    }
-
-    @GetMapping("/oauth/code")
-    public ApiUtils.ApiResult<Integer> getUserCode(@RequestParam String code) {
-
-        System.out.print("code: " + code);
-        return null;
-    }
 
 
     @PostMapping("/signup")

@@ -23,5 +23,4 @@ public class GoogleOAuth {
     @Value("${google.client-secret}")
     private String googleClientSecret;
 
-
 }
