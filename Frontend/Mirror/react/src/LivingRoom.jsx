@@ -1,12 +1,16 @@
 import React from 'react';
-import './LivingRoom.css';
+import './LivingRoom.css'
 
-function LivingRoom(props) {
+const LivingRoom = ({ onClose }) => {
   return (
-    <div>
-      거실
+    <div className="modal-overlay">
+      <div className="living-room-modal">
+        <h3>Welcome to the Living Room</h3>
+        <p>Some content here...</p>
+        <button onClick={onClose}>Close</button>
+      </div>
     </div>
   );
-}
+};
 
 export default LivingRoom;

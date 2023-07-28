@@ -60,7 +60,7 @@ function VideoMessage(props) {
   return (
     <div className="modal-overlay">
       <div className='video-message-modal'>
-        <h3>{user}님의 메세지</h3> {/* 추후 보낸 사람으로 수정 */}
+        <h3>{user}님의 메세지</h3> {/* 보낸 사람으로 수정 예정 */}
         <hr />
         <video ref={videoRef} controls>
           <source src={playlist[currentVideoIndex]} type="video/mp4" />
