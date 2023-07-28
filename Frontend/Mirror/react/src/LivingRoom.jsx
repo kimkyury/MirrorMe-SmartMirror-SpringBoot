@@ -1,16 +1,18 @@
 import React from 'react';
-import './LivingRoom.css'
+import FavoriteNews from './components/FavoriteNews';
+import Character from './components/Character';
 
-const LivingRoom = ({ onClose }) => {
+function LivingRoom(props) {
   return (
-    <div className="modal-overlay">
-      <div className="living-room-modal">
-        <h3>Welcome to the Living Room</h3>
-        <p>Some content here...</p>
-        <button onClick={onClose}>Close</button>
+    <div>
+      <div className="bordered">
+        <FavoriteNews></FavoriteNews>
+      </div>
+      <div className="bordered">
+        <Character></Character>
       </div>
     </div>
   );
-};
+}
 
 export default LivingRoom;
