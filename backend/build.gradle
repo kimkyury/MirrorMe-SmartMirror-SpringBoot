@@ -21,12 +21,18 @@ repositories {
 
 dependencies {
 
+<<<<<<< HEAD
 
+=======
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+>>>>>>> 13bb6ecd2c68508fb5b799b4c653aa6c5511bdb7
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
-
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     // swagger 설정
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
@@ -38,6 +44,7 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20230227'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+<<<<<<< HEAD
 
     implementation 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok:1.18.20'
@@ -69,6 +76,9 @@ dependencies {
 
     //Junit
 
+=======
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+>>>>>>> 13bb6ecd2c68508fb5b799b4c653aa6c5511bdb7
 }
 
 tasks.named('test') {
