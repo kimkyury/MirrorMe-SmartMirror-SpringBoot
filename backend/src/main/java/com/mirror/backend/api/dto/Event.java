@@ -80,6 +80,8 @@ public class Event {
         private String updated;
         @JsonProperty("summary")
         private String summary;
+        @JsonProperty("description")
+        private String description;
         @JsonProperty("creator")
         private Creator creator;
         @JsonProperty("organizer")
@@ -118,13 +120,20 @@ public class Event {
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StartEndDateTime {
+        @JsonProperty("date")
+        private String date;
         @JsonProperty("dateTime")
         private String dateTime;
+
         @JsonProperty("timeZone")
         private String timeZone;
 
         public String getDateTime() {
             return dateTime;
+        }
+
+        public String getDate() {
+            return date;
         }
     }
     @NoArgsConstructor
