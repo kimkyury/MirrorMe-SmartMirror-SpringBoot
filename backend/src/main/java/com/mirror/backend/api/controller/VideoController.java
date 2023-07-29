@@ -1,7 +1,6 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.Message;
-import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.service.VideoService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
 
+import java.util.List;
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
@@ -34,18 +28,17 @@ public class VideoController {
     }
 
     @PostMapping
-    public ApiUtils.ApiResult<Integer> postMessage(MultipartFile videoFile, MultipartFile voiceFile) {
+    public ApiUtils.ApiResult<Integer> postMessage(MultipartFile videoFile, MultipartFile voiceFile, @RequestPart("RequestMessage") Message.RequestMessage requestMessage) {
         String videoPath = videoService.transferFile(videoFile, filePath);
         String voicePath = videoService.transferFile(voiceFile, filePath);
 
-        videoService.saveVideo(videoPath, voicePath);
+        videoService.saveVideo(videoPath, voicePath, requestMessage);
         return success(1);
     }
 
     @GetMapping
-    public ApiUtils.ApiResult<List<VideoMessage>> getMessage(@RequestParam int userId) {
-
-        return success(null);
+    public ApiUtils.ApiResult<List<Message.ResponseMessage>> getMessage(@RequestParam int userId) {
+        List<Message.ResponseMessage> video = videoService.getVideo(userId);
+        return success(video);
     }
-
 }
