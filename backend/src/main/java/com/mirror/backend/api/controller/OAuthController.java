@@ -6,19 +6,13 @@ import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -31,34 +25,17 @@ public class OAuthController {
 
     @Autowired
     private OAuthService oAuthService;
-
     @Autowired
     private GoogleOAuth googleOAuth;
+
+    static int SUCCESS = 1;
+    static int FAIL = 0;
 
     @GetMapping
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
     public ApiUtils.ApiResult<String> registerGoogle(HttpServletResponse response) throws Exception {
 
-        String endPoint = googleOAuth.REQUEST_AUTH_CODE_URL;
-
-        String redirectUri = googleOAuth.getRedirectUri();
-        String clientId = googleOAuth.getClientId();
-        String responseType = "code";
-        String scopeCalendar = googleOAuth.SCOPE_CALENDAR;
-        String scopeTask = googleOAuth.SCOPE_TASK;
-
-        StringBuilder requestUrl = new StringBuilder();
-        requestUrl.append(endPoint)
-                .append("?client_id=").append(clientId)
-                .append("&redirect_uri=").append(redirectUri)
-                .append("&response_type=").append(responseType)
-                .append("&scope=")
-                .append(URLEncoder.encode(scopeCalendar + " ", "UTF-8"))
-                .append(URLEncoder.encode(scopeTask + " ", "UTF-8"))
-                .append("email");
-//                .append("profile");
-
-        System.out.println(requestUrl.toString());
+        String requestUrl = oAuthService.getRequestUrlForAuthorizationCode();
         response.sendRedirect(requestUrl.toString());
 
         return success("Success Request Authorization Code to Google");
@@ -71,46 +48,18 @@ public class OAuthController {
             @RequestParam(name = "error", required = false) String error
     ) throws IOException {
 
-
         if (error != null) {
-            System.out.println("Not run AuthorizationCode");
-            return fail("Authorization Code 문제로 인하여 실패");
+            System.out.println("Can't run AuthorizationCode");
+            return fail("Authorization Code 발급 문제");
         }
-
         // 승인코드 확인
         System.out.println("authCode: " + authCode);
 
-        // 승인코드로 access, refresh 토큰으로 교환하기
-        String endPoint = googleOAuth.REQUEST_TOKEN_URL;
-
-        String clientId = googleOAuth.getClientId();
-        String clientSecret = googleOAuth.getClientSecret();
-        String code = authCode;
-        String grantType = "authorization_code";
-        String redirectUri = googleOAuth.getRedirectUri();
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-
-        map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
-        map.add("code", code);
-        map.add("grant_type", grantType);
-        map.add("redirect_uri", redirectUri);
-
-        System.out.println("!-----param 완성------!");
-        System.out.println("endPoint: " + endPoint + "\n" + "responseEntity: " + map);
-
-
-        ResponseEntity<String> responseEntity =
-                restTemplate.postForEntity(endPoint, map, String.class);
-
-
-        System.out.println("---------통과------------");
-        System.out.println("endPoint: " + endPoint + "\n" + "responseEntity: " + responseEntity.toString());
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            return fail("Token 발급 실패");
+        // 5. Access/Refresh Token으로 교환하기
+        int result = oAuthService.getGoogleToken(authCode);
+        if (result == FAIL) {
+            System.out.println("Can't Get Access/Refresh");
+            return fail("Access/Refresh Token 교환 문제");
         }
 
         // 6. userInfo 요청하기
@@ -124,7 +73,7 @@ public class OAuthController {
         // 8. 로그인하라고 안내한다 (redirectUrl: home화면)
 
 
-        return success(responseEntity.toString());
+        return success("Access/Refresh Token 발급 성공");
     }
 
     @GetMapping("/dump")
