@@ -63,7 +63,7 @@ public class OAuthController {
         }
 
         // 6. userInfo 요청하기
-
+        oAuthService.getUserEmail();
 
         // 7. 이미 존재하는 유저인지 확인한다
 
