@@ -1,64 +1,37 @@
+// App.js
 import logo from './logo.svg';
-import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import React from 'react';
 import './App.css';
 
-// import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
-
-import Weather from './components/Weather';
-import CurrentDate from './components/CurrentDate';
-import ToDoList from './components/ToDoList';
-import VideoMessage from './VideoMessage';
-import FavoriteNews from './components/FavoriteNews';
-import Character from './components/Character';
-
-import LivingRoom from './LivingRoom';
-import Entrance from './Entrance';
+import First from './First';
+import Second from './Second';
+import Last from './Last';
 
 function App() {
-  const [isVideoMessageVisible, setVideoMessageVisible] = useState(false);
-  const [randomNumber, setRandomNumber] = useState(0);
-
-  const [user, setUser] = useState('이소정');
-
-  // Open Living Room Modal
-  const openVideoMessageModal = () => {
-    setVideoMessageVisible(true);
-  };
-
-  // Close Living Room Modal
-  const closeVideoMessageModal = () => {
-    setVideoMessageVisible(false);
-  };
-
-  useEffect(() => {
-    const randomNumber = Math.floor(Math.random() * 101);
-    setRandomNumber(randomNumber);
-  }, []);
-  
   return (
-    <div className="App">
-      <div className="container">
-        <div className="weather bordered">
-          <Weather></Weather>
-        </div>
-        <div>
-          {randomNumber < 50 ? <h1>거실 UI</h1> : <h1>현관 UI</h1>}
-        </div>
-        <div className="CurrentDate bordered">
-          <CurrentDate></CurrentDate>
-        </div>
+    <Router>
+      <div>
+        {/* 모션제어 연결 후 변경 예정 */}
+        <header>
+          공통으로 들어갈 점 세개
+        </header>
+        <nav>
+          <ul>
+            <li><Link to="/">First</Link></li>
+            <li><Link to="/second">Second</Link></li>
+            <li><Link to="/last">Last</Link></li>
+          </ul>
+        </nav>
+        <main>
+          <Routes>
+            <Route path="/" element={<First />} />
+            <Route path="/second" element={<Second />} />
+            <Route path="/last" element={<Last />} />
+          </Routes>
+        </main>
       </div>
-      <div className="mirror-area">
-      </div>
-      {/* <div className="bordered">
-        {isVideoMessageVisible && <VideoMessage isVisible={true} onClose={closeVideoModal} />}
-      </div> */}
-      <button onClick={openVideoMessageModal}>Open Video Message Modal</button>
-      {isVideoMessageVisible && <VideoMessage onClose={closeVideoMessageModal} />}
-      {randomNumber < 50 ? <LivingRoom /> : <Entrance />}
-    </div>
+    </Router>
   );
 }
 
