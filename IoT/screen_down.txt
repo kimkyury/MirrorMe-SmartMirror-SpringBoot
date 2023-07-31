@@ -1,1 +1,0 @@
-      std::system("xset dpms force off");
