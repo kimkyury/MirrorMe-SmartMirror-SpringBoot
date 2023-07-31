@@ -32,7 +32,6 @@ public class TokenAuthenticationFilter implements Filter {
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
             .append("?access_token=").append(accessToken);
 
-
         try {
             restTemplate.getForObject(googleRequestURL.toString(), String.class);
             filterChain.doFilter(servletRequest, servletResponse); // AccessToken이 유효하다면 다음 Filter 또는 Controller로 요청 전달
@@ -50,6 +49,4 @@ public class TokenAuthenticationFilter implements Filter {
     public void destroy() {
 
     }
-
-
 }
