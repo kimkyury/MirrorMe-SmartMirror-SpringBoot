@@ -2,8 +2,8 @@ package com.mirror.backend.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.GoogleOAuthResponseDto;
-import com.mirror.backend.api.dto.ResponseLogin;
+import com.mirror.backend.api.dto.ResponseGoogleOAuthDto;
+import com.mirror.backend.api.dto.ResponseLoginDto;
 import com.mirror.backend.api.entity.RedisUserToken;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
@@ -38,8 +38,8 @@ public class OAuthService {
     @Autowired
     private UserService userService;
 
-    private ResponseLogin responseLogin;
-    private GoogleOAuthResponseDto googleOAuthResponseDto ;
+    private ResponseLoginDto responseLogin;
+    private ResponseGoogleOAuthDto googleOAuthResponseDto ;
 
 
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
@@ -68,8 +68,8 @@ public class OAuthService {
         return requestUrl.toString();
     }
 
-    public ResponseLogin login (String authCode){
-        googleOAuthResponseDto = new GoogleOAuthResponseDto();
+    public ResponseLoginDto login (String authCode){
+        googleOAuthResponseDto = new ResponseGoogleOAuthDto();
 
         // 1. authCode를 Access/Refresh/Id Token으로 변환하여 지역변수로 저장
         saveGoogleTokens(authCode);
@@ -80,7 +80,7 @@ public class OAuthService {
         // 3. 해당 Email이 MariaDB에 존재하는 값인지 확인
         boolean isExistUser = userService.isExistUser(userEmail);
 
-        responseLogin = new ResponseLogin();
+        responseLogin = new ResponseLoginDto();
         // 존재유무에따라, Front에게 추가기입 창을 안내하라는 Signal(0, 1) 설정
         if ( !isExistUser){
             // 최초의 유저 정보 생성
@@ -180,11 +180,7 @@ public class OAuthService {
         googleOAuthResponseDto.setAccessToken(returnNode.get("access_token").asText());
         googleOAuthResponseDto.setRefreshToken(returnNode.get("refresh_token").asText());
         googleOAuthResponseDto.setIdToken(returnNode.get("id_token").asText());
-
-
     }
-
-
 
     public int getUserEmailfromAccessToken() {
 
@@ -218,6 +214,5 @@ public class OAuthService {
 
         return SUCCESS;
     }
-
 }
 
