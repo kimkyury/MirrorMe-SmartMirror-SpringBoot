@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://i9e101.p.ssafy.io:3306/mlm
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${USERNAME}
+    password: ${PASSWORD}
+  redis:
+    host: i9e101.p.ssafy.io
+    port: 6379
+  servlet:
+    multipart:
+      location: c:\\upload
+      maxFileSize: 200MB
+      maxRequestSize: 100MB
+
+jpa:
+  generate-ddl: true
+  show-sql: true
+
+google:
+  client-id: ${CLINETID}
+  client-secret: ${CLIENTSECRET}
+  redirect-uri: http://localhost:8080/oauth/google/callback
