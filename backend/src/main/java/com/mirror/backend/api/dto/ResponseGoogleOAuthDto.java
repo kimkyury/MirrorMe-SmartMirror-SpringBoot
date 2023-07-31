@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GoogleOAuthResponseDto {
+public class ResponseGoogleOAuthDto {
 
     private String accessToken;
     private String expiresIn;
