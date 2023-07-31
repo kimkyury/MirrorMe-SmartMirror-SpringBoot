@@ -1,6 +1,7 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.ShortTermForecast;
+import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,18 +24,18 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 @RequestMapping("/weather")
 public class WeatherController {
 
-    private String dangiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
+    private String weatherUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0";
 
     @Value("${data.service-key}")
     private String serviceKey;
 
-    @GetMapping
-    public ApiUtils.ApiResult<ShortTermForecast> getDangiWeather() throws Exception {
+    @GetMapping("/short")
+    public ApiUtils.ApiResult<ShortTermForecast> shortTermForecastApi() throws Exception {
         // user의 nx, ny 받아오는 로직 추가
         int nx = 55, ny = 127;
         String date = LocalDate.now().toString().replaceAll("-", "");
 
-        StringBuilder urlBuilder = new StringBuilder(dangiUrl); /*URL*/
+        StringBuilder urlBuilder = new StringBuilder(weatherUrl + "/getVilageFcst"); /*URL*/
         urlBuilder.append("?" +  "serviceKey=" + serviceKey);
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("266", "UTF-8")); /*한 페이지 결과 수*/
@@ -107,5 +108,71 @@ public class WeatherController {
         return success(shortTermForecast);
     }
 
+    @GetMapping("/ultra")
+    public ApiUtils.ApiResult<UltraShortTermForecast> ultraShortTermForecastApi() throws Exception {
+        String date = LocalDate.now().toString().replaceAll("-", "");
 
+        StringBuilder urlBuilder = new StringBuilder(weatherUrl + "/getUltraSrtNcst"); /*URL*/
+        urlBuilder.append("?" +  "serviceKey=" + serviceKey); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
+        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(date, "UTF-8")); /*‘21년 6월 28일 발표*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("0600", "UTF-8")); /*06시 발표(정시단위) */
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode("55", "UTF-8")); /*예보지점의 X 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode("127", "UTF-8")); /*예보지점의 Y 좌표값*/
+
+        URL url = new URL(urlBuilder.toString());
+        System.out.println("url = " + url);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        System.out.println("Response code: " + conn.getResponseCode());
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String result = sb.toString();
+
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(result);
+        JSONObject parse_response = (JSONObject) jsonObject.get("response");
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+
+        UltraShortTermForecast ultraShortTermForecast = new UltraShortTermForecast();
+
+        for(int i=0; i<parse_item.size(); i++) {
+            JSONObject object = (JSONObject) parse_item.get(i);
+            String category = (String) object.get("category");
+            String fcstValue = (String) object.get("obsrValue");
+            switch (category) {
+                case "T1H":
+                    ultraShortTermForecast.setT1H(Double.parseDouble(fcstValue));
+                    break;
+                case "PTY":
+                    ultraShortTermForecast.setPTY(Integer.parseInt(fcstValue));
+                    break;
+                case "REH":
+                    ultraShortTermForecast.setREH(Integer.parseInt(fcstValue));
+                    break;
+                case "RN1":
+                    ultraShortTermForecast.setRN1(Integer.parseInt(fcstValue));
+                    break;
+            }
+        }
+
+        ultraShortTermForecast.setDate(date);
+        return success(ultraShortTermForecast);
+    }
 }
