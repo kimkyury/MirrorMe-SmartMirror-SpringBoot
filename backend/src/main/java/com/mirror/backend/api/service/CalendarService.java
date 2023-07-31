@@ -23,19 +23,20 @@ public class CalendarService {
         try {
             String jsonData = "";
 
-            URL url = new URL(HTTP_REQUEST_PRE + calendarId + HTTP_REQUEST_POST +  "?access_token=" + accessToken);
+            URL url = new URL(HTTP_REQUEST_PRE + calendarId + HTTP_REQUEST_POST + "?access_token=" + accessToken);
 
             BufferedReader bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
             String line;
-            while((line = bf.readLine()) != null){
-                jsonData+=line;
+            while ((line = bf.readLine()) != null) {
+                jsonData += line;
             }
 
             ObjectMapper objectMapper = new ObjectMapper();
             Event event = objectMapper.readValue(jsonData, Event.class);
             return event;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+
             return null;
         }
     }
@@ -43,6 +44,7 @@ public class CalendarService {
     public List<Event.Item> getMyNowCalendar(Event event) {
         LocalDate now = LocalDate.now();
         List<Event.Item> items = new ArrayList<>();
+
 
         for( Event.Item item: event.getItems()) {
 
@@ -56,7 +58,7 @@ public class CalendarService {
             LocalDate localEndDate = LocalDate.parse(endTime, parser);
 
             boolean chk = !now.isBefore(localStartDate) && !now.isAfter(localEndDate);
-            if(chk) items.add(item);
+            if (chk) items.add(item);
         }
 
         return items;
