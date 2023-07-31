@@ -1,6 +1,6 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.CreateUserRequestDto;
+import com.mirror.backend.api.dto.RequestUserRequestDto;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -22,7 +22,7 @@ public class UserController {
 
 
     @PostMapping("/signup")
-    public ApiUtils.ApiResult<Integer> signUp(@RequestBody CreateUserRequestDto createUserRequestDto) {
+    public ApiUtils.ApiResult<Integer> signUp(@RequestBody RequestUserRequestDto createUserRequestDto) {
         return null;
 
     }

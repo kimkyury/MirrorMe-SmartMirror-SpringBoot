@@ -2,6 +2,9 @@ package com.mirror.backend.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mirror.backend.api.dto.GoogleOAuthResponseDto;
+import com.mirror.backend.api.dto.ResponseLogin;
+import com.mirror.backend.api.entity.RedisUserToken;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
@@ -23,6 +26,8 @@ public class OAuthService {
 
     static int FAIL = 0;
     static int SUCCESS = 1;
+    static int RE_LOGIN_USER = 0;
+    static int INIT_LOGIN_USER = 1;
 
     @Autowired
     private UserRepository userRepository;
@@ -30,10 +35,12 @@ public class OAuthService {
     private RedisUserTokenRepository redisUserTokenRepository;
     @Autowired
     private GoogleOAuth googleOAuth;
+    @Autowired
+    private UserService userService;
 
-    private String accessToken = "";
-    private String refreshToken = "";
-    private String id_token = "";
+    private ResponseLogin responseLogin;
+    private GoogleOAuthResponseDto googleOAuthResponseDto ;
+
 
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
         String endPoint = googleOAuth.REQUEST_AUTH_CODE_URL;
@@ -61,12 +68,81 @@ public class OAuthService {
         return requestUrl.toString();
     }
 
-    public void googleLogin(String authCode){
+    public ResponseLogin login (String authCode){
+        googleOAuthResponseDto = new GoogleOAuthResponseDto();
 
+        // 1. authCode를 Access/Refresh/Id Token으로 변환하여 지역변수로 저장
         saveGoogleTokens(authCode);
-        getUserEmailfromIdToken();
 
+        // 2. idToken을 이용하여 GoogleOAuth 로그인한 user의 googleEmail찾기
+        String userEmail = getUserEmailFromIdToken();
+
+        // 3. 해당 Email이 MariaDB에 존재하는 값인지 확인
+        boolean isExistUser = userService.isExistUser(userEmail);
+
+        responseLogin = new ResponseLogin();
+        // 존재유무에따라, Front에게 추가기입 창을 안내하라는 Signal(0, 1) 설정
+        if ( !isExistUser){
+            // 최초의 유저 정보 생성
+            userService.createUser(userEmail);
+            responseLogin.setIsInitLoginUser(INIT_LOGIN_USER);
+        }else{
+            responseLogin.setIsInitLoginUser(RE_LOGIN_USER);
+        }
+
+         // 4. userEmail을 Key으로 하여 Access/Refresh Token을 Redis에 저장
+        saveUserTokenToRedis(userEmail);
+//        System.out.println("Redis에 Token저장 완료");
+
+        responseLogin.setAccessToken(googleOAuthResponseDto.getAccessToken());
+        responseLogin.setRefreshToken(googleOAuthResponseDto.getRefreshToken());
+
+        return responseLogin;
     }
+
+    public void saveUserTokenToRedis(String userEmail){
+        String key = "token_" + userEmail;
+
+        RedisUserToken send = new RedisUserToken(key,
+                googleOAuthResponseDto.getAccessToken(),
+                googleOAuthResponseDto.getRefreshToken());
+
+        redisUserTokenRepository.save(send);
+
+//        System.out.println("유저 token정보 저장");
+    }
+
+
+    public String getUserEmailFromIdToken(){
+
+        String userEmail = "";
+        String[] parts = googleOAuthResponseDto.getIdToken().split("\\."); // '.'을 기준으로 분리
+
+        if (parts.length == 3) {
+
+            // payload영역만 Decode 후, Jackson으로 userEmail부분만 Parsing
+            byte[] payloadBytes = Base64.getUrlDecoder().decode(parts[1]);
+            String payload = new String(payloadBytes, StandardCharsets.UTF_8);
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode payloadNode = objectMapper.readTree(payload);
+                if (payloadNode.has("email")) {
+                    userEmail = payloadNode.get("email").asText();
+
+                } else {
+                    System.out.println("Email not found.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Invalid ID token.");
+        }
+//        System.out.println("User의 Email: " + userEmail);
+        return userEmail;
+    }
+
     public void saveGoogleTokens(String authCode) {
         // 승인코드로 access, refresh 토큰으로 교환하기
         ObjectMapper mapper = new ObjectMapper();
@@ -93,52 +169,22 @@ public class OAuthService {
         JsonNode returnNode = null;
         try {
             responseEntity = restTemplate.postForEntity(endPoint, map, String.class);
-            System.out.println("\nSending 'GET' request to URL : " + endPoint);
-            System.out.println("Response Code : " + responseEntity.getStatusCodeValue());
-
             returnNode = mapper.readTree(responseEntity.getBody());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("responseEntity: " + responseEntity.toString());
-        accessToken = returnNode.get("access_token").asText();
-        refreshToken = returnNode.get("refresh_token").asText();
-        id_token = returnNode.get("id_token").asText();
+        // AccessToken, expiresIn, refreshToken, scope, tokenType, idToken 확인
+         System.out.println("responseEntity: " + responseEntity.toString());
+
+        googleOAuthResponseDto.setAccessToken(returnNode.get("access_token").asText());
+        googleOAuthResponseDto.setRefreshToken(returnNode.get("refresh_token").asText());
+        googleOAuthResponseDto.setIdToken(returnNode.get("id_token").asText());
+
 
     }
 
-    public String getUserEmailfromIdToken(){
 
-        String userEmail = "";
-        String[] parts = id_token.split("\\."); // '.'을 기준으로 분리
-
-        if (parts.length == 3) {
-
-            // payload영역만 Decode 후, Jackson으로 userEmail부분만 Parsing
-            byte[] payloadBytes = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(payloadBytes, StandardCharsets.UTF_8);
-
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode payloadNode = objectMapper.readTree(payload);
-                if (payloadNode.has("email")) {
-                    userEmail = payloadNode.get("email").asText();
-
-                } else {
-                    System.out.println("Email not found.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Invalid ID token.");
-        }
-
-
-        System.out.println("User의 Email: " + userEmail);
-        return userEmail;
-    }
 
     public int getUserEmailfromAccessToken() {
 
@@ -151,7 +197,7 @@ public class OAuthService {
         // header설정, accessToken담기
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + accessToken);
+        headers.set("Authorization", "Bearer " + googleOAuthResponseDto.getAccessToken());
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         // 응답받기
