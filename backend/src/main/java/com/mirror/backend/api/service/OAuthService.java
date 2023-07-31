@@ -102,11 +102,19 @@ public class OAuthService {
 
         // id_token 디코딩 후, email을 key로 하는 redis Data생성  ( value: refresh, access)
 
+//        GoogleTokenResponse googleTokenResponse = requestGoogleToken()
 
         if (responseEntity.getStatusCode() != HttpStatus.OK)
             return FAIL;
         return SUCCESS;
     }
+
+//
+//    public int decodeIdToken() {
+//
+//
+//    }
+
 
     public int getUserEmail() {
 
