@@ -1,0 +1,14 @@
+오전
+
+google cloud stt사용하기
+
+구글에서 구글 클라우드 라이브러리가 있다
+아마 구글클라우드 플렛폼 api를 쓰려면 이 라이브러리를 써야하는거 같다.
+
+일단 c++언어의 라이브러리를 설치해서 진행해봐야 겠다.
+
+https://github.com/GoogleCloudPlatform/cpp-samples/tree/main/speech/api
+해당 깃허브의 README를 읽어서 그대로 진행하니 통신에 성공했다.
+
+cpp_sample/speech/api안에 .cc파일들이 통신하는 코드고 이후 커맨드라인에서 적은 코드로 변환하고자 하는 음성을 보내는듯 하다.
+이걸 바탕으로 코드리뷰를 진행해보자.
