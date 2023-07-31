@@ -1,8 +1,0 @@
-.idea/
-*.iml
-*~
-*.o
-*.ar
-cmake-build-debug/
-.build/
-.vscode/
