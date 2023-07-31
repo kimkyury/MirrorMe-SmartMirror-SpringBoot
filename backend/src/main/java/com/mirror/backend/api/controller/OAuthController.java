@@ -1,5 +1,6 @@
 package com.mirror.backend.api.controller;
 
+import com.mirror.backend.api.dto.ResponseLogin;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
@@ -34,6 +35,7 @@ public class OAuthController {
 
     static int SUCCESS = 1;
     static int FAIL = 0;
+    static int INIT_LOGIN_USER = 2;
 
     @GetMapping
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
@@ -46,23 +48,23 @@ public class OAuthController {
     }
 
     @GetMapping("/google/callback")
-    @Operation(summary = "Google Token 발급 요청", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환합니다")
-    public ApiUtils.ApiResult<String> userLogin(
+    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, 이후 로그인을 진행합니다. \n 만약, isInitLoginUser값이 1이라면 최초 로그인 유저입니다.(회원가입, 추가정보 기입 필요)")
+    public ApiUtils.ApiResult<ResponseLogin> userLogin(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error
     ) throws IOException {
+        ResponseLogin responseUserToken = null;
+
+        System.out.println("authCode: " + authCode);
 
         if (error != null) {
             System.out.println("Can't run AuthorizationCode");
-            return fail("Authorization Code 발급 문제");
+            return fail(null);
         }
-        // 승인코드 확인
-        System.out.println("authCode: " + authCode);
 
-        // 로그인 중에서도 최초 로그인시의 로직이 포함됨
-        oAuthService.googleLogin(authCode);
-
-        return success("Access/Refresh Token 발급 성공");
+        ResponseLogin response = oAuthService.login(authCode);
+        System.out.println(response);
+        System.out.println("Json 파일 준비완료" );
+        return success(response);
     }
-
 }

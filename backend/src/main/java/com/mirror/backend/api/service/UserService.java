@@ -27,12 +27,19 @@ public class UserService {
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
-    public int isExistUser(String email){
 
-        Optional<User> user = userRepository.findByUserEmail(email);
+    public User createUser(String userEmail){
+        User user = new User();
+        user.setUserEmail(userEmail);
 
-        if ( user.isEmpty()) return FAIL;
-        return SUCCESS;
+        return userRepository.save(user);
     }
 
+    public boolean isExistUser(String email){
+
+        Optional<User> user = userRepository.findByUserEmail(email);
+        if(user.isEmpty()) return false;
+
+        return true;
+    }
 }
