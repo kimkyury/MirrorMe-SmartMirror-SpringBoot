@@ -21,10 +21,10 @@ public class CalendarController {
     @Autowired
     private CalendarService calendarService;
 
-    @Value("${calendar.client-id}")
+    @Value("${google.client-id}")
     private String CLIENT_ID;
 
-    @Value("${calendar.client-secret}")
+    @Value("${google.client-secret}")
     private String CLIENT_SECRET;
 
     @GetMapping
