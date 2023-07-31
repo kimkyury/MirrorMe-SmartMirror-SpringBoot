@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class GoogleOAuth {
 
-
     public final String REQUEST_AUTH_CODE_URL = "https://accounts.google.com/o/oauth2/v2/auth";
     public final String REQUEST_TOKEN_URL = "https://oauth2.googleapis.com/token";
+    public final String REQUEST_TOKEN_INFO_URL="https://www.googleapis.com/oauth2/v1/tokeninfo";
     public final String REQUEST_USER_INFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
     public final String SCOPE_CALENDAR = "https://www.googleapis.com/auth/calendar.events.readonly";
