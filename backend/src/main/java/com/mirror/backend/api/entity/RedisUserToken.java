@@ -14,12 +14,12 @@ import org.springframework.data.redis.core.RedisHash;
 public class RedisUserToken {
 
     @Id
-    private String userId;
+    private String userEmail;
     private String accessToken;
     private String refreshToken;
 
-    public RedisUserToken(String userId, String accessToken, String refreshToken) {
-        this.userId = userId;
+    public RedisUserToken(String userEmail, String accessToken, String refreshToken) {
+        this.userEmail = userEmail;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
