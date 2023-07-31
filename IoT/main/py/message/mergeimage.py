@@ -17,7 +17,6 @@ final_clip = video_clip.set_audio(audio_clip)
 
 # 파일 이름 난수 생성
 
-
 # 합쳐진 동영상 저장
 final_output_path = './temp/' + 'final_output.mp4'
 final_clip.write_videofile(final_output_path, codec='mpeg4')
