@@ -28,7 +28,10 @@ public class CalendarController {
     private String CLIENT_SECRET;
 
     @GetMapping
-    @Operation(summary = "회원 캘린더 전체 조회", description = "회원 login시 받는 code를 이용하여 회원의 전체 캘린더를 조회합니다.")
+    @Operation(summary = "회원 캘린더 전체 조회", description = "회원 login시 받는 code를 이용하여 회원의 전체 캘린더를 조회합니다." +
+            "\n\n 만료된 AccessToken을 기입하면 RefreshToken이 요구되기 때문에 Error가 발생할 수 있습니다. " +
+            "\n이 경우 개발자모드에서 Cookie로 RefreshToken을 담거나, PostMan으로 수행하세요. 참고로 난 그래서 만료AccessToken 테스트시 Postman으로만 테스트함\"")
+
     public ApiUtils.ApiResult<Event> getSchedule(@RequestHeader("access_token") String accessToken) {
 //        RestJsonService restJsonService = new RestJsonService();
 //        String accessTokenData = null;
