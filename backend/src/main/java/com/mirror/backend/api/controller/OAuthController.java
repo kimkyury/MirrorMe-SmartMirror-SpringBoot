@@ -1,6 +1,6 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.ResponseLogin;
+import com.mirror.backend.api.dto.ResponseLoginDto;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
@@ -49,11 +49,11 @@ public class OAuthController {
 
     @GetMapping("/google/callback")
     @Operation(summary = "Callback Token을 통한 로그인 진행", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, 이후 로그인을 진행합니다. \n 만약, isInitLoginUser값이 1이라면 최초 로그인 유저입니다.(회원가입, 추가정보 기입 필요)")
-    public ApiUtils.ApiResult<ResponseLogin> userLogin(
+    public ApiUtils.ApiResult<ResponseLoginDto> userLogin(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error
     ) throws IOException {
-        ResponseLogin responseUserToken = null;
+        ResponseLoginDto responseUserToken = null;
 
         System.out.println("authCode: " + authCode);
 
@@ -62,9 +62,20 @@ public class OAuthController {
             return fail(null);
         }
 
-        ResponseLogin response = oAuthService.login(authCode);
+        ResponseLoginDto response = oAuthService.login(authCode);
         System.out.println(response);
         System.out.println("Json 파일 준비완료" );
         return success(response);
     }
+
+    @GetMapping("/")
+    @Operation(summary = "Google AccessToken 재발급 요청", description = "AccessToken 만료로 인하여 RefreshToken을 통한 재발급 요청을 수행합니다. ")
+    public ApiUtils.ApiResult<String> reissueToken(HttpServletResponse response) throws Exception {
+
+
+
+        return success("Success Request Authorization Code to Google");
+    }
+
+
 }
