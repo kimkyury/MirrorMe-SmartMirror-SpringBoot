@@ -41,7 +41,6 @@ public class User {
     @JsonProperty("roleType")
     private String roleType;
 
-
     @Override
     public String toString() {
         return "User{" +

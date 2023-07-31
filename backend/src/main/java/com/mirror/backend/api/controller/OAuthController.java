@@ -1,7 +1,9 @@
 package com.mirror.backend.api.controller;
 
+import com.mirror.backend.api.dto.ResponseLogin;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.service.OAuthService;
+import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,18 +20,22 @@ import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
-@RestController
+
 @RequestMapping("/oauth")
-@Tag(name = "OAuth", description = "OAuth 최초로그인 및 UserToken 관련 API")
+@RestController
+@Tag(name = "Oauth", description = "OAuth 최초로그인 및 UserToken 관련 API")
 public class OAuthController {
 
     @Autowired
+    private GoogleOAuth googleOAuth;
+    @Autowired
     private OAuthService oAuthService;
     @Autowired
-    private GoogleOAuth googleOAuth;
+    private UserService userService;
 
     static int SUCCESS = 1;
     static int FAIL = 0;
+    static int INIT_LOGIN_USER = 2;
 
     @GetMapping
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
@@ -42,68 +48,23 @@ public class OAuthController {
     }
 
     @GetMapping("/google/callback")
-    @Operation(summary = "Google Token 발급 요청", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환합니다")
-    public ApiUtils.ApiResult<String> getUserToken(
+    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, 이후 로그인을 진행합니다. \n 만약, isInitLoginUser값이 1이라면 최초 로그인 유저입니다.(회원가입, 추가정보 기입 필요)")
+    public ApiUtils.ApiResult<ResponseLogin> userLogin(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error
     ) throws IOException {
+        ResponseLogin responseUserToken = null;
+
+        System.out.println("authCode: " + authCode);
 
         if (error != null) {
             System.out.println("Can't run AuthorizationCode");
-            return fail("Authorization Code 발급 문제");
-        }
-        // 승인코드 확인
-        System.out.println("authCode: " + authCode);
-
-        // 5. Access/Refresh Token으로 교환하기
-        int result = oAuthService.getGoogleToken(authCode);
-        if (result == FAIL) {
-            System.out.println("Can't Get Access/Refresh");
-            return fail("Access/Refresh Token 교환 문제");
+            return fail(null);
         }
 
-        // 6. userInfo 요청하기
-        oAuthService.getUserEmail();
-
-        // 7. 이미 존재하는 유저인지 확인한다
-
-
-        // 존재하지 않는 유저라면, Redis에 회원 Token을 저장한다
-
-        // 8. 로그인하라고 안내한다 (redirectUrl: home화면)
-
-
-        return success("Access/Refresh Token 발급 성공");
+        ResponseLogin response = oAuthService.login(authCode);
+        System.out.println(response);
+        System.out.println("Json 파일 준비완료" );
+        return success(response);
     }
-
-    @GetMapping("/dump")
-    public ApiUtils.ApiResult<String> getUserToken(@RequestParam(name = "error", required = false) String error) {
-//        System.out.println(error);
-//        System.out.println("here is /oauth/token !");
-//
-//        String accessToken = String.valueOf(map.get("access_token"));
-//        String expiresIn = String.valueOf(map.get("expires_in"));
-//        String refreshToken = String.valueOf(map.get("refresh_token"));
-//        String scope = String.valueOf(map.get("scope"));
-//
-//
-//        Long userId = 1L; // 이 부분은 기존의 JSON에서 front가 userId를 붙여서 준다고 친다
-//
-//
-//        System.out.println("json전체: " + map);
-//        System.out.println("accessToken: " + accessToken);
-//        System.out.println("expires_in: " + expiresIn);
-//        System.out.println("refresh_token: " + refreshToken);
-//        System.out.println("scope: " + scope);
-//
-//        oAuthService.saveUserAccessToken(accessToken, refreshToken, userId);
-//
-//        return success("로직 작성중");
-        System.out.println("----------토큰 발급 성공----------");
-        return success("로직 작성중");
-
-
-    }
-
-
 }
