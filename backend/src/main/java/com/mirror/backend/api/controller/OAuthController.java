@@ -48,7 +48,12 @@ public class OAuthController {
     }
 
     @GetMapping("/google/callback")
-    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, 이후 로그인을 진행합니다. \n 만약, isInitLoginUser값이 1이라면 최초 로그인 유저입니다.(회원가입, 추가정보 기입 필요)")
+    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "" +
+            "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
+            "이후 로그인을 진행합니다. \n " +
+            "만약, isInitLoginUser값이 1이라면 최초 로그인 유저입니다.(회원가입, 추가정보 기입 필요)" +
+            "또한, 만료된 AccessToken을 기입하면 RefreshToken이 요구되기 때문에 Error가 발생할 수 있습니다. 이 경우 개발자모드에서 Cookie로 RefreshToken을 담거나, PostMan으로 수행하세요. 참고로 난 그래서 만료AccessToken 테스트시 Postman으로만 테스트함"
+    )
     public ApiUtils.ApiResult<ResponseLoginDto> userLogin(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error
@@ -68,14 +73,6 @@ public class OAuthController {
         return success(response);
     }
 
-    @GetMapping("/")
-    @Operation(summary = "Google AccessToken 재발급 요청", description = "AccessToken 만료로 인하여 RefreshToken을 통한 재발급 요청을 수행합니다. ")
-    public ApiUtils.ApiResult<String> reissueToken(HttpServletResponse response) throws Exception {
-
-
-
-        return success("Success Request Authorization Code to Google");
-    }
 
 
 }
