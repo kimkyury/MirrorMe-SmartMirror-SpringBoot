@@ -13,16 +13,16 @@ import org.springframework.data.redis.core.RedisHash;
 public class VideoMessage {
 
     @Id
-    private Integer userId;
-    private Integer sendUserId;
-    private String videoPath;
-    private String voicePath;
+    private String userId;
+    private String sendUserId;
+    private String fileName;
+    private String type;
 
     @Builder
-    public VideoMessage(Integer userId, Integer sendUserId, String videoPath, String voicePath) {
+    public VideoMessage(String userId, String sendUserId, String fileName, String type) {
         this.userId = userId;
         this.sendUserId = sendUserId;
-        this.videoPath = videoPath;
-        this.voicePath = voicePath;
+        this.fileName = fileName;
+        this.type = type;
     }
 }
