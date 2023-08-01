@@ -182,7 +182,7 @@ public class OAuthService {
         googleOAuthResponseDto.setIdToken(returnNode.get("id_token").asText());
     }
 
-    public int getUserEmailfromAccessToken() {
+    public String getUserEmailFromAccessToken(String accessToken) {
 
         String endPoint = googleOAuth.REQUEST_USER_INFO_URL;
 
@@ -201,18 +201,17 @@ public class OAuthService {
         JsonNode returnNode = null;
         try {
             response = restTemplate.exchange(endPoint, HttpMethod.GET, entity, String.class);
-            System.out.println("\nSending 'GET' request to URL : " + endPoint);
-            System.out.println("Response Code : " + response.getStatusCodeValue());
+//            System.out.println("\nSending 'GET' request to URL : " + endPoint);
+//            System.out.println("Response Code : " + response.getStatusCodeValue());
 
             returnNode = mapper.readTree(response.getBody());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println(returnNode);
-        System.out.println(returnNode.get("email").asText());
+        String userEmail = returnNode.get("email").asText();
 
-        return SUCCESS;
+        return userEmail;
     }
 }
 
