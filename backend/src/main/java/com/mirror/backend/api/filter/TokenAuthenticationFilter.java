@@ -3,8 +3,10 @@ package com.mirror.backend.api.filter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.repository.UserRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,12 +27,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 @Component
 public class TokenAuthenticationFilter implements Filter {
 
 
     private RedisUserTokenRepository redisUserTokenRepository;
+    private UserRepository userRepository;
     private GoogleOAuth googleOAuth;
 
     @Override
@@ -40,7 +44,7 @@ public class TokenAuthenticationFilter implements Filter {
 
         redisUserTokenRepository = webApplicationContext.getBean(RedisUserTokenRepository.class);
         googleOAuth = webApplicationContext.getBean(GoogleOAuth.class);
-
+        userRepository = webApplicationContext.getBean(UserRepository.class);
     }
 
     @Override
@@ -58,11 +62,28 @@ public class TokenAuthenticationFilter implements Filter {
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
             .append("?access_token=").append(accessToken);
 
+        ResponseEntity<String> responseEntity = null;
+        JsonNode returnNode = null;
+        ObjectMapper mapper = new ObjectMapper();
+
+        String userEmail = "";
+        Long userId;
+
         try {
-            restTemplate.getForObject(googleRequestURL.toString(), String.class);
+            responseEntity = restTemplate.getForEntity(googleRequestURL.toString(), String.class);
+            returnNode = mapper.readTree(responseEntity.getBody());
+
+            userEmail = returnNode.get("email").asText();
+            userId = getUserIdFromUserEmail(userEmail);
+
+            servletRequest.setAttribute("user_email", userEmail);
+            servletRequest.setAttribute("user_id", userId);
+
             filterChain.doFilter(servletRequest, servletResponse); // AccessToken이 유효하다면 다음 Filter 또는 Controller로 요청 전달
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                System.out.println("--------Filter-------");
+                System.out.println("해당 AccessToken이 유효하지 않으므로 Cookie내용을 따라 재발급합니다.");
                 // AccessToken이 유효하지 않다면 클라이언트에 401 Unauthorized 응답
 
                 // refreshToken으로 새 accessToken 재발급
@@ -80,29 +101,36 @@ public class TokenAuthenticationFilter implements Filter {
                     String reIssueAccessToken = tokens[0];
                     String idToken = tokens[1];
 
-                    String userEmail = getUserEmailFromIdToken(idToken);
+                    userEmail = getUserEmailFromIdToken(idToken);
                     saveAccessTokenToRedis(userEmail, reIssueAccessToken, refreshToken);
 
-                    System.out.println("userEmail: " + userEmail);
+//                    System.out.println("userEmail: " + userEmail);
                     System.out.println("AccessToken: " + accessToken);
                     System.out.println("reIssueAccessToken: " + reIssueAccessToken);
                     System.out.println("RefreshToken: " + refreshToken);
 
                     // 클라이언트에게 새로 발급 받은 accessToken과 refreshToken을 JSON 형태로 응답합니다.
-                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     PrintWriter out = response.getWriter();
-                    out.print("{\"access_token\":\"" + accessToken + "\",\"refresh_token\":\"" + refreshToken + "\"}");
+                    out.print("{\"access_token\":\"" + reIssueAccessToken + "\",\"refresh_token\":\"" + refreshToken + "\"}");
                     out.flush();
                 } else {
                     // refreshToken이 존재하지 않는 경우, Unauthorized 응답을 전송합니다.
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     response.getWriter().write("Invalid access token");
                 }
             } else {
                 throw e; // 다른 문제가 발생했다면 예외를 던짐
             }
         }
+
+    }
+
+    private Long getUserIdFromUserEmail(String userEmail){
+        Optional< User > user = userRepository.findByUserEmail(userEmail);
+        Long userId = user.get().getUserId();
+        return userId;
     }
 
 
@@ -143,6 +171,8 @@ public class TokenAuthenticationFilter implements Filter {
 
         return tokens;
     }
+
+
 
     public String getUserEmailFromIdToken (String idToken ){
 
