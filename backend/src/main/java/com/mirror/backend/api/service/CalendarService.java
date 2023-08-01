@@ -23,19 +23,20 @@ public class CalendarService {
         try {
             String jsonData = "";
 
-            URL url = new URL(HTTP_REQUEST_PRE + calendarId + HTTP_REQUEST_POST +  "?access_token=" + accessToken);
+            URL url = new URL(HTTP_REQUEST_PRE + calendarId + HTTP_REQUEST_POST + "?access_token=" + accessToken);
 
             BufferedReader bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
             String line;
-            while((line = bf.readLine()) != null){
-                jsonData+=line;
+            while ((line = bf.readLine()) != null) {
+                jsonData += line;
             }
 
             ObjectMapper objectMapper = new ObjectMapper();
             Event event = objectMapper.readValue(jsonData, Event.class);
             return event;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+
             return null;
         }
     }
@@ -44,16 +45,20 @@ public class CalendarService {
         LocalDate now = LocalDate.now();
         List<Event.Item> items = new ArrayList<>();
 
-        for( Event.Item item: event.getItems()) {
-            String startTime = item.getStart().getDateTime().substring(0, 10);
-            String endTime = item.getEnd().getDateTime().substring(0, 10);
 
+        for( Event.Item item: event.getItems()) {
+
+            String startTime = item.getStart().getDateTime();
+            String endTime = item.getEnd().getDateTime();
+
+            startTime = startTime == null ? item.getStart().getDate() : startTime.substring(0, 10);
+            endTime = endTime == null ? item.getEnd().getDate() : endTime.substring(0, 10);
             DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localStartDate = LocalDate.parse(startTime, parser);
             LocalDate localEndDate = LocalDate.parse(endTime, parser);
 
             boolean chk = !now.isBefore(localStartDate) && !now.isAfter(localEndDate);
-            if(chk) items.add(item);
+            if (chk) items.add(item);
         }
 
         return items;

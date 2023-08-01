@@ -17,9 +17,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @JsonProperty("userPassword")
-    private String userPassword;
-
     @JsonProperty("userNickname")
     private String userNickname;
 
@@ -41,20 +38,13 @@ public class User {
     @JsonProperty("householdId")
     private Long householdId;
 
-    @JsonProperty("providerType")
-    private String providerType;
-
     @JsonProperty("roleType")
     private String roleType;
-
-    @JsonProperty("emailVerifiedYn")
-    private String emailVerifiedYn;
 
     @Override
     public String toString() {
         return "User{" +
                 "userId='" + userId + '\'' +
-                ", userPassword='" + userPassword + '\'' +
                 ", userNickname='" + userNickname + '\'' +
                 ", userEmail='" + userEmail + '\'' +
                 ", userName='" + userName + '\'' +
