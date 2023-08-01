@@ -58,11 +58,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public int updateInitUser(String userEmail, RequestCreateUserDto requestCreateUserDto ){
+    public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
 
         Optional<User> user = userRepository.findByUserEmail(userEmail);
         // userId찾기
-        Long userId = user.get().getUserId();
 
         if ( user.isEmpty())
             return FAIL;
@@ -102,7 +101,7 @@ public class UserService {
 
 
 
-    public int uploadProfileImage(String userEmail, MultipartFile file) {
+    public int uploadProfileImage(String userEmail,  MultipartFile file) {
         Optional<User> user = userRepository.findByUserEmail(userEmail);
 
         String UPLOAD_DIR = "ImgTest/";  //TODO: 서버내의 절대경로로 바꿀 것
@@ -142,9 +141,8 @@ public class UserService {
         return true;
     }
 
-    public List<ResponseInterestDto> getInterestDtoList(String userEmail) {
+    public List<ResponseInterestDto> getInterestDtoList(String userEmail, Long userId) {
         Optional<User> user = userRepository.findByUserEmail(userEmail);
-        Long userId = user.get().getUserId();
 
         List<Interest> interests = interestRepository.findByIdUserIdAndIsUsed(userId, 1);
         List<InterestCommonCode> interestCodes = interestCommonCodeRepository.findAll();
@@ -165,28 +163,43 @@ public class UserService {
 
     }
 
-    public int updateInterest(String userEmail, RequestInterestDto requestInterestDto) {
+    public int updateInterest(String userEmail, Long userId, RequestInterestDto requestInterestDto) {
+
+        int INTEREST_CREATED = 2;
+        int INTEREST_OFF = 0;
+        int INTEREST_ON = 1;
+
 
         Optional<User> user = userRepository.findByUserEmail(userEmail);
-        Long userId = user.get().getUserId();
-
-        // dto에 대하여, 이미 1이라면 0으로 만들고, 이미 0이라면 1로 만든다
-        // 애초에 조회할 수 없는 애라면, userId와 code를 복합키로하여 생성한다
 
         Long interestCode = requestInterestDto.getInterestCode();
-
         Optional<Interest> interestOptional = interestRepository.findByIdUserIdAndIdInterestCode(userId, interestCode);
 
+        // 애초에 조회할 수 없는 애라면, userId와 code를 복합키로하여 생성한다
         if (interestOptional.isEmpty()){
             InterestKey interestKey = new InterestKey( userId, interestCode);
-
-//            Interest interest = new Interest
+            Interest interest = Interest.builder()
+                    .id(interestKey)
+                    .isUsed(1)
+                    .build();
+            interestRepository.save(interest);
+            return INTEREST_CREATED;
         }
 
+        // dto에 대하여, 이미 1이라면 0으로 만들고, 이미 0이라면 1로 만든다
+
+        interestOptional.ifPresent(selectInterest -> {
+            if ( selectInterest.getIsUsed() == INTEREST_OFF){
+                selectInterest.setIsUsed(INTEREST_ON);
+                interestRepository.save(selectInterest);
+            }else{
+                selectInterest.setIsUsed(INTEREST_OFF);
+                interestRepository.save(selectInterest);
+            }
+        });
 
 
 
-
-        return Result.SUCCESS;
+        return interestOptional.get().getIsUsed();
     }
 }
