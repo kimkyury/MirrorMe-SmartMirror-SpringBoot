@@ -37,67 +37,71 @@ public class UserController {
     public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
                                              @RequestBody RequestCreateUserDto requestCreateUserDto) {
 
-
-        System.out.println(request.getHeader("access_token"));
-        System.out.println(request.getAttribute("user_id"));
-        System.out.println(request.getAttribute("user_email"));
-
-
         String accessToken = request.getHeader("access_token");
-        // 이메일 찾기
-        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
-        // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.updateInitUser(userEmail, requestCreateUserDto);
+        String userEmail = (String) request.getAttribute("user_email");
+        Long userid = (Long)request.getAttribute("user_id");
 
-        if ( result == Result.FAIL ){
+        // 해당 이메일을 가진 유저의 정보 업데이트하기
+        int result = userService.updateInitUser(userEmail, userid,requestCreateUserDto);
+
+        if ( result == Result.FAIL )
             return fail("user 추가 정보 생성 실패");
-        }
         return success("User 추가 정보 생성 성공");
     }
 
     @PostMapping("/profile/img")
     @Operation(summary = "Profile 이미지 등록", description = "프로필이미지를 등록합니다. ")
-    public ApiUtils.ApiResult<String> updateProfileImage(@RequestHeader("access_token") String accessToken,
+    public ApiUtils.ApiResult<String> updateProfileImage(HttpServletRequest request,
                                              @RequestPart(value = "file") MultipartFile file) {
 
-        // 이메일 찾기
-        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
+        String accessToken = request.getHeader("access_token");
+        String userEmail = (String) request.getAttribute("user_email");
+
         // 해당 이메일을 가진 유저의 정보 업데이트하기
         int result = userService.uploadProfileImage(userEmail, file);
 
-        if ( result == Result.FAIL ){
+        if ( result == Result.FAIL )
             return fail("user Profile Img 업데이트 실패");
-        }
+
         return success("User Profile Img 업데이트 성공");
     }
 
 
     @GetMapping("/interests")
-    public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(@RequestHeader("access_token") String accessToken){
+    public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(HttpServletRequest request){
 
         // 이메일 찾기
-        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
-        List<ResponseInterestDto> interestDtoList = userService.getInterestDtoList(userEmail);
+        String userEmail = (String) request.getAttribute("user_email");
+        Long userId = (Long) request.getAttribute("user_id");
 
-        if(interestDtoList.size() == 0){
+        List<ResponseInterestDto> interestDtoList = userService.getInterestDtoList(userEmail, userId);
+
+        if(interestDtoList.size() == 0)
             success("해당 User는 관심사가 없습니다");
-        }
-
         return success(interestDtoList);
     }
 
     @PostMapping("/interests")
-    public ApiUtils.ApiResult<String> postMyInterest(@RequestHeader("access_token") String accessToken,
+    public ApiUtils.ApiResult<String> postMyInterest(HttpServletRequest request,
                                                      @RequestBody RequestInterestDto requestInterestDto){
 
+        int INTEREST_CREATED = 2;
+        int INTEREST_OFF = 0;
+        int INTEREST_ON = 1;
+
         // 이메일 찾기
-        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
-        int result  = userService.updateInterest(userEmail, requestInterestDto);
+        String userEmail = (String) request.getAttribute("user_email");
+        Long userId = (Long) request.getAttribute("user_id");
+        int result  = userService.updateInterest(userEmail, userId, requestInterestDto);
 
-        if (result == Result.FAIL)
-            return fail("뭔가 실패함");
+        if (result == INTEREST_CREATED)
+            return success("CREATE: Interest의 정보를 생성하였습니다. ");
+        else if (result == INTEREST_OFF)
+            return success("UPDATE: 해당 관심정보를 OFF하였습니다. (is_used = 0) ");
+        else if (result == INTEREST_ON)
+            return success("UPDATE: 해당 관심정보를 ON하였습니다. (is_used = 1)  ");
 
-        return success("User 관심사 정보 수정및 생성 성공");
+        return fail("수행불가");
     }
 
 

@@ -54,10 +54,7 @@ public class TokenAuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // Header에서 AccessToken 가져옴
-        System.out.println("---------Filter--------------");
         String accessToken = request.getHeader("access_token");
-        System.out.println(accessToken);
-
 
         // Google Oauth에 AccessToken 유효성 검사 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -85,6 +82,8 @@ public class TokenAuthenticationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse); // AccessToken이 유효하다면 다음 Filter 또는 Controller로 요청 전달
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                System.out.println("---------------");
+                System.out.println("해당 AccessToken이 유효하지 않으므로 Cookie내용을 따라 재발급합니다.");
                 // AccessToken이 유효하지 않다면 클라이언트에 401 Unauthorized 응답
 
                 // refreshToken으로 새 accessToken 재발급
