@@ -2,6 +2,7 @@ package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestInterestDto;
+import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.OAuthService;
@@ -77,6 +78,7 @@ public class UserController {
     }
 
     @DeleteMapping
+    @Operation(summary = "관심사 정보를 조회합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
     public ApiUtils.ApiResult<String> deleteUser(HttpServletRequest request){
 
         Long userId = (Long)request.getAttribute("user_id");
@@ -90,6 +92,7 @@ public class UserController {
 
 
     @GetMapping("/interests")
+    @Operation(summary = "관심사 정보를 조회합니다.", description = "어디에 관심있니" )
     public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(HttpServletRequest request){
 
         // 이메일 찾기
@@ -104,9 +107,9 @@ public class UserController {
     }
 
     @PostMapping("/interests")
+    @Operation(summary = "관심사 정보를 생성/수정 합니다. ", description = "관심사 정보를 생성하거나, 기존에 이미 유저가 등록한 관심사라면 ON/OFF 합니다." )
     public ApiUtils.ApiResult<String> postMyInterest(HttpServletRequest request,
                                                      @RequestBody RequestInterestDto requestInterestDto){
-
 
         int INTEREST_OFF = 0;
         int INTEREST_ON = 1;
@@ -127,12 +130,29 @@ public class UserController {
         return fail("수행불가");
     }
 
+    @PutMapping
+    @Operation(summary = "본인의 닉네임을 수정합니다.", description = "수정합니다." )
+    public ApiUtils.ApiResult<String> getUser(HttpServletRequest request,
+    @RequestBody RequestUpdateUserNicknameDto dto) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        int result = userService.updateUserNickname(userId, dto);
+
+        if ( result == Result.FAIL)
+            return fail("닉네임 수정 실패");
+        return success("닉네임 수정 성공");
+    }
+
     @GetMapping
     @Operation(summary = "서버 정보 조회 테스트", description = "서버내의 MariaDB 접근을 테스트합니다" )
-
     public ApiUtils.ApiResult<User> getUser(@RequestParam("user_id") Long userId) {
         User exUser = userService.getUser(userId);
         System.out.println(exUser.toString());
         return success(exUser);
     }
+
+
+
+
+
 }
