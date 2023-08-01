@@ -2,6 +2,7 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestInterestDto;
+import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
@@ -220,6 +221,18 @@ public class UserService {
             e.getMessage();
             return Result.FAIL;
         }
+        return Result.SUCCESS;
+    }
+
+    public int updateUserNickname(Long userId, RequestUpdateUserNicknameDto dto) {
+
+        Optional<User> user = userRepository.findByUserId(userId);
+
+        user.ifPresent( selectUser -> {
+           selectUser.setUserNickname(dto.getUserNickname());
+           userRepository.save(selectUser);
+        });
+
         return Result.SUCCESS;
     }
 }
