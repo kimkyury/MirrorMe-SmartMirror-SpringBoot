@@ -14,6 +14,7 @@ function App() {
   return (
     <Router>
       <div>
+        <p>머지를 잘하자</p>
         {/* 모션제어 연결 후 변경 예정 */}
         <header>
           공통으로 들어갈 점 세개
