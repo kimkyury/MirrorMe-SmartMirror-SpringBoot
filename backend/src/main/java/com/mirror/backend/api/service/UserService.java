@@ -4,10 +4,12 @@ import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestInterestDto;
 import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.entity.keys.InterestKey;
+import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.InterestCommonCodeRepository;
 import com.mirror.backend.api.repository.InterestsRepository;
 import com.mirror.backend.api.repository.UserRepository;
@@ -34,13 +36,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final InterestsRepository interestRepository;
     private final InterestCommonCodeRepository interestCommonCodeRepository;
+    private final ConnectUserRepository connectUserRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, InterestsRepository interestRepository,
-                           InterestCommonCodeRepository interestCommonCodeRepository) {
+                           InterestCommonCodeRepository interestCommonCodeRepository,
+                       ConnectUserRepository connectUserRepository) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
+        this.connectUserRepository = connectUserRepository;
     }
 
 
@@ -224,6 +229,7 @@ public class UserService {
         return Result.SUCCESS;
     }
 
+
     public int updateUserNickname(Long userId, RequestUpdateUserNicknameDto dto) {
 
         Optional<User> user = userRepository.findByUserId(userId);
@@ -235,4 +241,12 @@ public class UserService {
 
         return Result.SUCCESS;
     }
+
+    public List<ConnectUser> getConnectUsers(Long userId) {
+
+        List<ConnectUser> connectUsers = connectUserRepository.findByIdUserId(userId);
+
+        return connectUsers;
+    }
+
 }

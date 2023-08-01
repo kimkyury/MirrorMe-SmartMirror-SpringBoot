@@ -1,6 +1,6 @@
 package com.mirror.backend.api.entity;
 
-import com.mirror.backend.api.entity.keys.InterestKey;
+import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,25 +13,25 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@Table(name = "interests")
+@Table(name = "connect_users")
 @NoArgsConstructor
-public class Interest {
+public class ConnectUser {
 
     @EmbeddedId
-    private InterestKey id;
-    private int isUsed; // 0:사용 아님, 1: 사용 중임
+    private ConnectUserKey id;
+    private String connectUserAlias;
 
     @Builder
-    public Interest(InterestKey id, int isUsed) {
+    public ConnectUser(ConnectUserKey id, String connectUserAlias) {
         this.id = id;
-        this.isUsed = isUsed;
+        this.connectUserAlias = connectUserAlias;
     }
 
     @Override
     public String toString() {
-        return "Interests{" +
+        return "ConnectUser{" +
                 "id=" + id +
-                ", isUsed=" + isUsed +
+                ", userAlias='" + connectUserAlias + '\'' +
                 '}';
     }
 }
