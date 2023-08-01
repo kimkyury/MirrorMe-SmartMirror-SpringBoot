@@ -4,6 +4,7 @@ import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestInterestDto;
 import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
@@ -78,7 +79,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    @Operation(summary = "관심사 정보를 조회합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
+    @Operation(summary = "유저가 탈퇴합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
     public ApiUtils.ApiResult<String> deleteUser(HttpServletRequest request){
 
         Long userId = (Long)request.getAttribute("user_id");
@@ -142,6 +143,21 @@ public class UserController {
             return fail("닉네임 수정 실패");
         return success("닉네임 수정 성공");
     }
+
+
+    @GetMapping("/friends")
+    @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )
+    public ApiUtils.ApiResult<List<ConnectUser>> getConnectUsers(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        List<ConnectUser> connectUsers = userService.getConnectUsers(userId);
+
+        if ( connectUsers.size() == 0){
+            success("해당 유저는 저장된 connectMember가 없습니다.");
+        }
+        return success(connectUsers);
+    }
+
 
     @GetMapping
     @Operation(summary = "서버 정보 조회 테스트", description = "서버내의 MariaDB 접근을 테스트합니다" )

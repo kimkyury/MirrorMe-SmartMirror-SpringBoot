@@ -1,6 +1,5 @@
 package com.mirror.backend.api.entity.keys;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,13 +11,14 @@ import java.io.Serializable;
 @Setter
 @Embeddable
 @NoArgsConstructor
-public class InterestKey implements Serializable {
+public class ConnectUserKey implements Serializable {
 
     private Long userId;
-    private Long interestCode;
+    private Long connectUserId;
 
-    public InterestKey(Long userId, Long interestCode) {
+    public ConnectUserKey(Long userId, Long connectUserId) {
         this.userId = userId;
-        this.interestCode = interestCode;
+        this.connectUserId = connectUserId;
     }
+
 }
