@@ -1,6 +1,7 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
+import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -54,6 +57,18 @@ public class UserController {
             return fail("user Profile Img 업데이트 실패");
         }
         return success("User Profile Img 업데이트 성공");
+    }
+
+
+    @GetMapping("interests")
+    public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(@RequestHeader("access_token") String accessToken){
+
+        // 이메일 찾기
+        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
+        List<ResponseInterestDto> interestDtoList = userService.getInterestDtoList(userEmail);
+
+
+        return success(interestDtoList);
     }
 
 

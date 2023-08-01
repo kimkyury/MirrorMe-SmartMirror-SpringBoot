@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "interests")
-public class Interests {
+public class Interest {
 
     @EmbeddedId
     private InterestKey id;
