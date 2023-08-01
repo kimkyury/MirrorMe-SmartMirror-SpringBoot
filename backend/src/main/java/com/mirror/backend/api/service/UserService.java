@@ -246,12 +246,12 @@ public class UserService {
         return connectUsers;
     }
 
-    public ResponseUserInfo getUserInfo(Long userId) {
+    public ResponseUserInfoDto getUserInfo(Long userId) {
 
         Optional<User> userOptional = userRepository.findByUserId(userId);
 
         User user = userOptional.get();
-        ResponseUserInfo userInfo = ResponseUserInfo.builder()
+        ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
                 .userEmail(user.getUserEmail())
                 .userNickname(user.getUserNickname())
                 .userName(user.getUserName())
@@ -266,5 +266,26 @@ public class UserService {
     }
 
 
+    public int updateConnectUserAlias(Long userId, RequestConnectUserInfoDto dto) {
 
+        Long connectUserId = dto.getConnectUserId();
+        String connectUserAlias = dto.getConnectUserAlias(); //변경시키려는 이름
+
+        // 1. 해당 userId와 connectUserAlias를 가진 사람이 없는지 확인한다
+
+        Optional<ConnectUser> connectUserOptional = connectUserRepository.findByIdUserIdAndConnectUserAlias(userId, connectUserAlias);
+
+        if (connectUserOptional.isPresent()){
+            return Result.FAIL;
+        }
+
+        Optional<ConnectUser> updateConnectUserTargetOptional = connectUserRepository.findByIdUserIdAndIdConnectUserId(userId, connectUserId);
+
+        updateConnectUserTargetOptional.ifPresent( selectConnectUser -> {
+            selectConnectUser.setConnectUserAlias(connectUserAlias);
+            connectUserRepository.save(selectConnectUser);
+        });
+
+        return Result.SUCCESS;
+    }
 }
