@@ -18,7 +18,7 @@
     "socket.io-client": "^4.7.1",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "http://192.168.30.158:8080/",
+  "proxy": "http://i9e101.p.ssafy.io:8080/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
