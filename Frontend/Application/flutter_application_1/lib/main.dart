@@ -4,6 +4,8 @@ import './component/Emotions.dart';
 import './component/Home.dart';
 import './component/Family.dart';
 import './component/Settings.dart';
+import './component/Message.dart';
+import './component/Connect.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,8 +53,48 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          Icon(Icons.message), // 메세지
-          Icon(Icons.connect_without_contact), // 연결
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.message),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 300),
+                      pageBuilder: (_, __, ___) => Message(),
+                      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                        var curveAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+                        return SlideTransition(
+                          position: Tween<Offset>(begin: Offset(0, -1), end: Offset.zero).animate(curveAnimation),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),// Add a SizedBox to create spacing between the icons
+              IconButton(
+                icon: Icon(Icons.connect_without_contact),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 300),
+                      pageBuilder: (_, __, ___) => Connect(),
+                      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                        var curveAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+                        return SlideTransition(
+                          position: Tween<Offset>(begin: Offset(0, -1), end: Offset.zero).animate(curveAnimation),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),// Add a SizedBox to create spacing between the icons
+            ],
+          ),// 연결
         ],
       ),
       body: PageView(
