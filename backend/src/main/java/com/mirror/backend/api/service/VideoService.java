@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VideoService {
     int matchVideo(String text);
-    void saveVideo(String videoPath, String voicePath, Message.RequestMessage requestMessage);
+    int saveVideo(String videoPath, String voicePath);
     List<Message.ResponseMessage> getVideo(int userId);
     String transferFile(MultipartFile videoFile, String filePath);
 }

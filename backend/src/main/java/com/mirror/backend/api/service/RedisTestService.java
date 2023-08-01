@@ -16,6 +16,8 @@ public class RedisTestService {
     @Autowired
     private RedisTestRepository redisTestRepository;
 
+
+
     public int saveRedisTest(String userId, String videoUrl) {
         String key = "video" + userId;
         RedisTest send = new RedisTest(key, videoUrl);
