@@ -2,6 +2,8 @@ from face_and_gesture import find_user, gesture
 from message import videorec, mergeimage, audiorec
 import threading
 
+from socket import *
+
 if __name__ == "__main__":
     print("start...")
 
