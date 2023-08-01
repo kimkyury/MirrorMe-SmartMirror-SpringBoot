@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -28,7 +28,8 @@ public class CalendarController {
             "\n\n 만료된 AccessToken을 기입하면 RefreshToken이 요구되기 때문에 Error가 발생할 수 있습니다. " +
             "\n이 경우 개발자모드에서 Cookie로 RefreshToken을 담거나, PostMan으로 수행하세요. 참고로 난 그래서 만료AccessToken 테스트시 Postman으로만 테스트함\"")
 
-    public ApiUtils.ApiResult<Event> getSchedule(@RequestHeader("access_token") String accessToken) {
+    public ApiUtils.ApiResult<Event> getSchedule(HttpServletRequest request) {
+        String accessToken = request.getHeader("access_token");
 
         Event resData = calendarService.getMyCalendar(accessToken, "primary");
         return success(resData);
@@ -36,17 +37,19 @@ public class CalendarController {
 
     @GetMapping("/today")
     @Operation(summary = "회원 캘린더 오늘 날짜 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정을 조회합니다.")
-    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestHeader("access_token") String accessToken) {
+    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(HttpServletRequest request) {
+        String accessToken = request.getHeader("access_token");
 
         Event event = calendarService.getMyCalendar(accessToken, "primary");
-//        System.out.println("event.getItems() = " + event.getItems());
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar);
     }
 
     @GetMapping("/today/count")
     @Operation(summary = "회원 캘린더 오늘 날짜 개수 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정의 개수를 조회합니다.")
-    public ApiUtils.ApiResult<Integer> getScheduleNowCount(@RequestHeader("access_token") String accessToken) {
+    public ApiUtils.ApiResult<Integer> getScheduleNowCount(HttpServletRequest request) {
+        String accessToken = request.getHeader("access_token");
+
         Event event = calendarService.getMyCalendar(accessToken, "primary");
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar.size());

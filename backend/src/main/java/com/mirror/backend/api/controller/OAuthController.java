@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
@@ -56,21 +55,9 @@ public class OAuthController {
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error
     ) throws IOException {
-        ResponseLoginDto responseUserToken = null;
-
-        System.out.println("authCode: " + authCode);
-
-        if (error != null) {
-            System.out.println("Can't run AuthorizationCode");
-            return fail(null);
-        }
 
         ResponseLoginDto response = oAuthService.login(authCode);
-        System.out.println(response);
-        System.out.println("Json 파일 준비완료" );
+
         return success(response);
     }
-
-
-
 }
