@@ -39,14 +39,20 @@ public class BackendApplication {
         ObjectMapper objectMapper = new ObjectMapper();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
-        System.out.println("simpleDateFormat = " + simpleDateFormat.format(now));
 
-        String imsi = "2308011033";
+        String imsi = "2308011033/";
         String folderPath = "/home/ubuntu/message/" + imsi;
 
+        System.out.println("folderPath = " + folderPath);
+
         File fileDirectory = new File(folderPath);
+        System.out.println("fileDirectory.listFiles() = " + fileDirectory.listFiles());
+        System.out.println("fileDirectory.length() = " + fileDirectory.length());
+        System.out.println("fileDirectory.isDirectory() = " + fileDirectory.isDirectory());
+
         File[] files = fileDirectory.listFiles((dir, name) -> name.endsWith(".json"));
         if (files != null) {
+            System.out.println(" check ");
             for (File file : files) {
                 System.out.println("Found JSON file: " + file.getAbsolutePath());
 
@@ -57,6 +63,9 @@ public class BackendApplication {
                 System.out.println("videoPath = " + videoPath);
                 saveVideo(videoPath, videoMessage);
             }
+        }
+        else {
+            System.out.println("files = " + files);
         }
     }
 
