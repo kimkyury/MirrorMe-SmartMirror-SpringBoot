@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ResponseUserInfo {
+public class ResponseUserInfoDto {
 
     @JsonProperty("userNickname")
     private String userNickname;
@@ -35,7 +35,7 @@ public class ResponseUserInfo {
 
 
     @Builder
-    public ResponseUserInfo(String userNickname, String userEmail, String userName, String profileImageUrl, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
+    public ResponseUserInfoDto(String userNickname, String userEmail, String userName, String profileImageUrl, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
         this.userNickname = userNickname;
         this.userEmail = userEmail;
         this.userName = userName;
