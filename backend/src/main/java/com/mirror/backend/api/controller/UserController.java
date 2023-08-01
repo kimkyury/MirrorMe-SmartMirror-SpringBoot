@@ -1,6 +1,7 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
+import com.mirror.backend.api.dto.RequestInterestDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.OAuthService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
@@ -31,8 +33,17 @@ public class UserController {
     private OAuthService oAuthService;
 
     @PostMapping("/signup")
-    public ApiUtils.ApiResult<String> signUp(@RequestHeader("access_token") String accessToken,
+    @Operation(summary = "OAuth 첫 로그인 이후, 부가 정보 작성", description = "실제이름, 닉네임, 가정id를 기입합니다. ")
+    public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
                                              @RequestBody RequestCreateUserDto requestCreateUserDto) {
+
+
+        System.out.println(request.getHeader("access_token"));
+        System.out.println(request.getAttribute("user_id"));
+        System.out.println(request.getAttribute("user_email"));
+
+
+        String accessToken = request.getHeader("access_token");
         // 이메일 찾기
         String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
         // 해당 이메일을 가진 유저의 정보 업데이트하기
@@ -45,6 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/img")
+    @Operation(summary = "Profile 이미지 등록", description = "프로필이미지를 등록합니다. ")
     public ApiUtils.ApiResult<String> updateProfileImage(@RequestHeader("access_token") String accessToken,
                                              @RequestPart(value = "file") MultipartFile file) {
 
@@ -60,15 +72,32 @@ public class UserController {
     }
 
 
-    @GetMapping("interests")
+    @GetMapping("/interests")
     public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(@RequestHeader("access_token") String accessToken){
 
         // 이메일 찾기
         String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
         List<ResponseInterestDto> interestDtoList = userService.getInterestDtoList(userEmail);
 
+        if(interestDtoList.size() == 0){
+            success("해당 User는 관심사가 없습니다");
+        }
 
         return success(interestDtoList);
+    }
+
+    @PostMapping("/interests")
+    public ApiUtils.ApiResult<String> postMyInterest(@RequestHeader("access_token") String accessToken,
+                                                     @RequestBody RequestInterestDto requestInterestDto){
+
+        // 이메일 찾기
+        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
+        int result  = userService.updateInterest(userEmail, requestInterestDto);
+
+        if (result == Result.FAIL)
+            return fail("뭔가 실패함");
+
+        return success("User 관심사 정보 수정및 생성 성공");
     }
 
 
