@@ -82,7 +82,7 @@ public class TokenAuthenticationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse); // AccessToken이 유효하다면 다음 Filter 또는 Controller로 요청 전달
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                System.out.println("---------------");
+                System.out.println("--------Filter-------");
                 System.out.println("해당 AccessToken이 유효하지 않으므로 Cookie내용을 따라 재발급합니다.");
                 // AccessToken이 유효하지 않다면 클라이언트에 401 Unauthorized 응답
 
@@ -110,14 +110,14 @@ public class TokenAuthenticationFilter implements Filter {
                     System.out.println("RefreshToken: " + refreshToken);
 
                     // 클라이언트에게 새로 발급 받은 accessToken과 refreshToken을 JSON 형태로 응답합니다.
-                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     PrintWriter out = response.getWriter();
-                    out.print("{\"access_token\":\"" + accessToken + "\",\"refresh_token\":\"" + refreshToken + "\"}");
+                    out.print("{\"access_token\":\"" + reIssueAccessToken + "\",\"refresh_token\":\"" + refreshToken + "\"}");
                     out.flush();
                 } else {
                     // refreshToken이 존재하지 않는 경우, Unauthorized 응답을 전송합니다.
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     response.getWriter().write("Invalid access token");
                 }
             } else {

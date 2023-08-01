@@ -202,4 +202,24 @@ public class UserService {
 
         return interestOptional.get().getIsUsed();
     }
+
+    public String getUserProfileImage(Long userId) {
+
+        Optional<User> user = userRepository.findByUserId(userId);
+        if ( user.isEmpty()){
+            return "FAIL";
+        }
+        return user.get().getProfileImageUrl();
+    }
+
+    public int deleteUser(Long userId) {
+
+        try {
+            userRepository.deleteById(userId);
+        } catch(Exception e){
+            e.getMessage();
+            return Result.FAIL;
+        }
+        return Result.SUCCESS;
+    }
 }
