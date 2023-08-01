@@ -1,19 +1,15 @@
 package com.mirror.backend.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.service.CalendarService;
-import com.mirror.backend.api.service.RestJsonService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -27,44 +23,30 @@ public class CalendarController {
     @Autowired
     private CalendarService calendarService;
 
-    @Value("${calendar.client-id}")
-    private String CLIENT_ID;
-
-    @Value("${calendar.client-secret}")
-    private String CLIENT_SECRET;
-
     @GetMapping
-    @Operation(summary = "회원 캘린더 전체 조회", description = "회원 login시 받는 code를 이용하여 회원의 전체 캘린더를 조회합니다.")
-    public ApiUtils.ApiResult<Event> getSchedule(@RequestParam("code") String code) {
-        RestJsonService restJsonService = new RestJsonService();
-        String accessTokenData = null;
-        try {
-            accessTokenData = restJsonService.getAccessTokenJsonData(code, CLIENT_ID, CLIENT_SECRET, 0);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    @Operation(summary = "회원 캘린더 전체 조회", description = "회원 login시 받는 code를 이용하여 회원의 전체 캘린더를 조회합니다." +
+            "\n\n 만료된 AccessToken을 기입하면 RefreshToken이 요구되기 때문에 Error가 발생할 수 있습니다. " +
+            "\n이 경우 개발자모드에서 Cookie로 RefreshToken을 담거나, PostMan으로 수행하세요. 참고로 난 그래서 만료AccessToken 테스트시 Postman으로만 테스트함\"")
 
-        JSONObject accessTokenjsonObject = new JSONObject(accessTokenData);
+    public ApiUtils.ApiResult<Event> getSchedule(@RequestHeader("access_token") String accessToken) {
 
-        String accessToken = accessTokenjsonObject.get("access_token").toString();
-        System.out.println("accessToken = " + accessToken);
-        // access_token을 받는다면 이 전 코드는 삭제
         Event resData = calendarService.getMyCalendar(accessToken, "primary");
         return success(resData);
     }
 
     @GetMapping("/today")
     @Operation(summary = "회원 캘린더 오늘 날짜 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정을 조회합니다.")
-    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestParam("accessToken") String accessToken) {
+    public ApiUtils.ApiResult<List<Event.Item>> getScheduleNow(@RequestHeader("access_token") String accessToken) {
+
         Event event = calendarService.getMyCalendar(accessToken, "primary");
-        System.out.println("event.getItems() = " + event.getItems());
+//        System.out.println("event.getItems() = " + event.getItems());
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar);
     }
 
     @GetMapping("/today/count")
     @Operation(summary = "회원 캘린더 오늘 날짜 개수 조회", description = "회원 login시 받는 token을 이용하여 회원의 오늘 날짜 캘린더 일정의 개수를 조회합니다.")
-    public ApiUtils.ApiResult<Integer> getScheduleNowCount(@RequestParam("accessToken") String accessToken) {
+    public ApiUtils.ApiResult<Integer> getScheduleNowCount(@RequestHeader("access_token") String accessToken) {
         Event event = calendarService.getMyCalendar(accessToken, "primary");
         List<Event.Item> myNowCalendar = calendarService.getMyNowCalendar(event);
         return success(myNowCalendar.size());
