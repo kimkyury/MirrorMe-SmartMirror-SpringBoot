@@ -1,11 +1,13 @@
 package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
-import com.mirror.backend.api.entity.Interests;
+import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.entity.Interest;
+import com.mirror.backend.api.entity.InterestCommonCode;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.entity.keys.InterestKey;
+import com.mirror.backend.api.repository.InterestCommonCodeRepository;
 import com.mirror.backend.api.repository.InterestsRepository;
-import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.Constants.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +21,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final InterestsRepository interestRepository;
+    private final InterestCommonCodeRepository interestCommonCodeRepository;
 
     @Autowired
-    private InterestsRepository interestsRepository;
+    public UserService(UserRepository userRepository, InterestsRepository interestRepository,
+                           InterestCommonCodeRepository interestCommonCodeRepository) {
+        this.userRepository = userRepository;
+        this.interestRepository = interestRepository;
+        this.interestCommonCodeRepository = interestCommonCodeRepository;
+    }
 
-    @Autowired
-    private RedisUserTokenRepository redisUserTokenRepository;
 
     int SUCCESS = 1;
     int FAIL = 0;
@@ -81,11 +89,11 @@ public class UserService {
             interestKey.setUserId(userId);
             interestKey.setInterestCode(interestCodes.get(i));
 
-            Interests interest = new Interests();
+            Interest interest = new Interest();
             interest.setId(interestKey);
             interest.setIsUsed(1);
 
-            interestsRepository.save(interest);
+            interestRepository.save(interest);
         }
 
         return SUCCESS;
@@ -132,4 +140,28 @@ public class UserService {
 
         return true;
     }
+
+    public List<ResponseInterestDto> getInterestDtoList(String userEmail) {
+        Optional<User> user = userRepository.findByUserEmail(userEmail);
+        Long userId = user.get().getUserId();
+
+        List<Interest> interests = interestRepository.findByIdUserIdAndIsUsed(userId, 1);
+        List<InterestCommonCode> interestCodes = interestCommonCodeRepository.findAll();
+
+        HashMap<Long, String> interestCodesMap = new HashMap<>();
+        for( InterestCommonCode interestCode : interestCodes ){
+            interestCodesMap.put(interestCode.getInterestCode(), interestCode.getInterestName());
+        }
+
+        List<ResponseInterestDto> responseInterestDtoList= new ArrayList<>();
+        for(Interest interest : interests){
+            Long interestCode = interest.getId().getInterestCode();
+            String interestName = interestCodesMap.get(interestCode);
+            ResponseInterestDto dto = new ResponseInterestDto(interestCode, interestName);
+            responseInterestDtoList.add(dto);
+        }
+        return responseInterestDtoList;
+
+    }
+
 }
