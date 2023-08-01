@@ -30,11 +30,13 @@ public class OAuthService {
     static int INIT_LOGIN_USER = 1;
 
     @Autowired
+    GoogleOAuth googleOAuth;
+
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private RedisUserTokenRepository redisUserTokenRepository;
-    @Autowired
-    private GoogleOAuth googleOAuth;
+
     @Autowired
     private UserService userService;
 
@@ -43,13 +45,13 @@ public class OAuthService {
 
 
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
-        String endPoint = googleOAuth.REQUEST_AUTH_CODE_URL;
+        String endPoint = GoogleOAuth.REQUEST_AUTH_CODE_URL;
 
         String redirectUri = googleOAuth.getRedirectUri();
         String clientId = googleOAuth.getClientId();
         String responseType = "code";
-        String scopeCalendar = googleOAuth.SCOPE_CALENDAR;
-        String scopeTask = googleOAuth.SCOPE_TASK;
+        String scopeCalendar = GoogleOAuth.SCOPE_CALENDAR;
+        String scopeTask = GoogleOAuth.SCOPE_TASK;
 
         StringBuilder requestUrl = new StringBuilder();
         requestUrl.append(endPoint)
@@ -147,7 +149,7 @@ public class OAuthService {
         // 승인코드로 access, refresh 토큰으로 교환하기
         ObjectMapper mapper = new ObjectMapper();
 
-        String endPoint = googleOAuth.REQUEST_TOKEN_URL;
+        String endPoint = GoogleOAuth.REQUEST_TOKEN_URL;
 
         String clientId = googleOAuth.getClientId();
         String clientSecret = googleOAuth.getClientSecret();
@@ -184,7 +186,7 @@ public class OAuthService {
 
     public String getUserEmailFromAccessToken(String accessToken) {
 
-        String endPoint = googleOAuth.REQUEST_USER_INFO_URL;
+        String endPoint = GoogleOAuth.REQUEST_USER_INFO_URL;
 
         // RestTemplate로 GET요청 보내기
         RestTemplate restTemplate = new RestTemplate();
@@ -193,7 +195,9 @@ public class OAuthService {
         // header설정, accessToken담기
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + googleOAuthResponseDto.getAccessToken());
+
+//        System.out.println(accessToken);
+        headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         // 응답받기
