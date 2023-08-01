@@ -37,16 +37,26 @@ public class UserController {
     public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
                                              @RequestBody RequestCreateUserDto requestCreateUserDto) {
 
-        String accessToken = request.getHeader("access_token");
         String userEmail = (String) request.getAttribute("user_email");
-        Long userid = (Long)request.getAttribute("user_id");
+        Long userId = (Long)request.getAttribute("user_id");
 
         // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.updateInitUser(userEmail, userid,requestCreateUserDto);
+        int result = userService.updateInitUser(userEmail, userId,requestCreateUserDto);
 
         if ( result == Result.FAIL )
             return fail("user 추가 정보 생성 실패");
         return success("User 추가 정보 생성 성공");
+    }
+
+    @GetMapping("/profile/img")
+    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지 URL을 조회합니다. ")
+    public ApiUtils.ApiResult<String> getProfileImage(HttpServletRequest request) {
+        Long userId = (Long)request.getAttribute("user_id");
+        String result = userService.getUserProfileImage(userId);
+
+        if (result.equals("FAIL"))
+            return fail("유저의 Profile이 저장되어있지 않거나, 잘못된 요청을 시도하였습니다.");
+        return success(result);
     }
 
     @PostMapping("/profile/img")
@@ -64,6 +74,18 @@ public class UserController {
             return fail("user Profile Img 업데이트 실패");
 
         return success("User Profile Img 업데이트 성공");
+    }
+
+    @DeleteMapping
+    public ApiUtils.ApiResult<String> deleteUser(HttpServletRequest request){
+
+        Long userId = (Long)request.getAttribute("user_id");
+        int result = userService.deleteUser(userId);
+
+        if (result == Result.FAIL)
+            fail("유저 탈퇴 실패했습니다.");
+
+        return success("유저가 탈퇴되었습니다.");
     }
 
 
@@ -85,9 +107,10 @@ public class UserController {
     public ApiUtils.ApiResult<String> postMyInterest(HttpServletRequest request,
                                                      @RequestBody RequestInterestDto requestInterestDto){
 
-        int INTEREST_CREATED = 2;
+
         int INTEREST_OFF = 0;
         int INTEREST_ON = 1;
+        int INTEREST_CREATED = 2;
 
         // 이메일 찾기
         String userEmail = (String) request.getAttribute("user_email");
@@ -104,16 +127,12 @@ public class UserController {
         return fail("수행불가");
     }
 
-
     @GetMapping
-    @Operation(summary = "서버 정보 조회 테스트", description = "서버내의 MariaDB 접근을 테스트합니다" +
-            "")
+    @Operation(summary = "서버 정보 조회 테스트", description = "서버내의 MariaDB 접근을 테스트합니다" )
 
     public ApiUtils.ApiResult<User> getUser(@RequestParam("user_id") Long userId) {
-
         User exUser = userService.getUser(userId);
         System.out.println(exUser.toString());
-
         return success(exUser);
     }
 }
