@@ -1,9 +1,6 @@
 package com.mirror.backend.api.service;
 
-import com.mirror.backend.api.dto.RequestCreateUserDto;
-import com.mirror.backend.api.dto.RequestInterestDto;
-import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
-import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
@@ -248,5 +245,26 @@ public class UserService {
 
         return connectUsers;
     }
+
+    public ResponseUserInfo getUserInfo(Long userId) {
+
+        Optional<User> userOptional = userRepository.findByUserId(userId);
+
+        User user = userOptional.get();
+        ResponseUserInfo userInfo = ResponseUserInfo.builder()
+                .userEmail(user.getUserEmail())
+                .userNickname(user.getUserNickname())
+                .userName(user.getUserName())
+                .createAt(user.getCreateAt())
+                .modifiedAt(user.getModifiedAt())
+                .householdId(user.getHouseholdId())
+                .profileImageUrl(user.getProfileImageUrl())
+                .build();
+
+        return userInfo;
+
+    }
+
+
 
 }
