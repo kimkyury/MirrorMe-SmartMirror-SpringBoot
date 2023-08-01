@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import './component/News.dart';
+import './component/Emotions.dart';
+import './component/Home.dart';
+import './component/Family.dart';
+import './component/Settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,13 +27,11 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 2; // 기본 페이지 홈으로 설정
   final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
-    // Replace these with your actual pages or widgets
     News(),
     Emotions(),
     Home(),
@@ -36,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Settings(),
   ];
 
-  // 전체 화면 구성
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,11 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
-          ),),
-          actions: [
+          ),
+        ),
+        actions: [
           Icon(Icons.message), // 메세지
-          Icon(Icons.connect_without_contact) // 연결
-        ],),
+          Icon(Icons.connect_without_contact), // 연결
+        ],
+      ),
       body: PageView(
         controller: _pageController,
         children: _pages,
@@ -104,167 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-// BottomNavigationBar별 페이지
-// 뉴스
-class News extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Container( // 키워드 별 컨테이너 한 개
-          padding: EdgeInsets.all(10),
-          height: 130,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row( // 키워드 제목
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        Icon(Icons.sports_football, color: Colors.black,),
-                        Text('스포츠', style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500
-                        ),),
-                      ],
-                    ),
-                  ),
-                  Text('업데이트 시간') // 추후 업데이트 시간으로 변경
-                ],
-              ),
-              Container( // 기사 목록
-                child: Column(
-                children: [
-                  Row( // 뉴스 기사 1
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                  Row( // 뉴스 기사 2
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                  Row( // 뉴스 기사 3
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        
-        Container( // 키워드 별 컨테이너 한 개
-          padding: EdgeInsets.all(10),
-          height: 130,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row( // 키워드 제목
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        Icon(Icons.computer, color: Colors.black,),
-                        Text('IT/과학', style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500
-                        ),),
-                      ],
-                    ),
-                  ),
-                  Text('업데이트 시간') // 추후 업데이트 시간으로 변경
-                ],
-              ),
-              Container( // 기사 목록
-                child: Column(
-                children: [
-                  Row( // 뉴스 기사 1
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                  Row( // 뉴스 기사 2
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                  Row( // 뉴스 기사 3
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
-                    ],
-                  ),
-                ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// 감정
-class Emotions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 2'),
-    );
-  }
-}
-
-// 홈 화면
-class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 3'),
-    );
-  }
-}
-
-// 가족
-class Family extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 4'),
-    );
-  }
-}
-
-// 설정
-class Settings extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 5'),
     );
   }
 }
