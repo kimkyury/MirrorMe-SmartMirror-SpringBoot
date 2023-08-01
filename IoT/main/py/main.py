@@ -24,5 +24,5 @@ if __name__ == "__main__":
         if do == 'Yo':
             audiorec.record_audio(my_name, "1")
         if do == 'V':
-            pass
+            exit(0)
 

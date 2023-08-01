@@ -12,7 +12,7 @@ def getgesture():
     def dist(x1,y1,x2,y2):
         return math.sqrt(math.pow(x1 - x2, 2)) + math.sqrt(math.pow(y1 - y2, 2))
 
-    compareIndex = [[18,4],[6,8],[10,12],[14,16],[18,20]]
+    compareIndex = [[14,4],[6,8],[10,12],[14,16],[18,20],[4,12]]
     open = [False, False, False, False, False]
     gesture = [[True, True, True, True, True, "Hi"],
             [False, True, True, False, False, "V"],
@@ -42,12 +42,12 @@ def getgesture():
                             flag = False
                     if (flag == True):
                         result.append(gesture[i][5])
-                        if len(result) >= 30:
+                        if len(result) >= 20:
                             print(result)
                             return max(set(result), key = result.count)
                         cv2.putText(img,gesture[i][5],(round(text_x) - 50,round(text_y) - 250),
                                 cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
                 mpDraw.draw_landmarks(img,handLms,mpHands.HAND_CONNECTIONS)
         
-        # cv2.imshow("HandTracking",img)
-        # cv2.waitKey(1)
+        cv2.imshow("HandTracking",img)
+        cv2.waitKey(1)
