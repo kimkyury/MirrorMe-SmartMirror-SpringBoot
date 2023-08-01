@@ -1,8 +1,18 @@
 import pyaudio
 import wave
 import time
+import string
+import random
+import json
 
-def record_audio(duration, output_path):
+def record_audio(From, To):
+    # 파일 이름 난수 생성
+    chars = string.ascii_letters + string.digits
+    fileName = ''.join(random.choice(chars) for _ in range(10))
+
+    duration = 5
+    output_path = './message/temp/' + fileName + '.wav'
+
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
@@ -48,7 +58,12 @@ def record_audio(duration, output_path):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-if __name__ == "__main__":
-    recording_duration = 5  # 녹음 시간(초)
-    output_file = "recorded_audio.wav"  # 저장할 오디오 파일 이름
-    record_audio(recording_duration, output_file)
+    temp = dict()
+    temp['userId'] = From
+    temp['sendUserId'] = To
+    temp['fileName'] = fileName + '.wav'
+    temp['type'] = 'audio'
+
+    json_data = json.dumps(temp)
+    with open('./message/temp/' + fileName + '.json', 'w') as f:
+        f.write(json_data)
