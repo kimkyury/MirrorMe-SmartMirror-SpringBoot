@@ -83,10 +83,10 @@ public class TokenAuthenticationFilter implements Filter {
                     String userEmail = getUserEmailFromIdToken(idToken);
                     saveAccessTokenToRedis(userEmail, reIssueAccessToken, refreshToken);
 
-                    System.out.println("userEmail: " + userEmail);
-                    System.out.println("AccessToken: " + accessToken);
-                    System.out.println("reIssueAccessToken: " + reIssueAccessToken);
-                    System.out.println("RefreshToken: " + refreshToken);
+//                    System.out.println("userEmail: " + userEmail);
+//                    System.out.println("AccessToken: " + accessToken);
+//                    System.out.println("reIssueAccessToken: " + reIssueAccessToken);
+//                    System.out.println("RefreshToken: " + refreshToken);
 
                     // 클라이언트에게 새로 발급 받은 accessToken과 refreshToken을 JSON 형태로 응답합니다.
                     response.setStatus(HttpServletResponse.SC_OK);
