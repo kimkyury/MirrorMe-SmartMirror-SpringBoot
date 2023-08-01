@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import React from 'react';
 import './App.css';
 
+import SocketTest from './SocketTest';
+
 import First from './First';
 import Second from './Second';
 import Last from './Last';
@@ -15,6 +17,7 @@ function App() {
         {/* 모션제어 연결 후 변경 예정 */}
         <header>
           공통으로 들어갈 점 세개
+          <SocketTest></SocketTest>
         </header>
         <nav>
           <ul>
