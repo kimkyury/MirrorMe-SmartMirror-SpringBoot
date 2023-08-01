@@ -31,5 +31,4 @@ public class GoogleOAuth {
 //    @Value("${google.redirect-uri-token}")
 //    private String redirectUriToken;
 
-
 }
