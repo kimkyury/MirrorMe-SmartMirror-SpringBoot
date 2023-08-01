@@ -37,4 +37,5 @@ out/
 .vscode/
 
 ###
-docker-compose.yml
+application.yml
+application.properties
