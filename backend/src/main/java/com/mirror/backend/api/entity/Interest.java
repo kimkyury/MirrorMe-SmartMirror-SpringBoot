@@ -2,6 +2,7 @@ package com.mirror.backend.api.entity;
 
 import com.mirror.backend.api.entity.keys.InterestKey;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.EmbeddedId;
@@ -12,12 +13,18 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "interests")
+@NoArgsConstructor
 public class Interest {
 
     @EmbeddedId
     private InterestKey id;
 
     private int isUsed; // 0:사용 아님, 1: 사용 중임
+
+    public Interest(InterestKey id, int isUsed) {
+        this.id = id;
+        this.isUsed = isUsed;
+    }
 
     @Override
     public String toString() {

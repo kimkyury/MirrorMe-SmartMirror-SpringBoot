@@ -1,6 +1,7 @@
 package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
+import com.mirror.backend.api.dto.RequestInterestDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
@@ -164,4 +165,28 @@ public class UserService {
 
     }
 
+    public int updateInterest(String userEmail, RequestInterestDto requestInterestDto) {
+
+        Optional<User> user = userRepository.findByUserEmail(userEmail);
+        Long userId = user.get().getUserId();
+
+        // dto에 대하여, 이미 1이라면 0으로 만들고, 이미 0이라면 1로 만든다
+        // 애초에 조회할 수 없는 애라면, userId와 code를 복합키로하여 생성한다
+
+        Long interestCode = requestInterestDto.getInterestCode();
+
+        Optional<Interest> interestOptional = interestRepository.findByIdUserIdAndIdInterestCode(userId, interestCode);
+
+        if (interestOptional.isEmpty()){
+            InterestKey interestKey = new InterestKey( userId, interestCode);
+
+//            Interest interest = new Interest
+        }
+
+
+
+
+
+        return Result.SUCCESS;
+    }
 }
