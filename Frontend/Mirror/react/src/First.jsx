@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Weather from './components/Weather';
 import CurrentDate from './components/CurrentDate';
 import Character from './components/Character';
-import ToDoList from './components/ToDoList';
+import Schedules from './components/Schedules';
 import FavoriteNews from './components/FavoriteNews';
 
 import LivingRoom from './LivingRoom';

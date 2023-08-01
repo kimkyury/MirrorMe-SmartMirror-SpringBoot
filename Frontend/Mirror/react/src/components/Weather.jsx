@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
 function Weather(props) {
+  const [weatherInfo, setWeatherInfo] = useState([]);
+
+
   return (
     <>
       <div className="weather-container">
