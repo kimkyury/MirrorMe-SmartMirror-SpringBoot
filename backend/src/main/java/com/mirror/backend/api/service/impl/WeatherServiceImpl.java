@@ -1,4 +1,8 @@
 package com.mirror.backend.api.service.impl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mirror.backend.api.dto.MidtermForecast;
+import com.mirror.backend.api.dto.MidtermWeatherForecast;
 import com.mirror.backend.api.dto.ShortTermForecast;
 import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.api.service.WeatherService;
@@ -109,5 +113,19 @@ public class WeatherServiceImpl implements WeatherService {
             }
         }
         return ultraShortTermForecast;
+    }
+
+    @Override
+    public MidtermForecast getMidtermForecast(JSONArray jsonArray) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MidtermForecast midtermForecast = objectMapper.readValue(jsonArray.get(0).toString(), MidtermForecast.class);
+        return midtermForecast;
+    }
+
+    @Override
+    public MidtermWeatherForecast getMidtermWeatherForecast(JSONArray jsonArray) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MidtermWeatherForecast midtermWeatherForecast = objectMapper.readValue(jsonArray.get(0).toString(), MidtermWeatherForecast.class);
+        return midtermWeatherForecast;
     }
 }
