@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +24,8 @@ public class TaskController {
 
     @GetMapping
     @Operation(summary = "회원 Task 전체 조회", description = "accessToken을 이용하여 회원의 전체 Task를 조회합니다.")
-    public ApiUtils.ApiResult<List<Task>> getTask(@RequestHeader("access_token") String accessToken) {
-        System.out.println("accessToken을 통하여 태스크를 봅니다. : " + accessToken);
+    public ApiUtils.ApiResult<List<Task>> getTask(HttpServletRequest request) {
+        String accessToken = request.getHeader("access_token");
 
         Task myTaskList = taskService.getMyTask(accessToken);
 
@@ -37,8 +38,8 @@ public class TaskController {
 
     @GetMapping("/count")
     @Operation(summary = "회원 Task 전체 개수 조회", description = "accessToken을 이용하여 회원의 전체 Task 개수를 조회합니다.")
-    public ApiUtils.ApiResult<Integer> getTaskCount(@RequestHeader("access_token") String accessToken) {
-
+    public ApiUtils.ApiResult<Integer> getTaskCount(HttpServletRequest request) {
+        String accessToken = request.getHeader("access_token");
 
         Task myTaskList = taskService.getMyTask(accessToken);
 
