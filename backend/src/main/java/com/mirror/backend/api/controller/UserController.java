@@ -155,12 +155,27 @@ public class UserController {
         return success(connectUsers);
     }
 
-    @GetMapping("/profile")
-    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
-    public ApiUtils.ApiResult<ResponseUserInfo> getUserInfo(HttpServletRequest request) {
+    @PutMapping("/friends")
+    @Operation(summary = "자신의 친인척 별명을 수정합니다.", description = "수정하기" )
+    public ApiUtils.ApiResult<String> updqteConnectUserAlias(HttpServletRequest request, @RequestBody RequestConnectUserInfoDto dto) {
 
         Long userId = (Long) request.getAttribute("user_id");
-        ResponseUserInfo userInfo = userService.getUserInfo(userId);
+        int result = userService.updateConnectUserAlias(userId, dto);
+
+
+        if ( result == Result.FAIL){
+            return fail("해당 이름으로 저장된 지인정보가 존재합니다.");
+        }
+        return success("해당 지인의 별명이 수정되었습니다.");
+    }
+
+
+    @GetMapping("/profile")
+    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
+    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
 
         return success(userInfo);
     }
