@@ -1,9 +1,6 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.RequestCreateUserDto;
-import com.mirror.backend.api.dto.RequestInterestDto;
-import com.mirror.backend.api.dto.RequestUpdateUserNicknameDto;
-import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.OAuthService;
@@ -156,6 +153,16 @@ public class UserController {
             success("해당 유저는 저장된 connectMember가 없습니다.");
         }
         return success(connectUsers);
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
+    public ApiUtils.ApiResult<ResponseUserInfo> getUserInfo(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        ResponseUserInfo userInfo = userService.getUserInfo(userId);
+
+        return success(userInfo);
     }
 
 
