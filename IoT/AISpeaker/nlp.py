@@ -186,14 +186,12 @@ def sample_analyze_sentiment(content):
 #######################################################################################    
 #######################################################################################
 
-    
-    
+
 if __name__ == '__main__':
-	# text = "아니 그거말고 다시"
-	# text = "응"
-	text = "유튜브에 ssafy 검색해줘"
-# 	sample_analyze_entities(text)
-	sample_analyze_syntax(text)
-#	sample_analyze_sentiment(text)
+    test_txt_1 = "부모님께 영상메세지 보내 줘"
+    #test_txt_2 = "엄마한테 영상 찍어 줘"
+    sample_analyze_syntax(test_txt_1)
+    #print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    #sample_analyze_syntax(test_txt_2)
     
     

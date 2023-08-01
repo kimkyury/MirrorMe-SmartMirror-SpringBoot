@@ -1,4 +1,4 @@
-from nlp import sample_analyze_syntax as nla
+from nlp import my_analyze as nla
 from stt_streaming import *
 import stt_streaming
 from tts import text_to_speech
@@ -38,21 +38,29 @@ def listen_print_loop(responses):
 
         else:   # 확정된 transcript라면
 
-            # 문장중에 '명령끝'이라는 단어가 있다면 종료한다.
-            if STATE == WAITING and re.search(r'\b(거울아)\b', transcript, re.I):
+            if re.search(r'\b(여기까지)\b', transcript, re.I):
+                text_to_speech("대화를 종료합니다.")
+                break
+
+            # 거울아 단어에 반응해서 대답한다
+            elif STATE == WAITING and re.search(r'\b(거울아)\b', transcript, re.I):
                 print("##################################")
                 text_to_speech("네")
                 STATE = LISTEN_ORDER
-                break
+                continue
 
             elif STATE == LISTEN_ORDER:
-                text_to_speech("죄송해요 알아듣지 못했어요")
-                STATE = WAITING
+                temp, order = nla(transcript)
+                text_to_speech()
+                if temp != -1:
+                    STATE = WAITING
                 print("##################################")
-                break
+                continue
 
-            else:
-                print(transcript + overwrite_chars)
+
+
+            # else:
+                # print(transcript + overwrite_chars)
                 
             
             num_chars_printed = 0
@@ -61,26 +69,26 @@ def listen_print_loop(responses):
 RATE = 16000
 CHUNK = int(RATE / 10) 
 
-while True:
-    language_code = 'ko-KR'  # a BCP-47 language tag
 
-    client = speech.SpeechClient()
-    config = speech.RecognitionConfig(
-        encoding='LINEAR16',
-        sample_rate_hertz=RATE,
-        max_alternatives=1, 
-        language_code=language_code)
-    streaming_config = speech.StreamingRecognitionConfig(
-        config=config,
-        interim_results=True)
+language_code = 'ko-KR'  # a BCP-47 language tag
 
-    with MicrophoneStream(RATE, CHUNK) as stream:
-        audio_generator = stream.generator()
-        requests = (speech.StreamingRecognizeRequest(audio_content=content)
-                    for content in audio_generator) 
+client = speech.SpeechClient()
+config = speech.RecognitionConfig(
+    encoding='LINEAR16',
+    sample_rate_hertz=RATE,
+    max_alternatives=1, 
+    language_code=language_code)
+streaming_config = speech.StreamingRecognitionConfig(
+    config=config,
+    interim_results=True)
 
-        responses = client.streaming_recognize(streaming_config, requests)
-        listen_print_loop(responses) 
+with MicrophoneStream(RATE, CHUNK) as stream:
+    audio_generator = stream.generator()
+    requests = (speech.StreamingRecognizeRequest(audio_content=content)
+                for content in audio_generator) 
+
+    responses = client.streaming_recognize(streaming_config, requests)
+    listen_print_loop(responses) 
 
     
 
