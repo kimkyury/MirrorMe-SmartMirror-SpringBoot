@@ -70,9 +70,9 @@ public class BackendApplication {
     }
 
     public void saveVideo(String videoPath, VideoMessage videoMessage) {
-        saveListToHash(videoMessage.getUserId(), "sendUserId", videoMessage.getSendUserId());
-        saveListToHash(videoMessage.getUserId(), "videoPath", videoPath);
-        saveListToHash(videoMessage.getUserId(), "type", videoMessage.getType());
+        saveListToHash(videoMessage.getUserEmail(), "sendUserId", videoMessage.getSendUserEmail());
+        saveListToHash(videoMessage.getUserEmail(), "videoPath", videoPath);
+        saveListToHash(videoMessage.getUserEmail(), "type", videoMessage.getType());
     }
 
     public void saveListToHash(String hashKey, String innerKey, String innerValue) {
