@@ -4,15 +4,21 @@ import axios from 'axios';
 function Weather(props) {
   const [weatherInfo, setWeatherInfo] = useState([]);
   const [temperatureInfo, setTemperatureInfo] = useState([]);
+  const [ultraInfo, setUltraInfo] = useState([]);
 
   useEffect(() => {
-    const numOfRows = 500;
-    const pageNo = 1;
+    let numOfRows = 300;
+    let pageNo = 1;
+    const currentTime = new Date();
+    const year = currentTime.getFullYear();
+    const month = String(currentTime.getMonth() + 1).padStart(2, '0');
+    const day = String(currentTime.getDate()).padStart(2, '0');
+    const baseDate = `${year}${month}${day}`;
     const baseTime = "0200"; // 기준 시간 고정
 
     // 최고, 최저 기온 정보 요청
     axios.get("weather/short", {
-      params: { baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
+      params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res) => {
       console.log(res.data.response);
       setTemperatureInfo(res.data.response); // 최고 및 최저 기온 정보 업데이트
@@ -20,11 +26,10 @@ function Weather(props) {
       console.log(error);
     });
 
-    const currentTime = new Date();
     const currentHour = currentTime.getHours();
     const isBeforeDawn = currentHour >= 2 && currentHour < 5;
 
-    // 새벽 두시 ~ 새벽 다섯시 사이가 아닐 때는 현재 시간을 기준으로 날씨 정보 요청
+    // 새벽 두시 ~ 새벽 다섯시 사이가 아닐 때 날씨 정보 요청
     if (!isBeforeDawn) {
       const getClosestTime = (currentTime) => { // 베이스시간 구하기
         const baseTimes = [5, 8, 11, 14, 17, 20, 23]; // 시간 목록 (새벽 두시는 이미 요청했으므로 제외)
@@ -42,7 +47,7 @@ function Weather(props) {
 
       // 날씨 정보 요청
       axios.get("weather/short", {
-        params: { baseTime: weatherBaseTime, numOfRows: numOfRows, pageNo: pageNo },
+        params: { baseDate: baseDate, baseTime: weatherBaseTime, numOfRows: numOfRows, pageNo: pageNo },
       }).then((res) => {
         console.log(res.data.response);
         setWeatherInfo(res.data.response); // 날씨 정보 업데이트
@@ -50,10 +55,21 @@ function Weather(props) {
         console.log(error);
       });
     }
+
+    const ultrabasetime = `${('0' + currentHour).slice(-2)}00`;
+
+    axios.get("weather/ultra", {
+      params : { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
+    }).then((res => {
+      console.log(res.data.response);
+      setUltraInfo(res.data.response); // 현재 날씨 업데이트
+    })).catch((error) => {
+      console.log(error);
+    })
   }, []);
 
   let today = '';
-  // 비, 눈 둥 오지 않을 때 하늘 정보 활용
+  // 비, 눈 등이 오지 않을 때 하늘 정보 활용
   if (temperatureInfo.pty === 0) {
     if (temperatureInfo.sky === 1) {
       today = '맑음';
@@ -93,6 +109,9 @@ function Weather(props) {
         </div>
         <div>
           <div className="weather-right">
+            {/* 현재기온 */}
+            <h3>{ultraInfo.t1H}℃</h3>
+            {/* 오늘 최고, 최저기온 */}
             <h3 className="temperture">{temperatureInfo.tmx}℃ / {temperatureInfo.tmn}℃ </h3>
             <h5 className="chance-of-rain">습도 : {weatherInfo.reh}%</h5>
             <h5 className="chance-of-rain">강수 확률 : {weatherInfo.pop}%</h5>
