@@ -53,7 +53,7 @@ function Weather(props) {
   }, []);
 
   let today = '';
-  // 비, 눈 둥이 오지 않을 때 하늘 정보 활용
+  // 비, 눈 둥 오지 않을 때 하늘 정보 활용
   if (temperatureInfo.pty === 0) {
     if (temperatureInfo.sky === 1) {
       today = '맑음';
