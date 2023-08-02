@@ -28,10 +28,8 @@ async def handle_client_input(session_id):
         print(f"\r{session_id} input:", client_input, end="\nEnter something: ")
         
     except websockets.exceptions.ConnectionClosedOK:
-       print(f"{session_id}클라이언트의 요청으로 연결 종료")
+       print(f"{session_id} 클라이언트의 요청으로 연결 종료")
        del client[session_id]
-
-
 
 
 # 클라이언트 접속이 되면 호출된다.
@@ -40,13 +38,6 @@ async def accept(websocket, path):
   client[session_id] = websocket
   # asyncio.get_event_loop().run_until_complete(handle_client_input());
   await handle_client_input(session_id);
-
-#
-async def handle_client_input(session_id):
-    while True:
-      client_input = await client[session_id].recv()
-      # 클라이언트의 입력 처리
-      print(f"\r{session_id} input:", client_input, end="\nEnter something: ")
  
 
 
