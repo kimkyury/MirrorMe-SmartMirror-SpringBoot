@@ -8,8 +8,12 @@ import websockets;
 # 클라이언트 접속이 되면 호출된다.
 async def accept(websocket, path):
   while True:
-    data = input("리엑트로 보낼 명령어 : ");
-    await websocket.send(data)
+        data = await websocket.recv()
+        print(f"Received: {data}")
+
+        response_data = input("보낼 메세지: ")
+
+        await websocket.send(response_data)
 
     
  

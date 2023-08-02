@@ -2,7 +2,7 @@ import React from 'react';
 
 function Second(props) {
   return (
-    <div>
+    <div className="App">
       <p>Second</p>
     </div>
   );
