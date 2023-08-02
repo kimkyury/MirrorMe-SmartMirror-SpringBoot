@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './main_page.dart';
+
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -27,7 +29,15 @@ class Login extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Center(
-                child: Text('구글 계정으로 로그인'),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement( // 현재 라우트(Login)를 MyHomePage로 대체하여 이동합니다.
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
+                  child: Text('구글 계정으로 로그인'),
+                ),
               ),
             ),
           ],
