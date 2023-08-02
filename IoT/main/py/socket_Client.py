@@ -3,7 +3,7 @@
 import socket
 from _thread import *
 
-HOST = '192.168.56.1' ## server에 출력되는 ip를 입력해주세요 ##
+HOST = '192.168.30.150' ## server에 출력되는 ip를 입력해주세요 ##
 PORT = 3000
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
