@@ -4,6 +4,7 @@ import mediapipe as mp
 import face_recognition
 import numpy as np
 
+
 def resize_face_region(image, temp, known):
     # 얼굴 영역의 좌표와 크기를 구합니다.
     xmax = int(temp.xmin * image.shape[1] + temp.width * image.shape[1])
@@ -31,6 +32,7 @@ def resize_face_region(image, temp, known):
         
         # 이름을 return
         return result
+
 
 def get_name():
     # 모델
