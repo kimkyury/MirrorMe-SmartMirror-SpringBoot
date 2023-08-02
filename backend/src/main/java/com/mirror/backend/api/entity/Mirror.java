@@ -19,18 +19,18 @@ public class Mirror {
 
     @Id
     @JsonProperty("mirrorId")
-    String mirror_id;
+    String mirrorId;
     @JsonProperty("mirrorGroupId")
-    String mirror_group_id;
+    Long mirrorGroupId;
     @JsonProperty("mirrorPlaceCode")
-    String mirror_place_code;
+    Long mirrorPlaceCode;
 
     @Override
     public String toString() {
         return "Mirror{" +
-                "mirror_id='" + mirror_id + '\'' +
-                ", mirror_group_id='" + mirror_group_id + '\'' +
+                "mirrorId='" + mirrorId + '\'' +
+                ", mirrorGroupId='" + mirrorGroupId + '\'' +
+                ", mirrorPlaceCode='" + mirrorPlaceCode + '\'' +
                 '}';
     }
-
 }
