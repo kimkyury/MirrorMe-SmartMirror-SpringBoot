@@ -1,31 +1,47 @@
 package com.mirror.backend.api.controller;
 
 
-import com.mirror.backend.api.dto.IotRequestUsersDto;
+import com.mirror.backend.api.dto.IotRequestUserDto;
+import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.service.IotService;
+import com.mirror.backend.common.utils.ApiResponse;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import static com.mirror.backend.common.utils.ApiUtils.success;
+import java.util.List;
+
+import static com.mirror.backend.common.utils.ApiResponse.success;
+
 
 @RequestMapping("/api/iot")
 @RestController
 @Tag(name = "iot를 위한 APIs", description = "IOT전용")
 public class IotController {
 
-    @GetMapping("/users")
+    private IotService iotService;
+
+    @Autowired
+    IotController(IotService iotService){
+        this.iotService = iotService;
+    }
+
+    @PostMapping("/users")
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
-    public ApiUtils.ApiResult<String> getProfileImage(@RequestBody IotRequestUsersDto iotRequestUsersDto) {
+    public ApiResponse<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
 
         // Json으로 날라온 mirrorId가 DB에 존재하는지 확인한다
         String mirrorId = iotRequestUsersDto.getMirrorId();
+        System.out.println(mirrorId);
 
         // DB에 없다면, 응답코드로 404를 날린다
+        boolean isExistMirror = iotService.findMirror(mirrorId);
+        if (!isExistMirror)
+            return ApiResponse.notFountMirror();
 
+        List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
 
 
         // DB에 존재한다면
@@ -38,7 +54,7 @@ public class IotController {
 
 
 
-        return success("성공");
+        return success("usersInSameHousehold", users);
 
     }
 }

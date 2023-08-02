@@ -5,10 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IotRequestUsersDto {
+public class IotRequestUserDto {
 
     String mirrorId;
-
 
     @Override
     public String toString() {
