@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import './component/News.dart';
+import './component/Emotions.dart';
+import './component/Home.dart';
+import './component/Family.dart';
+import './component/Settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,13 +27,11 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
+  int _currentIndex = 2; // 기본 페이지 홈으로 설정
   final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
-    // Replace these with your actual pages or widgets
     News(),
     Emotions(),
     Home(),
@@ -36,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Settings(),
   ];
 
-  // 전체 화면 구성
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,11 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
-          ),),
-          actions: [
+          ),
+        ),
+        actions: [
           Icon(Icons.message), // 메세지
-          Icon(Icons.connect_without_contact) // 연결
-        ],),
+          Icon(Icons.connect_without_contact), // 연결
+        ],
+      ),
       body: PageView(
         controller: _pageController,
         children: _pages,
@@ -104,57 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-// BottomNavigationBar별 페이지
-// 뉴스
-class News extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 1'),
-    );
-  }
-}
-
-// 감정
-class Emotions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 2'),
-    );
-  }
-}
-
-// 홈 화면
-class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 3'),
-    );
-  }
-}
-
-// 가족
-class Family extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 4'),
-    );
-  }
-}
-
-// 설정
-class Settings extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 5'),
     );
   }
 }

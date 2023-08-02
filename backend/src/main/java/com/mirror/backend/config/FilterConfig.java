@@ -15,6 +15,7 @@ public class FilterConfig {
         registrationBean.setFilter(new TokenAuthenticationFilter());
         registrationBean.addUrlPatterns("/schedule/*"); // 필터를 적용할 URL 패턴
         registrationBean.addUrlPatterns("/tasks/*");
+        registrationBean.addUrlPatterns("/users/*");
 
         return registrationBean;
     }
