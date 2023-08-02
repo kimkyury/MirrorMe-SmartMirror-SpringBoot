@@ -10,17 +10,16 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @Setter
 @Builder
-@RedisHash("token")
-public class RedisUserToken {
+@RedisHash("profileImg")
+public class RedisUserProfileImg {
 
     @Id
     private String userEmail;
-    private String accessToken;
-    private String refreshToken;
+    private byte[] profileImg;
 
-    public RedisUserToken(String userEmail, String accessToken, String refreshToken) {
+
+    public RedisUserProfileImg(String userEmail, byte[] profileImg ) {
         this.userEmail = userEmail;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        this.profileImg = profileImg;
     }
 }
