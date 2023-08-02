@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Weather from './components/Weather';
+import TodayWeather from './components/TodayWeather';
 import CurrentDate from './components/CurrentDate';
 import Character from './components/Character';
 import Schedules from './components/Schedules';
@@ -25,7 +25,7 @@ function First(props) {
       <Link to="/last">Last</Link>
       <div className="container">
         <div className="weather bordered">
-          <Weather></Weather>
+          <TodayWeather></TodayWeather>
         </div>
         <div>
           {randomNumber < 50 ? <h1>거실 UI</h1> : <h1>현관 UI</h1>}
