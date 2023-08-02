@@ -1,14 +1,14 @@
 package com.mirror.backend.api.controller;
 
 
+import com.mirror.backend.api.dto.IotRequestUsersDto;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
@@ -18,12 +18,15 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 public class IotController {
 
     @GetMapping("/users")
-    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지 URL을 조회합니다. ")
-    public ApiUtils.ApiResult<String> getProfileImage(HttpServletRequest request) {
+    @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
+    public ApiUtils.ApiResult<String> getProfileImage(@RequestBody IotRequestUsersDto iotRequestUsersDto) {
 
         // Json으로 날라온 mirrorId가 DB에 존재하는지 확인한다
+        String mirrorId = iotRequestUsersDto.getMirrorId();
 
         // DB에 없다면, 응답코드로 404를 날린다
+
+
 
         // DB에 존재한다면
         // 1. Mirror 테이블에서 해당 Mirrorid를 찾아온다
