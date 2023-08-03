@@ -1,0 +1,11 @@
+.active-link {
+  font-weight: bold;
+  color: blue;
+}
+
+.first,
+.second,
+.last {
+  display: inline-block;
+  margin: 10px;
+}
