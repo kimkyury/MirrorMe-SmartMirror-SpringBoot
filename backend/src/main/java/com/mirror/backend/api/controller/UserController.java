@@ -3,7 +3,6 @@ package com.mirror.backend.api.controller;
 import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
-import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import com.mirror.backend.common.utils.Constants.Result;
@@ -30,25 +29,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private OAuthService oAuthService;
-
-    @PostMapping("/signup")
-    @Operation(summary = "OAuth 첫 로그인 이후, 부가 정보 작성", description = "실제이름, 닉네임, 가정id를 기입합니다. ")
-    public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
-                                             @RequestBody RequestCreateUserDto requestCreateUserDto) {
-
-        String userEmail = (String) request.getAttribute("user_email");
-        Long userId = (Long)request.getAttribute("user_id");
-
-        // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.updateInitUser(userEmail, userId,requestCreateUserDto);
-
-        if ( result == Result.FAIL )
-            return fail("user 추가 정보 생성 실패");
-        return success("User 추가 정보 생성 성공");
-    }
 
     @GetMapping("/profile/img")
     @Operation(summary = "Profile 이미지 조회", description = "프로필이미지의 encoding값을 조회합니다. ")
@@ -134,20 +114,6 @@ public class UserController {
 
         return fail("수행불가");
     }
-
-    @PutMapping
-    @Operation(summary = "본인의 닉네임을 수정합니다.", description = "수정합니다." )
-    public ApiUtils.ApiResult<String> getUser(HttpServletRequest request,
-    @RequestBody RequestUpdateUserNicknameDto dto) {
-
-        Long userId = (Long) request.getAttribute("user_id");
-        int result = userService.updateUserNickname(userId, dto);
-
-        if ( result == Result.FAIL)
-            return fail("닉네임 수정 실패");
-        return success("닉네임 수정 성공");
-    }
-
 
     @GetMapping("/friends")
     @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )

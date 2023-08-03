@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface InterestsRepository extends JpaRepository<Interest, InterestKey> {
+public interface InterestRepository extends JpaRepository<Interest, InterestKey> {
     Optional<Interest> findByIdUserIdAndIdInterestCode(Long userId, Long interestCode);
     List<Interest> findByIdUserIdAndIsUsed(Long userId, int isUsed);
 }
