@@ -5,6 +5,7 @@ import com.mirror.backend.api.service.VideoService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,4 +42,5 @@ public class VideoController {
         List<Message.ResponseMessage> video = videoService.getVideo(userId);
         return success(video);
     }
+
 }
