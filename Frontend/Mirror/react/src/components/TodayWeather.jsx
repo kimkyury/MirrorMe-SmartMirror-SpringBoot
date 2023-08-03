@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Weather(props) {
-  const [weatherInfo, setWeatherInfo] = useState([]);
+  const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
+
   useEffect(() => {
-    const today = {}
     let numOfRows = 500;
     let pageNo = 1;
     const currentTime = new Date();
@@ -16,35 +16,25 @@ function Weather(props) {
     const baseDate = `${year}${month}${day}`;
     const baseTime = "0200";
 
-    // 최고, 최저 기온 정보 요청
+    // 오늘 날짜로 필터링 후 최저 기온, 최고기온, 강수확률, 강수형태, 하늘상태 저장
     axios.get("weather/short", {
       params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res) => {
       const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
-      console.log(todayWeather);
 
-      // 최저 기온
-      const tempertureMin = todayWeather.filter((data) => data.category === 'TMN');
-      today['tmn'] = tempertureMin[0].tmn;
-
-      // 최고 기온
-      const tempertureMax = todayWeather.filter((data) => data.category === 'TMX');
-      today['tmx'] = tempertureMax[0].tmx;
-
-      // 강수 확률
-      const popInfo = todayWeather.filter((data) => data.category === 'POP');
-      today['pop'] = popInfo[0].pop;
-
-      // 강수 형태
-      const ptyInfo = todayWeather.filter((data) => data.category === 'PTY');
-      today['pty'] = ptyInfo[0].pty;
-
-      // 하늘 상태
-      const skyInfo = todayWeather.filter((data) => data.category === 'SKY');
-      today['sky'] = skyInfo[0].sky;
+      const tempertureMin = todayWeather.find((data) => data.category === 'TMN');
+      const tempertureMax = todayWeather.find((data) => data.category === 'TMX');
+      const popInfo = todayWeather.find((data) => data.category === 'POP');
+      const ptyInfo = todayWeather.find((data) => data.category === 'PTY');
+      const skyInfo = todayWeather.find((data) => data.category === 'SKY');
       
-      console.log(today)
-      setWeatherInfo(today)
+      setWeatherInfo({
+        tmn : tempertureMin.tmn,
+        tmx : tempertureMax.tmx,
+        pop : popInfo.pop,
+        pty : ptyInfo.pty,
+        sky : skyInfo.sky
+      });
     }).catch((error) => {
       console.log(error);
     });
@@ -52,6 +42,8 @@ function Weather(props) {
     const currentHour = currentTime.getHours();
     const ultrabasetime = `${('0' + currentHour).slice(-2)}00`;
 
+
+    // 초단기 예보 업데이트 시간 고려해서 수정 필요
     axios.get("weather/ultra", {
       params : { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res => {
@@ -85,9 +77,9 @@ function Weather(props) {
   }
 
   // 값이 구해지기 전에는 로딩중
-  if (weatherInfo.length === 0 || ultraInfo.length === 0) {
-    return <div>Loading...</div>
-  }
+  // if (weatherInfo.length === 0 || ultraInfo.length === 0) {
+  //   return <div>Loading...</div>
+  // }
 
   return (
     <>
@@ -103,10 +95,14 @@ function Weather(props) {
         </div>
         <div>
           <div className="weather-right">
-            {/* 현재기온 */}
+            
+            {/* 실시간 기온 */}
             <h3>{ultraInfo.t1H}℃</h3>
+
             {/* 오늘 최고, 최저기온 */}
             <h3 className="temperture">{weatherInfo.tmx}℃ / {weatherInfo.tmn}℃ </h3>
+
+            {/* 실시간 습도 */}
             <h5 className="chance-of-rain">습도 : {ultraInfo.reh}%</h5>
             <h5 className="chance-of-rain">강수 확률 : {weatherInfo.pop}%</h5>
           </div>
