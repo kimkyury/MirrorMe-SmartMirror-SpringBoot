@@ -10,6 +10,9 @@ import com.mirror.backend.common.utils.Constants.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,14 +51,18 @@ public class UserController {
     }
 
     @GetMapping("/profile/img")
-    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지 URL을 조회합니다. ")
-    public ApiUtils.ApiResult<String> getProfileImage(HttpServletRequest request) {
-        Long userId = (Long)request.getAttribute("user_id");
-        String result = userService.getUserProfileImage(userId);
+    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지의 encoding값을 조회합니다. ")
+    public ResponseEntity<byte[]> getProfileImage(HttpServletRequest request) {
+        String userEmail = (String)request.getAttribute("user_email");
+        byte[] result = userService.getUserProfileImage(userEmail);
 
-        if (result.equals("FAIL"))
-            return fail("유저의 Profile이 저장되어있지 않거나, 잘못된 요청을 시도하였습니다.");
-        return success(result);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl("public, max-age=3600");  // Cache-Control 헤더를 설정하여 이미지를 캐싱할 수 있도록 함
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(result);
     }
 
     @PostMapping("/profile/img")

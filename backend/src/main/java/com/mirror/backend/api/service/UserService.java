@@ -1,31 +1,20 @@
 package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.*;
-import com.mirror.backend.api.entity.ConnectUser;
-import com.mirror.backend.api.entity.Interest;
-import com.mirror.backend.api.entity.InterestCommonCode;
-import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.entity.keys.InterestKey;
-import com.mirror.backend.api.repository.ConnectUserRepository;
-import com.mirror.backend.api.repository.InterestCommonCodeRepository;
-import com.mirror.backend.api.repository.InterestsRepository;
-import com.mirror.backend.api.repository.UserRepository;
+import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.Constants.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -34,15 +23,18 @@ public class UserService {
     private final InterestsRepository interestRepository;
     private final InterestCommonCodeRepository interestCommonCodeRepository;
     private final ConnectUserRepository connectUserRepository;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     public UserService(UserRepository userRepository, InterestsRepository interestRepository,
                            InterestCommonCodeRepository interestCommonCodeRepository,
-                       ConnectUserRepository connectUserRepository) {
+                       ConnectUserRepository connectUserRepository,
+                        RedisTemplate<String, String> redisTemplate){
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
         this.connectUserRepository = connectUserRepository;
+        this.redisTemplate = redisTemplate;
     }
 
 
@@ -98,42 +90,30 @@ public class UserService {
 
             interestRepository.save(interest);
         }
-
         return SUCCESS;
     }
 
 
-
-    public int uploadProfileImage(String userEmail,  MultipartFile file) {
-        Optional<User> user = userRepository.findByUserEmail(userEmail);
-
-        String UPLOAD_DIR = "ImgTest/";  //TODO: 서버내의 절대경로로 바꿀 것
-
-        Path filePath = null;
-
+    // 프로필 이미지
+    public int uploadProfileImage(String userEmail,  MultipartFile profileImg)  {
         try {
-
-            Path resourceDirectory = Paths.get("src","main","resources", UPLOAD_DIR);
-            String absolutePath = resourceDirectory.toFile().getAbsolutePath();
-
-            filePath = Paths.get(absolutePath, file.getOriginalFilename());
-            Files.write(filePath, file.getBytes());
-
+            byte[] bytes = profileImg.getBytes();
+            String encodedImage = Base64.getEncoder().encodeToString(bytes);
+            String key = "profileImg:" + userEmail;
+            redisTemplate.opsForHash().put(key, "imageData", encodedImage);
         } catch (IOException e) {
-            // 에러 처리
             e.printStackTrace();
         }
 
-        System.out.println("이미지파일 저장경로: " + filePath.toString());
-        Path finalFilePath = filePath;
-
-        user.ifPresent(selectUser -> {
-            selectUser.setProfileImageUrl(finalFilePath.toString());
-            selectUser.setModifiedAt(LocalDateTime.now());
-            userRepository.save(selectUser);
-        });
-
         return Result.SUCCESS;
+    }
+
+    public byte[] getUserProfileImage(String userEmail) {
+        String key = "profileImg:" + userEmail;
+        String value = (String) redisTemplate.opsForHash().get(key, "imageData");
+
+        byte[] imageData = Base64.getDecoder().decode(value);
+        return imageData;
     }
 
     public boolean isExistUser(String email){
@@ -206,14 +186,7 @@ public class UserService {
         return interestOptional.get().getIsUsed();
     }
 
-    public String getUserProfileImage(Long userId) {
 
-        Optional<User> user = userRepository.findByUserId(userId);
-        if ( user.isEmpty()){
-            return "FAIL";
-        }
-        return user.get().getProfileImageUrl();
-    }
 
     public int deleteUser(Long userId) {
 
