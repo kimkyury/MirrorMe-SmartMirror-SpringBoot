@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.dto.ResponseGoogleOAuthDto;
 import com.mirror.backend.api.dto.ResponseLoginDto;
+import com.mirror.backend.api.dto.ResponseTokensDto;
 import com.mirror.backend.api.entity.RedisUserToken;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,22 +20,22 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 @Service
 public class OAuthService {
 
-    static int FAIL = 0;
-    static int SUCCESS = 1;
-    static int RE_LOGIN_USER = 0;
-    static int INIT_LOGIN_USER = 1;
-
-    @Autowired
-    GoogleOAuth googleOAuth;
-    @Autowired
+    private GoogleOAuth googleOAuth;
     private RedisUserTokenRepository redisUserTokenRepository;
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    public OAuthService(GoogleOAuth googleOAuth, RedisUserTokenRepository redisUserTokenRepository, UserService userService) {
+        this.googleOAuth = googleOAuth;
+        this.redisUserTokenRepository = redisUserTokenRepository;
+        this.userService = userService;
+    }
+
 
     private ResponseLoginDto responseLogin;
     private ResponseGoogleOAuthDto googleOAuthResponseDto ;
@@ -66,9 +67,13 @@ public class OAuthService {
     }
 
     public ResponseLoginDto login (String authCode){
+
         googleOAuthResponseDto = new ResponseGoogleOAuthDto();
 
-        // 1. authCode를 Access/Refresh/Id Token으로 변환하여 지역변수로 저장
+         int RE_LOGIN_USER = 0;
+         int INIT_LOGIN_USER = 1;
+
+         // 1. authCode를 Access/Refresh/Id Token으로 변환하여 지역변수로 저장
         saveGoogleTokens(authCode);
 
         // 2. idToken을 이용하여 GoogleOAuth 로그인한 user의 googleEmail찾기
@@ -172,6 +177,25 @@ public class OAuthService {
         googleOAuthResponseDto.setAccessToken(returnNode.get("access_token").asText());
         googleOAuthResponseDto.setRefreshToken(returnNode.get("refresh_token").asText());
         googleOAuthResponseDto.setIdToken(returnNode.get("id_token").asText());
+    }
+
+    public ResponseTokensDto getTokensFromUserEmail(String userEmail) {
+        // :TODO 등록되지 않은 유저의 Email로 요청시 예외처리
+        String key = "token_" + userEmail;
+        Optional<RedisUserToken> redisUserTokenOptional = redisUserTokenRepository.findById(key);
+
+        if ( redisUserTokenOptional.isEmpty()){
+            return null;
+        }
+
+        RedisUserToken redisUserToken = redisUserTokenOptional.get();
+
+        ResponseTokensDto tokenDto = ResponseTokensDto.builder()
+                .accessToken(redisUserToken.getAccessToken())
+                .refreshToken(redisUserToken.getRefreshToken())
+                .build();
+
+        return tokenDto;
     }
 }
 
