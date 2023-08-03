@@ -2,6 +2,7 @@ package com.mirror.backend.api.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,13 @@ public class Mirror {
     Long mirrorGroupId;
     @JsonProperty("mirrorPlaceCode")
     Long mirrorPlaceCode;
+
+    @Builder
+    public Mirror(String mirrorId, Long mirrorGroupId, Long mirrorPlaceCode) {
+        this.mirrorId = mirrorId;
+        this.mirrorGroupId = mirrorGroupId;
+        this.mirrorPlaceCode = mirrorPlaceCode;
+    }
 
     @Override
     public String toString() {
