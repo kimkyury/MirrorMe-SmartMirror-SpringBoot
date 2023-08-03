@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -42,13 +41,12 @@ public class OAuthController {
     }
 
     @GetMapping("/oauth/google/callback")
-    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "" +
+    @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
             "이후 로그인을 진행합니다. \n ")
     public ApiUtils.ApiResult<ResponseLoginDto> callback(
             @RequestParam(name = "code", required = false) String authCode,
-            @RequestParam(name = "error", required = false) String error
-    ) throws IOException {
+            @RequestParam(name = "error", required = false) String error) {
 
         ResponseLoginDto response = oAuthService.login(authCode);
 
