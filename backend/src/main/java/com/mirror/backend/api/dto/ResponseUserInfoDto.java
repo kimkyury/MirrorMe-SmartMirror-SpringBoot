@@ -12,17 +12,11 @@ import java.time.LocalDateTime;
 @Setter
 public class ResponseUserInfoDto {
 
-    @JsonProperty("userNickname")
-    private String userNickname;
-
     @JsonProperty("userEmail")
     private String userEmail;
 
     @JsonProperty("userName")
     private String userName;
-
-    @JsonProperty("profileImageUrl")
-    private String profileImageUrl;
 
     @JsonProperty("createAt")
     private LocalDateTime createAt;
@@ -33,13 +27,10 @@ public class ResponseUserInfoDto {
     @JsonProperty("householdId")
     private Long householdId;
 
-
     @Builder
-    public ResponseUserInfoDto(String userNickname, String userEmail, String userName, String profileImageUrl, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
-        this.userNickname = userNickname;
+    public ResponseUserInfoDto(String userEmail, String userName, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
         this.userEmail = userEmail;
         this.userName = userName;
-        this.profileImageUrl = profileImageUrl;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
         this.householdId = householdId;
@@ -47,11 +38,9 @@ public class ResponseUserInfoDto {
 
     @Override
     public String toString() {
-        return "ResponseUserInfo{" +
-                "userNickname='" + userNickname + '\'' +
+        return "ResponseUserInfoDto{" +
                 ", userEmail='" + userEmail + '\'' +
                 ", userName='" + userName + '\'' +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
                 ", createAt=" + createAt +
                 ", modifiedAt=" + modifiedAt +
                 ", householdId=" + householdId +

@@ -2,6 +2,9 @@ package com.mirror.backend.api.controller;
 
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
+import com.mirror.backend.api.dto.RequestHouseholdDto;
+import com.mirror.backend.api.dto.RequestMirrorDto;
+import com.mirror.backend.api.dto.ResponseHouseholdDto;
 import com.mirror.backend.api.service.SignUpService;
 import com.mirror.backend.common.utils.ApiUtils;
 import com.mirror.backend.common.utils.Constants.Result;
@@ -59,9 +62,57 @@ public class SignUpController {
     }
 
     // household 등록
+    @PostMapping("/households")
+    @Operation(summary = "새로운 가정 생성", description = "사용자가 새로운 가정을 생성합니다. ")
+    public ApiUtils.ApiResult<ResponseHouseholdDto> createHousehold(HttpServletRequest request,
+                                                                    @RequestBody RequestHouseholdDto requestHouseholdDto) {
+        Long userId = (Long) request.getAttribute("user_id");
+
+        ResponseHouseholdDto result = signUpService.createHousehold(userId, requestHouseholdDto);
+
+        return success(result);
+    }
 
     // household 조회
+    @GetMapping("/households")
+    @Operation(summary = "기존의 가정 검색", description = "사용자가 기존에 있는 가정을, 생성자 Email로 검색합니다. ")
+    public ApiUtils.ApiResult<ResponseHouseholdDto> searchHousehold(HttpServletRequest request,
+                                                        @RequestParam String createUserEmail) {
+
+        String userEmail = (String) request.getAttribute("user_email");
+
+        ResponseHouseholdDto result = signUpService.searchHousehold(createUserEmail );
+
+        return success(result);
+    }
+
+    @PostMapping("/household")
+    @Operation(summary = "사용자의 가정 등록", description = "사용자가 새로운 가정을 등록하며, 자동으로 기존 사용자와의 관계를 업데이트합니다. ")
+    public ApiUtils.ApiResult<String> registerHousehold(HttpServletRequest request,
+                                                        @RequestParam(name="householdId", required = true) Long householdId) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+
+        int result = signUpService.registerHousehold(userId,householdId );
+
+
+        return success("사용자 가정 등록 및, 기존 사용자간 연락처 업데이트 완료 ");
+    }
 
     // Mirror 등록
+    @PostMapping("/mirror")
+    @Operation(summary = "사용자의 미러 등록", description = "사용자가 새로운 미러를 본인의 가정으로 등록합니다")
+    public ApiUtils.ApiResult<String> registerMirror(HttpServletRequest request,
+                                                        @RequestBody RequestMirrorDto requestMirrorDto) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+
+        // TODO: mirrorId가 암호화 되어있다면 암호화 로직을 포함시켜야 함
+        int result = signUpService.registerMirror(userId, requestMirrorDto);
+
+        System.out.println(result);
+
+        return success("Mirror 등록 완료");
+    }
 
 }
