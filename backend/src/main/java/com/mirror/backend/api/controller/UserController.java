@@ -128,7 +128,6 @@ public class UserController {
         return success("추가 성공");
     }
 
-
     @GetMapping("/friends")
     @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )
     public ApiUtils.ApiResult<List<ConnectUser>> getConnectUsers(HttpServletRequest request) {
