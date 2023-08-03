@@ -10,9 +10,13 @@ import com.mirror.backend.api.repository.InterestRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.Constants.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,14 +26,17 @@ public class SignUpService {
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final InterestCommonCodeRepository interestCommonCodeRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     @Autowired
     public SignUpService(UserRepository userRepository,
                          InterestRepository interestRepository,
-                         InterestCommonCodeRepository interestCommonCodeRepository) {
+                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
@@ -66,4 +73,18 @@ public class SignUpService {
     }
 
 
+    // 프로필 이미지
+    public int uploadProfileImage(String userEmail,  MultipartFile profileImg)  {
+        try {
+            byte[] bytes = profileImg.getBytes();
+            String encodedImage = Base64.getEncoder().encodeToString(bytes);
+            String key = "profileImg:" + userEmail;
+            redisTemplate.opsForHash().put(key, "imageData", encodedImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.REDIS_INSERT_ERROR;
+        }
+
+        return Result.SUCCESS;
+    }
 }

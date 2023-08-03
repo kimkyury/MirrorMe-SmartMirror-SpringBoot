@@ -1,6 +1,9 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.*;
+import com.mirror.backend.api.dto.RequestConnectUserInfoDto;
+import com.mirror.backend.api.dto.RequestInterestDto;
+import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.dto.ResponseUserInfoDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.UserService;
@@ -13,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -45,22 +47,6 @@ public class UserController {
                 .body(result);
     }
 
-    @PostMapping("/profile/img")
-    @Operation(summary = "Profile 이미지 등록", description = "프로필이미지를 등록합니다. ")
-    public ApiUtils.ApiResult<String> updateProfileImage(HttpServletRequest request,
-                                             @RequestPart(value = "file") MultipartFile file) {
-
-        String accessToken = request.getHeader("access_token");
-        String userEmail = (String) request.getAttribute("user_email");
-
-        // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.uploadProfileImage(userEmail, file);
-
-        if ( result == Result.FAIL )
-            return fail("user Profile Img 업데이트 실패");
-
-        return success("User Profile Img 업데이트 성공");
-    }
 
     @DeleteMapping
     @Operation(summary = "유저가 탈퇴합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
@@ -141,7 +127,6 @@ public class UserController {
         }
         return success("해당 지인의 별명이 수정되었습니다.");
     }
-
 
     @GetMapping("/profile")
     @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )

@@ -18,10 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -62,20 +60,6 @@ public class UserService {
     }
 
 
-
-    // 프로필 이미지
-    public int uploadProfileImage(String userEmail,  MultipartFile profileImg)  {
-        try {
-            byte[] bytes = profileImg.getBytes();
-            String encodedImage = Base64.getEncoder().encodeToString(bytes);
-            String key = "profileImg:" + userEmail;
-            redisTemplate.opsForHash().put(key, "imageData", encodedImage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return Result.SUCCESS;
-    }
 
     public byte[] getUserProfileImage(String userEmail) {
         String key = "profileImg:" + userEmail;
