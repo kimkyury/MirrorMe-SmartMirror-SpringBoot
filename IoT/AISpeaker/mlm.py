@@ -51,7 +51,7 @@ def listen_print_loop(responses):
 
             elif STATE == LISTEN_ORDER:
                 temp, order = nla(transcript)
-                text_to_speech()
+                text_to_speech(order)
                 if temp != -1:
                     STATE = WAITING
                 print("##################################")
