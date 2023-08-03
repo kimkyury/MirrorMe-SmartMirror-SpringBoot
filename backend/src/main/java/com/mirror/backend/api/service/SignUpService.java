@@ -3,11 +3,9 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestHouseholdDto;
+import com.mirror.backend.api.dto.RequestMirrorDto;
 import com.mirror.backend.api.dto.ResponseHouseholdDto;
-import com.mirror.backend.api.entity.ConnectUser;
-import com.mirror.backend.api.entity.Household;
-import com.mirror.backend.api.entity.Interest;
-import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.*;
@@ -183,5 +181,25 @@ public class SignUpService {
         }
 
         return Result.SUCCESS;
+    }
+
+    public int registerMirror(Long userId, RequestMirrorDto requestMirrorDto) {
+
+        //TODO: mirrorId가 암호화되어 온다면, 이를 Decoding하는 과정을 진행할 것
+        String mirrorId = requestMirrorDto.getMirrorId();
+        Long mirrorPlaceCode = requestMirrorDto.getMirrorPlaceCode();
+
+        // 1. user의 householdId조희
+        Optional<User> user = userRepository.findByUserId(userId);
+
+        Mirror mirror = Mirror.builder()
+                .mirrorId(mirrorId)
+                .mirrorGroupId(user.get().getHouseholdId())
+                .mirrorPlaceCode(mirrorPlaceCode)
+                .build();
+        mirrorRepository.save(mirror);
+
+        return Result.SUCCESS;
+
     }
 }

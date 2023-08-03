@@ -87,7 +87,7 @@ public class SignUpController {
     }
 
     @PostMapping("/household")
-    @Operation(summary = "사용자의 가정 등록", description = "사용자가 새로운 가정을 등록합니다. ")
+    @Operation(summary = "사용자의 가정 등록", description = "사용자가 새로운 가정을 등록하며, 자동으로 기존 사용자와의 관계를 업데이트합니다. ")
     public ApiUtils.ApiResult<String> registerHousehold(HttpServletRequest request,
                                                         @RequestParam(name="householdId", required = true) Long householdId) {
 
@@ -96,7 +96,7 @@ public class SignUpController {
         int result = signUpService.registerHousehold(userId,householdId );
 
 
-        return success("User Profile Img 업데이트 성공");
+        return success("사용자 가정 등록 및, 기존 사용자간 연락처 업데이트 완료 ");
     }
 
     // Mirror 등록
@@ -105,8 +105,14 @@ public class SignUpController {
     public ApiUtils.ApiResult<String> registerMirror(HttpServletRequest request,
                                                         @RequestBody RequestMirrorDto requestMirrorDto) {
 
-        String userEmail = (String) request.getAttribute("user_email");
-        return success("User Profile Img 업데이트 성공");
+        Long userId = (Long) request.getAttribute("user_id");
+
+        // TODO: mirrorId가 암호화 되어있다면 암호화 로직을 포함시켜야 함
+        int result = signUpService.registerMirror(userId, requestMirrorDto);
+
+        System.out.println(result);
+
+        return success("Mirror 등록 완료");
     }
 
 }
