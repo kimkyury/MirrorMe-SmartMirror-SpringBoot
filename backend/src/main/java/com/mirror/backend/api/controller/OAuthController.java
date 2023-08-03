@@ -36,7 +36,7 @@ public class OAuthController {
         return success("Success Request Authorization Code to Google");
     }
 
-    @GetMapping("/login/google/callback")
+    @GetMapping("/oauth/google/callback")
     @Operation(summary = "Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
             "이후 로그인을 진행합니다. \n "
