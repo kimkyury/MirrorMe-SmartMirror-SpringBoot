@@ -32,14 +32,14 @@ public class OAuthController {
 
     @GetMapping("/login")
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
-    public ApiUtils.ApiResult<String> registerGoogleAccount(HttpServletResponse response) throws Exception {
+    public void registerGoogleAccount(HttpServletResponse response) throws Exception {
 
         String requestUrl = oAuthService.getRequestUrlForAuthorizationCode();
-        response.sendRedirect(requestUrl.toString());
+        response.sendRedirect(requestUrl); //TODO: FrontUrl 로 변경
 
-        return success("Success Request Authorization Code to Google");
     }
 
+    // 아래 메소드는 Front한테 위임되면서 삭제될 예정
     @GetMapping("/oauth/google/callback")
     @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
@@ -47,6 +47,18 @@ public class OAuthController {
     public ApiUtils.ApiResult<ResponseLoginDto> callback(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error) {
+
+        System.out.println("authCode: " + authCode);
+        ResponseLoginDto response = oAuthService.login(authCode);
+        return success(response);
+    }
+
+    @GetMapping("/login/auth")
+    @Operation(summary = "승인코드를 통한 유저 존재 확인 ",
+            description = "Authorization Code를 Access/Refresh토큰으로 교환합니다." +
+            "또한 유저 확인을 진행합니다.")
+    public ApiUtils.ApiResult<ResponseLoginDto> confirmExistUser(
+            @RequestParam(name = "code", required = false) String authCode) {
 
         ResponseLoginDto response = oAuthService.login(authCode);
 
