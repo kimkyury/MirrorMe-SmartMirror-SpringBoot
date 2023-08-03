@@ -1,6 +1,9 @@
 package com.mirror.backend.api.service;
 
-import com.mirror.backend.api.dto.*;
+import com.mirror.backend.api.dto.RequestConnectUserInfoDto;
+import com.mirror.backend.api.dto.RequestInterestDto;
+import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.dto.ResponseUserInfoDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
@@ -8,46 +11,38 @@ import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.InterestCommonCodeRepository;
-import com.mirror.backend.api.repository.InterestsRepository;
+import com.mirror.backend.api.repository.InterestRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.Constants.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final InterestsRepository interestRepository;
+    private final InterestRepository interestRepository;
     private final InterestCommonCodeRepository interestCommonCodeRepository;
     private final ConnectUserRepository connectUserRepository;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
-    public UserService(UserRepository userRepository, InterestsRepository interestRepository,
+    public UserService(UserRepository userRepository, InterestRepository interestRepository,
                            InterestCommonCodeRepository interestCommonCodeRepository,
-                       ConnectUserRepository connectUserRepository) {
+                       ConnectUserRepository connectUserRepository,
+                        RedisTemplate<String, String> redisTemplate){
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
         this.connectUserRepository = connectUserRepository;
+        this.redisTemplate = redisTemplate;
     }
 
-
-    int SUCCESS = 1;
-    int FAIL = 0;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -61,79 +56,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
-
-        Optional<User> user = userRepository.findByUserEmail(userEmail);
-        // userId찾기
-
-        if ( user.isEmpty())
-            return FAIL;
-
-        String userName = requestCreateUserDto.getUserName();
-        String userNickname = requestCreateUserDto.getUserNickname();
-        List<Long> interestCodes = requestCreateUserDto.getInterestCodes();
-        Long householdId = requestCreateUserDto.getHouseholdId();
-
-        // 저장된 파일의 경로를 DB에 저장
-
-        // uesrTable Update
-        user.ifPresent(selectUser -> {
-            selectUser.setUserName(userName);
-            selectUser.setUserNickname(userNickname);
-            selectUser.setHouseholdId(householdId);
-            selectUser.setCreateAt(LocalDateTime.now());
-            userRepository.save(selectUser);
-        });
-
-        // interests Create (multyKey1; userId, multiKey2: interestId)
-        // 복합키 이용
-        for(int i =0; i<interestCodes.size(); i++){
-            InterestKey interestKey = new InterestKey();
-            interestKey.setUserId(userId);
-            interestKey.setInterestCode(interestCodes.get(i));
-
-            Interest interest = new Interest();
-            interest.setId(interestKey);
-            interest.setIsUsed(1);
-
-            interestRepository.save(interest);
-        }
-
-        return SUCCESS;
-    }
 
 
+    public byte[] getUserProfileImage(String userEmail) {
+        String key = "profileImg:" + userEmail;
+        String value = (String) redisTemplate.opsForHash().get(key, "imageData");
 
-    public int uploadProfileImage(String userEmail,  MultipartFile file) {
-        Optional<User> user = userRepository.findByUserEmail(userEmail);
-
-        String UPLOAD_DIR = "ImgTest/";  //TODO: 서버내의 절대경로로 바꿀 것
-
-        Path filePath = null;
-
-        try {
-
-            Path resourceDirectory = Paths.get("src","main","resources", UPLOAD_DIR);
-            String absolutePath = resourceDirectory.toFile().getAbsolutePath();
-
-            filePath = Paths.get(absolutePath, file.getOriginalFilename());
-            Files.write(filePath, file.getBytes());
-
-        } catch (IOException e) {
-            // 에러 처리
-            e.printStackTrace();
-        }
-
-        System.out.println("이미지파일 저장경로: " + filePath.toString());
-        Path finalFilePath = filePath;
-
-        user.ifPresent(selectUser -> {
-            selectUser.setProfileImageUrl(finalFilePath.toString());
-            selectUser.setModifiedAt(LocalDateTime.now());
-            userRepository.save(selectUser);
-        });
-
-        return Result.SUCCESS;
+        byte[] imageData = Base64.getDecoder().decode(value);
+        return imageData;
     }
 
     public boolean isExistUser(String email){
@@ -206,14 +136,7 @@ public class UserService {
         return interestOptional.get().getIsUsed();
     }
 
-    public String getUserProfileImage(Long userId) {
 
-        Optional<User> user = userRepository.findByUserId(userId);
-        if ( user.isEmpty()){
-            return "FAIL";
-        }
-        return user.get().getProfileImageUrl();
-    }
 
     public int deleteUser(Long userId) {
 
@@ -226,18 +149,6 @@ public class UserService {
         return Result.SUCCESS;
     }
 
-
-    public int updateUserNickname(Long userId, RequestUpdateUserNicknameDto dto) {
-
-        Optional<User> user = userRepository.findByUserId(userId);
-
-        user.ifPresent( selectUser -> {
-           selectUser.setUserNickname(dto.getUserNickname());
-           userRepository.save(selectUser);
-        });
-
-        return Result.SUCCESS;
-    }
 
     public List<ConnectUser> getConnectUsers(Long userId) {
 
@@ -253,12 +164,10 @@ public class UserService {
         User user = userOptional.get();
         ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
                 .userEmail(user.getUserEmail())
-                .userNickname(user.getUserNickname())
                 .userName(user.getUserName())
                 .createAt(user.getCreateAt())
                 .modifiedAt(user.getModifiedAt())
                 .householdId(user.getHouseholdId())
-                .profileImageUrl(user.getProfileImageUrl())
                 .build();
 
         return userInfo;

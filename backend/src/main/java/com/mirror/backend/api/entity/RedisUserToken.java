@@ -23,6 +23,4 @@ public class RedisUserToken {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
-
-
 }

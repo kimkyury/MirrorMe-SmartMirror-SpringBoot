@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import TodayWeather from './components/TodayWeather';
 import CurrentDate from './components/CurrentDate';
-import Character from './components/Character';
-import Schedules from './components/Schedules';
-import FavoriteNews from './components/FavoriteNews';
+
+import NavBar from './NavBar';
 
 import LivingRoom from './LivingRoom';
 import Entrance from './Entrance';
@@ -21,13 +20,12 @@ function First(props) {
 
   return (
     <div className="App">
-      <Link to="/second">Second</Link>
-      <Link to="/last">Last</Link>
       <div className="container">
         <div className="weather bordered">
           <TodayWeather></TodayWeather>
         </div>
         <div>
+          <NavBar></NavBar>
           {randomNumber < 50 ? <h1>거실 UI</h1> : <h1>현관 UI</h1>}
         </div>
         <div className="CurrentDate bordered">

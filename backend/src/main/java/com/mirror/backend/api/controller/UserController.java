@@ -1,17 +1,21 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.*;
+import com.mirror.backend.api.dto.RequestConnectUserInfoDto;
+import com.mirror.backend.api.dto.RequestInterestDto;
+import com.mirror.backend.api.dto.ResponseInterestDto;
+import com.mirror.backend.api.dto.ResponseUserInfoDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
-import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import com.mirror.backend.common.utils.Constants.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -21,59 +25,39 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
 @RestController
-@RequestMapping("/users")
-@Tag(name = "users", description = "유저 정보 API")
+@RequestMapping("/user")
+@Tag(name = "user", description = "유저 프로필 관련 API")
 public class UserController {
+
+    @GetMapping("/profile")
+    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
+    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
+
+        return success(userInfo);
+    }
+
 
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private OAuthService oAuthService;
-
-    @PostMapping("/signup")
-    @Operation(summary = "OAuth 첫 로그인 이후, 부가 정보 작성", description = "실제이름, 닉네임, 가정id를 기입합니다. ")
-    public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
-                                             @RequestBody RequestCreateUserDto requestCreateUserDto) {
-
-        String userEmail = (String) request.getAttribute("user_email");
-        Long userId = (Long)request.getAttribute("user_id");
-
-        // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.updateInitUser(userEmail, userId,requestCreateUserDto);
-
-        if ( result == Result.FAIL )
-            return fail("user 추가 정보 생성 실패");
-        return success("User 추가 정보 생성 성공");
-    }
-
     @GetMapping("/profile/img")
-    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지 URL을 조회합니다. ")
-    public ApiUtils.ApiResult<String> getProfileImage(HttpServletRequest request) {
-        Long userId = (Long)request.getAttribute("user_id");
-        String result = userService.getUserProfileImage(userId);
+    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지의 encoding값을 조회합니다. ")
+    public ResponseEntity<byte[]> getProfileImage(HttpServletRequest request) {
+        String userEmail = (String)request.getAttribute("user_email");
+        byte[] result = userService.getUserProfileImage(userEmail);
 
-        if (result.equals("FAIL"))
-            return fail("유저의 Profile이 저장되어있지 않거나, 잘못된 요청을 시도하였습니다.");
-        return success(result);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl("public, max-age=3600");  // Cache-Control 헤더를 설정하여 이미지를 캐싱할 수 있도록 함
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(result);
     }
 
-    @PostMapping("/profile/img")
-    @Operation(summary = "Profile 이미지 등록", description = "프로필이미지를 등록합니다. ")
-    public ApiUtils.ApiResult<String> updateProfileImage(HttpServletRequest request,
-                                             @RequestPart(value = "file") MultipartFile file) {
-
-        String accessToken = request.getHeader("access_token");
-        String userEmail = (String) request.getAttribute("user_email");
-
-        // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = userService.uploadProfileImage(userEmail, file);
-
-        if ( result == Result.FAIL )
-            return fail("user Profile Img 업데이트 실패");
-
-        return success("User Profile Img 업데이트 성공");
-    }
 
     @DeleteMapping
     @Operation(summary = "유저가 탈퇴합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
@@ -128,20 +112,6 @@ public class UserController {
         return fail("수행불가");
     }
 
-    @PutMapping
-    @Operation(summary = "본인의 닉네임을 수정합니다.", description = "수정합니다." )
-    public ApiUtils.ApiResult<String> getUser(HttpServletRequest request,
-    @RequestBody RequestUpdateUserNicknameDto dto) {
-
-        Long userId = (Long) request.getAttribute("user_id");
-        int result = userService.updateUserNickname(userId, dto);
-
-        if ( result == Result.FAIL)
-            return fail("닉네임 수정 실패");
-        return success("닉네임 수정 성공");
-    }
-
-
     @GetMapping("/friends")
     @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )
     public ApiUtils.ApiResult<List<ConnectUser>> getConnectUsers(HttpServletRequest request) {
@@ -170,15 +140,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/profile")
-    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
-    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
-
-        Long userId = (Long) request.getAttribute("user_id");
-        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
-
-        return success(userInfo);
-    }
 
 
     @GetMapping
