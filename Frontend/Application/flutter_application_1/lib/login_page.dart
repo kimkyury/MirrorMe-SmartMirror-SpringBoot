@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './main_page.dart';
+// import './main_page.dart';
+import './profile.dart';
 
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
@@ -31,9 +32,9 @@ class Login extends StatelessWidget {
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement( // 현재 라우트(Login)를 MyHomePage로 대체하여 이동합니다.
+                    Navigator.push( // 구글 로그인 버튼이 눌렸을 때 Profile 페이지로 이동합니다.
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                      MaterialPageRoute(builder: (context) => Profile()),
                     );
                   },
                   child: Text('구글 계정으로 로그인'),
