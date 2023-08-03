@@ -1,4 +1,5 @@
 import React from 'react';
+import WeekWeather from './components/WeekWeather';
 
 import NavBar from './NavBar';
 
@@ -9,6 +10,7 @@ function Second(props) {
         <NavBar></NavBar>
       </div>
       <p>Second</p>
+      <WeekWeather></WeekWeather>
     </div>
   );
 }
