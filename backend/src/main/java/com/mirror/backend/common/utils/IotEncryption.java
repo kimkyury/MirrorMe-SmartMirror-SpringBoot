@@ -25,21 +25,13 @@ public class IotEncryption {
     }
 
     public static String encrytionText(String input){
-        int N = 1517;
-        int PNB = 1061;
-
         String output = encryption(input, N, PNB);
-        System.out.println(output);
 
         return output;
     }
 
     public static String decryptionText(String input){
-        int N = 1517;
-        int PNA = 1421;
-
         String output = decryption(input, N, PNA);
-        System.out.println(output);
 
         return output;
     }
