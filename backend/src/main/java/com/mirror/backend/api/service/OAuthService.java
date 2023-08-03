@@ -66,7 +66,7 @@ public class OAuthService {
         return requestUrl.toString();
     }
 
-    public ResponseLoginDto login (String authCode){
+    public ResponseLoginDto login(String authCode){
 
         googleOAuthResponseDto = new ResponseGoogleOAuthDto();
 
@@ -84,7 +84,7 @@ public class OAuthService {
 
         responseLogin = new ResponseLoginDto();
         // 존재유무에따라, Front에게 추가기입 창을 안내하라는 Signal(0, 1) 설정
-        if ( !isExistUser){
+        if (!isExistUser){
             // 최초의 유저 정보 생성
             userService.createUser(userEmail);
             responseLogin.setIsInitLoginUser(INIT_LOGIN_USER);

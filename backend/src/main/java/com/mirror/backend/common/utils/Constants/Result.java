@@ -9,5 +9,4 @@ public class Result {
     public static final int NOT_FOUNT_USER = 10001;
     public static final int REDIS_INSERT_ERROR = 10002;
 
-
 }

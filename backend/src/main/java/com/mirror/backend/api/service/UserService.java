@@ -8,6 +8,7 @@ import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.InterestCommonCode;
 import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.InterestCommonCodeRepository;
@@ -43,11 +44,27 @@ public class UserService {
         this.redisTemplate = redisTemplate;
     }
 
-
     public User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public ResponseUserInfoDto getUserInfo(Long userId) {
+
+        Optional<User> userOptional = userRepository.findByUserId(userId);
+
+        User user = userOptional.get();
+        ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
+                .userEmail(user.getUserEmail())
+                .userName(user.getUserName())
+                .createAt(user.getCreateAt())
+                .modifiedAt(user.getModifiedAt())
+                .householdId(user.getHouseholdId())
+                .build();
+
+        return userInfo;
+
     }
 
     public User createUser(String userEmail){
@@ -55,8 +72,6 @@ public class UserService {
         user.setUserEmail(userEmail);
         return userRepository.save(user);
     }
-
-
 
     public byte[] getUserProfileImage(String userEmail) {
         String key = "profileImg:" + userEmail;
@@ -75,7 +90,6 @@ public class UserService {
     }
 
     public List<ResponseInterestDto> getInterestDtoList(String userEmail, Long userId) {
-        Optional<User> user = userRepository.findByUserEmail(userEmail);
 
         List<Interest> interests = interestRepository.findByIdUserIdAndIsUsed(userId, 1);
         List<InterestCommonCode> interestCodes = interestCommonCodeRepository.findAll();
@@ -102,9 +116,7 @@ public class UserService {
         int INTEREST_OFF = 0;
         int INTEREST_ON = 1;
 
-
         Optional<User> user = userRepository.findByUserEmail(userEmail);
-
         Long interestCode = requestInterestDto.getInterestCode();
         Optional<Interest> interestOptional = interestRepository.findByIdUserIdAndIdInterestCode(userId, interestCode);
 
@@ -120,7 +132,6 @@ public class UserService {
         }
 
         // dto에 대하여, 이미 1이라면 0으로 만들고, 이미 0이라면 1로 만든다
-
         interestOptional.ifPresent(selectInterest -> {
             if ( selectInterest.getIsUsed() == INTEREST_OFF){
                 selectInterest.setIsUsed(INTEREST_ON);
@@ -131,11 +142,8 @@ public class UserService {
             }
         });
 
-
-
         return interestOptional.get().getIsUsed();
     }
-
 
 
     public int deleteUser(Long userId) {
@@ -149,6 +157,32 @@ public class UserService {
         return Result.SUCCESS;
     }
 
+    public int createConnectUsersFromHouseholdId(Long userId, Long householdId) {
+
+        // 1. householdId를 가지는 모든 회원들을 데려온다
+        List<User> userInSameHouseholdList = userRepository.findByHouseholdId(householdId);
+
+        if ( userInSameHouseholdList.size() == 0){
+            return Result.NOT_FOUNT_USER;
+        }
+
+        // 2. 해당 회원들 각각의 Id와 userID를 이용하여 친인척 정보를 생성한다
+        for(User targetUser : userInSameHouseholdList){
+            ConnectUserKey connectUserKey = ConnectUserKey.builder()
+                    .userId(userId)
+                    .connectUserId(targetUser.getUserId())
+                    .build();
+
+            ConnectUser connectUser = ConnectUser.builder()
+                    .id(connectUserKey)
+                    .connectUserAlias(targetUser.getUserName())  // 해당 친인척의 실제이름을 기본값으로 함
+                    .build();
+
+            connectUserRepository.save(connectUser);
+        }
+
+        return Result.SUCCESS;
+    }
 
     public List<ConnectUser> getConnectUsers(Long userId) {
 
@@ -157,36 +191,18 @@ public class UserService {
         return connectUsers;
     }
 
-    public ResponseUserInfoDto getUserInfo(Long userId) {
-
-        Optional<User> userOptional = userRepository.findByUserId(userId);
-
-        User user = userOptional.get();
-        ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
-                .userEmail(user.getUserEmail())
-                .userName(user.getUserName())
-                .createAt(user.getCreateAt())
-                .modifiedAt(user.getModifiedAt())
-                .householdId(user.getHouseholdId())
-                .build();
-
-        return userInfo;
-
-    }
-
-
     public int updateConnectUserAlias(Long userId, RequestConnectUserInfoDto dto) {
 
         Long connectUserId = dto.getConnectUserId();
         String connectUserAlias = dto.getConnectUserAlias(); //변경시키려는 이름
 
-        // 1. 해당 userId와 connectUserAlias를 가진 사람이 없는지 확인한다
-
-        Optional<ConnectUser> connectUserOptional = connectUserRepository.findByIdUserIdAndConnectUserAlias(userId, connectUserAlias);
-
-        if (connectUserOptional.isPresent()){
-            return Result.FAIL;
-        }
+        // 1. 해당 userId와 connectUserAlias를 가진 사람이 없는지 확인한다 (별명의 중복방지를 위함..이었는데 그냥 중복허용시키자)
+        // 왜냐면.. 친인척 추가시 디폴트값이 저장되면 어쩔 수 없이 중복될듯.
+//        Optional<ConnectUser> connectUserOptional = connectUserRepository.findByIdUserIdAndConnectUserAlias(userId, connectUserAlias);
+//
+//        if (connectUserOptional.isPresent()){
+//            return Result.FAIL;
+//        }
 
         Optional<ConnectUser> updateConnectUserTargetOptional = connectUserRepository.findByIdUserIdAndIdConnectUserId(userId, connectUserId);
 
@@ -197,4 +213,5 @@ public class UserService {
 
         return Result.SUCCESS;
     }
+
 }
