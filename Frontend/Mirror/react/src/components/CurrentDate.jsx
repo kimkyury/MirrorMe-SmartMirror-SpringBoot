@@ -31,7 +31,6 @@ function CurrentDate(props) {
 
   // 시계를 hh:mm 형태로 변환
   const hour24 = hour > 12 ? hour - 12 : hour;
-  const paddedHour = hour24.toString().padStart(1, '0');
   const minute = currentTime.getMinutes();
   const paddedMinute = minute.toString().padStart(2, '0');
 
@@ -41,7 +40,7 @@ function CurrentDate(props) {
     <div className="current-date-container">
       <h1 className="clock">
         <div className="ampm">{ ampm }</div>
-        <div className="hour">{ paddedHour }</div>
+        <div className="hour">{ hour24 }</div>
         <div className="colon">:</div>
         <div className="minute">{ paddedMinute }</div>
       </h1>
