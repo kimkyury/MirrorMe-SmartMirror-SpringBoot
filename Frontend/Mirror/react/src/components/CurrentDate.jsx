@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../css/CurrentDate.css';
 
 function CurrentDate(props) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,18 +31,21 @@ function CurrentDate(props) {
 
   // 시계를 hh:mm 형태로 변환
   const hour24 = hour > 12 ? hour - 12 : hour;
-  const paddedHour = hour24.toString().padStart(2, '0');
+  const paddedHour = hour24.toString().padStart(1, '0');
   const minute = currentTime.getMinutes();
   const paddedMinute = minute.toString().padStart(2, '0');
 
   const ampm = hour >= 12 ? 'PM' : 'AM';
 
   return (
-    <div>
-      <h1>
-        {blink ? `${ampm} ${paddedHour}:${paddedMinute}` : `${ampm} ${paddedHour} ${paddedMinute}`}
+    <div className="current-date-container">
+      <h1 className="clock">
+        <div className="ampm">{ ampm }</div>
+        <div className="hour">{ paddedHour }</div>
+        <div className="colon">:</div>
+        <div className="minute">{ paddedMinute }</div>
       </h1>
-      <h4>
+      <h4 className="date">
         {year}년 {month}월 {date}일 {dayOfWeek}요일
       </h4>
     </div>

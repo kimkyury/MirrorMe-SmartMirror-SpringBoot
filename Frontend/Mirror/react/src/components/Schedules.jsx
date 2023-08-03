@@ -9,7 +9,7 @@ function Schedules(props) {
   useEffect(() => {
     const accessToken = 'ya29.a0AbVbY6PutUnNo7eSvZjrNU924KYbJFooVUHae6MPNSRCSQ49fn62i2ONd6keZFkJUQ5UDfomwVhXpiGYgI-EWIm-BFZ4F3V8H4VygblYaqV4S9pf_JW5RGOz1E5JSvy_zOICv6tBaue4YfQ6TQw25Ny815M_aCgYKAcYSARMSFQFWKvPlwtmk-lUDI6IlKngsM1Y1rA0163';
 
-    axios.get("schedule/today", {
+    axios.get("/schedule/today", {
       params: { accessToken : accessToken },
     }).then((res) => {
       console.log(res.data.response)
@@ -19,7 +19,7 @@ function Schedules(props) {
       console.log(error);
     });
 
-    axios.get("schedule/today/count", {
+    axios.get("/schedule/today/count", {
       params: { accessToken : accessToken },
     }).then((res) => {
       console.log(res.data.response)
