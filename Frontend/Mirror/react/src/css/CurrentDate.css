@@ -24,6 +24,11 @@
     font-size: 4rem;
   }
   
+  .ampm {
+    margin-right: 25px;
+    font-size: 3rem;
+  }
+
   .colon {
     animation: blink 1s infinite;
   }
