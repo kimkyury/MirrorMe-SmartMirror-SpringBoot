@@ -4,9 +4,11 @@ package com.mirror.backend.api.service;
 import com.mirror.backend.api.dto.RequestCreateUserDto;
 import com.mirror.backend.api.dto.RequestHouseholdDto;
 import com.mirror.backend.api.dto.ResponseHouseholdDto;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Household;
 import com.mirror.backend.api.entity.Interest;
 import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.Constants.Result;
@@ -30,18 +32,20 @@ public class SignUpService {
     private final RedisTemplate<String, String> redisTemplate;
     private final HouseholdRepository householdRepository;
     private final MirrorRepository mirrorRepository;
+    private final ConnectUserRepository connectUserRepository;
 
 
     @Autowired
     public SignUpService(UserRepository userRepository,
                          InterestRepository interestRepository,
-                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository) {
+                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
         this.redisTemplate = redisTemplate;
         this.householdRepository = householdRepository;
         this.mirrorRepository = mirrorRepository;
+        this.connectUserRepository = connectUserRepository;
     }
 
     public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
@@ -122,7 +126,6 @@ public class SignUpService {
         Optional<User> createUser = userRepository.findByUserEmail(createUserEmail);
         Optional<Household> targetHousehold = householdRepository.findByCreateUserId(createUser.get().getUserId());
 
-
         ResponseHouseholdDto response = ResponseHouseholdDto.builder()
                 .createUserName(createUser.get().getUserName())
                 .createUserEmail(createUser.get().getUserEmail())
@@ -133,8 +136,51 @@ public class SignUpService {
         return response;
     }
 
-    public int registerHousehold(Long userId, String householdId) {
+    public int registerHousehold(Long userId, Long householdId) {
 
+        Optional<User> user = userRepository.findByUserId(userId);
+
+        // 사용자에게 household 지정
+        user.ifPresent(selectUser -> {
+            selectUser.setHouseholdId(householdId);
+            userRepository.save(selectUser);
+        });
+
+        // 해당 집에 이미 사람이 존재하는지 확인
+        List<User> usersInSameHousehold = userRepository.findByHouseholdId(householdId);
+
+        // 존재하는 사람들은 ConnectUser로 추가
+        // 마찬가지로, 이미 존재했던 사람들도 해당 사람들이 뜨도록 쌍방으로 추
+        if(usersInSameHousehold.size() != 0){
+
+            for(User targetUser : usersInSameHousehold){
+
+                // 가입자 기
+                ConnectUserKey connectUserKey1 = ConnectUserKey.builder()
+                        .userId(userId)
+                        .connectUserId(targetUser.getUserId())
+                        .build();
+
+                ConnectUser connectUser = ConnectUser.builder()
+                        .id(connectUserKey1)
+                        .connectUserAlias(targetUser.getUserName())  // 해당 친인척의 실제이름을 기본값으로 함
+                        .build();
+
+                // 기존 사용자 기준
+                ConnectUserKey connectUserKey2 = ConnectUserKey.builder()
+                        .userId(targetUser.getUserId())
+                        .connectUserId(userId)
+                        .build();
+
+                ConnectUser connectUser2 = ConnectUser.builder()
+                        .id(connectUserKey2)
+                        .connectUserAlias(user.get().getUserName())  // 가입자의 실제이름을 기본값으로
+                        .build();
+
+                connectUserRepository.save(connectUser);
+                connectUserRepository.save(connectUser2);
+            }
+        }
 
         return Result.SUCCESS;
     }
