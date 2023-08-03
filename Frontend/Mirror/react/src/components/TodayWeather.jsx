@@ -2,62 +2,48 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Weather(props) {
-  const [weatherInfo, setWeatherInfo] = useState([]);
-  const [temperatureInfo, setTemperatureInfo] = useState([]);
+  const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
+
   useEffect(() => {
-    let numOfRows = 300;
+    let numOfRows = 500;
     let pageNo = 1;
     const currentTime = new Date();
     const year = currentTime.getFullYear();
     const month = String(currentTime.getMonth() + 1).padStart(2, '0');
     const day = String(currentTime.getDate()).padStart(2, '0');
     const baseDate = `${year}${month}${day}`;
-    const baseTime = "0200"; // 기준 시간 고정
+    const baseTime = "0200";
 
-    // 최고, 최저 기온 정보 요청
+    // 오늘 날짜로 필터링 후 최저 기온, 최고기온, 강수확률, 강수형태, 하늘상태 저장
     axios.get("weather/short", {
       params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res) => {
-      console.log(res.data.response);
-      setTemperatureInfo(res.data.response); // 최고 및 최저 기온 정보 업데이트
+      const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
+
+      const tempertureMin = todayWeather.find((data) => data.category === 'TMN');
+      const tempertureMax = todayWeather.find((data) => data.category === 'TMX');
+      const popInfo = todayWeather.find((data) => data.category === 'POP');
+      const ptyInfo = todayWeather.find((data) => data.category === 'PTY');
+      const skyInfo = todayWeather.find((data) => data.category === 'SKY');
+      
+      setWeatherInfo({
+        tmn : tempertureMin.tmn,
+        tmx : tempertureMax.tmx,
+        pop : popInfo.pop,
+        pty : ptyInfo.pty,
+        sky : skyInfo.sky
+      });
     }).catch((error) => {
       console.log(error);
     });
 
     const currentHour = currentTime.getHours();
-    const isBeforeDawn = currentHour >= 2 && currentHour < 5;
-
-    // 새벽 두시 ~ 새벽 다섯시 사이가 아닐 때 날씨 정보 요청
-    if (!isBeforeDawn) {
-      const getClosestTime = (currentTime) => { // 베이스시간 구하기
-        const baseTimes = [5, 8, 11, 14, 17, 20, 23]; // 시간 목록 (새벽 두시는 이미 요청했으므로 제외)
-        let closestTime = baseTimes[0];
-        for (const time of baseTimes) {
-          if (Math.abs(currentTime - time) < Math.abs(currentTime - closestTime)) {
-            closestTime = time;
-          }
-        }
-        return closestTime;
-      };
-
-      const closestTime = getClosestTime(currentHour);
-      const weatherBaseTime = `${('0' + closestTime).slice(-2)}00`;
-
-      // 날씨 정보 요청
-      axios.get("weather/short", {
-        params: { baseDate: baseDate, baseTime: weatherBaseTime, numOfRows: numOfRows, pageNo: pageNo },
-      }).then((res) => {
-        console.log(res.data.response);
-        setWeatherInfo(res.data.response); // 날씨 정보 업데이트
-      }).catch((error) => {
-        console.log(error);
-      });
-    }
-
     const ultrabasetime = `${('0' + currentHour).slice(-2)}00`;
 
+
+    // 초단기 예보 업데이트 시간 고려해서 수정 필요
     axios.get("weather/ultra", {
       params : { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res => {
@@ -68,32 +54,32 @@ function Weather(props) {
     })
   }, []);
 
-  let today = '';
+  let todaySky = '';
   // 비, 눈 등이 오지 않을 때 하늘 정보 활용
-  if (temperatureInfo.pty === 0) {
-    if (temperatureInfo.sky === 1) {
-      today = '맑음';
-    } else if (temperatureInfo.sky === 3) {
-      today = '구름많음';
-    } else if (temperatureInfo.sky === 4) {
-      today = '흐림';
+  if (weatherInfo.pty === 0) {
+    if (weatherInfo.sky === 1) {
+      todaySky = '맑음';
+    } else if (weatherInfo.sky === 3) {
+      todaySky = '구름많음';
+    } else if (weatherInfo.sky === 4) {
+      todaySky = '흐림';
     }
   } else { // 아니면 비, 눈 정보 활용
-    if (temperatureInfo.pty === 1) {
-      today = '비';
-    } else if (temperatureInfo.pty === 2) {
-      today = '비와 눈';
-    } else if (temperatureInfo.pty === 3) {
-      today = '눈';
-    } else {
-      today = '소나기';
+    if (weatherInfo.pty === 1) {
+      todaySky = '비';
+    } else if (weatherInfo.pty === 2) {
+      todaySky = '비와 눈';
+    } else if (weatherInfo.pty === 3) {
+      todaySky = '눈';
+    } else if (weatherInfo.pty === 4) {
+      todaySky = '소나기';
     }
   }
 
-  // 값이 있는 경우 화면에 표시
-  if (temperatureInfo.length === 0 || weatherInfo.length === 0) {
-    return <div>Loading...</div>
-  }
+  // 값이 구해지기 전에는 로딩중
+  // if (weatherInfo.length === 0 || ultraInfo.length === 0) {
+  //   return <div>Loading...</div>
+  // }
 
   return (
     <>
@@ -104,16 +90,20 @@ function Weather(props) {
             <p>날씨 아이콘</p>
           </div>
           <div className="weather-condition">
-            <p>{today}</p>
+            <p>{todaySky}</p>
           </div>
         </div>
         <div>
           <div className="weather-right">
-            {/* 현재기온 */}
+            
+            {/* 실시간 기온 */}
             <h3>{ultraInfo.t1H}℃</h3>
+
             {/* 오늘 최고, 최저기온 */}
-            <h3 className="temperture">{temperatureInfo.tmx}℃ / {temperatureInfo.tmn}℃ </h3>
-            <h5 className="chance-of-rain">습도 : {weatherInfo.reh}%</h5>
+            <h3 className="temperture">{weatherInfo.tmx}℃ / {weatherInfo.tmn}℃ </h3>
+
+            {/* 실시간 습도 */}
+            <h5 className="chance-of-rain">습도 : {ultraInfo.reh}%</h5>
             <h5 className="chance-of-rain">강수 확률 : {weatherInfo.pop}%</h5>
           </div>
         </div>
