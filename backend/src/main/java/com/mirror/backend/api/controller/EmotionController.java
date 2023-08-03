@@ -5,10 +5,9 @@ import com.mirror.backend.api.entity.Emotion;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
@@ -21,7 +20,12 @@ public class EmotionController {
 
     @PostMapping
     public ApiUtils.ApiResult<Long> postEmotion(@RequestBody EmotionDto.EmotionReq emotionReq) {
-
         return success(emotionService.saveEmotion(emotionReq));
+    }
+
+    @GetMapping
+    public ApiUtils.ApiResult<List<Emotion>> getMyEmotion() {
+        // 유저 가져오기
+        return success(emotionService.getMyEmotion(1L));
     }
 }
