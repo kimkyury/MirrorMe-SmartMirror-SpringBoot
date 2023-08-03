@@ -24,6 +24,7 @@ function SocketTest() {
     };
     // 소켓 서버로부터 메시지가 오면 호출되는 함수.
     socket.onmessage = (event) => {
+      console.log(event)
       setMessageTextArea(prev => prev + "Receive From Server => " + event.data + "\n");
     };
 
