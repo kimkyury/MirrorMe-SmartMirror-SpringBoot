@@ -32,7 +32,6 @@ import java.util.Optional;
 @Component
 public class TokenAuthenticationFilter implements Filter {
 
-
     private RedisUserTokenRepository redisUserTokenRepository;
     private UserRepository userRepository;
     private GoogleOAuth googleOAuth;
