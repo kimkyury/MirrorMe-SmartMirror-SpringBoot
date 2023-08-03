@@ -5,11 +5,13 @@ import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
 import com.mirror.backend.api.service.IotService;
 import com.mirror.backend.common.utils.ApiResponse;
-import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -43,7 +45,6 @@ public class IotController {
 
         List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
 
-
         // DB에 존재한다면
         // 1. Mirror 테이블에서 해당 Mirrorid를 찾아온다
         // 2. {mirrorId}의 {mirror_group_id}를 찾아온다
@@ -51,8 +52,6 @@ public class IotController {
         // 4. userList 각각에 대하여 userEmail을 통해 Redis내의 Profile을 가져온다
         // 5. encoding된 profile이미지를 Response에 담는다
         // 6. 해당값을 Json파일로 묶어서 내보낸다
-
-
 
         return success("usersInSameHousehold", users);
 
