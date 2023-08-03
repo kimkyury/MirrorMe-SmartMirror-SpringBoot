@@ -5,7 +5,6 @@ import com.mirror.backend.api.dto.RequestInterestDto;
 import com.mirror.backend.api.dto.ResponseInterestDto;
 import com.mirror.backend.api.dto.ResponseUserInfoDto;
 import com.mirror.backend.api.entity.ConnectUser;
-import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import com.mirror.backend.common.utils.Constants.Result;
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
+    @Operation(summary = "본인 정보를 조회합니다(id제외).", description = "본인실명, 이메일, 생성/수정 시점, 가정ID를 조회합니다." )
     public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("user_id");
@@ -46,9 +45,8 @@ public class UserController {
         return success(userInfo);
     }
 
-
     @GetMapping("/profile/img")
-    @Operation(summary = "Profile 이미지 조회", description = "프로필이미지의 encoding값을 조회합니다. ")
+    @Operation(summary = "Profile Image를 조회합니다", description = "프로필이미지의 encoding값을 조회합니다. ")
     public ResponseEntity<byte[]> getProfileImage(HttpServletRequest request) {
         String userEmail = (String)request.getAttribute("user_email");
         byte[] result = userService.getUserProfileImage(userEmail);
@@ -62,22 +60,7 @@ public class UserController {
                 .body(result);
     }
 
-
-    @DeleteMapping
-    @Operation(summary = "유저가 탈퇴합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
-    public ApiUtils.ApiResult<String> deleteUser(HttpServletRequest request){
-
-        Long userId = (Long)request.getAttribute("user_id");
-        int result = userService.deleteUser(userId);
-
-        if (result == Result.FAIL)
-            fail("유저 탈퇴 실패했습니다.");
-
-        return success("유저가 탈퇴되었습니다.");
-    }
-
-
-    @GetMapping("/interests")
+    @GetMapping("/profile/interests")
     @Operation(summary = "관심사 정보를 조회합니다.", description = "어디에 관심있니" )
     public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(HttpServletRequest request){
 
@@ -116,6 +99,36 @@ public class UserController {
         return fail("수행불가");
     }
 
+    @DeleteMapping
+    @Operation(summary = "유저가 탈퇴합니다.", description = "탈퇴합니다. 관련된 연락처 정보나 관심사 정보도 함께 삭제되며, 단 Token정보는 삭제되지 않습니다." )
+    public ApiUtils.ApiResult<String> deleteUser(HttpServletRequest request){
+
+        Long userId = (Long)request.getAttribute("user_id");
+        int result = userService.deleteUser(userId);
+
+        if (result == Result.FAIL)
+            fail("유저 탈퇴 실패했습니다.");
+
+        return success("유저가 탈퇴되었습니다.");
+    }
+
+    @PostMapping("/friends")
+    @Operation(summary = "특정 가정의 회원들을 추가합니다.",
+            description = "mirror QR로 얻은 mirror_group_id를 통해 해당 가정 인원을 친구로 추가합니다." )
+    public ApiUtils.ApiResult<String> getConnectUsers(HttpServletRequest request,
+                                                                 @RequestParam(name = "householdId") Long householdId) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        int result = userService.createConnectUsersFromHouseholdId(userId, householdId);
+
+        if ( result == Result.NOT_FOUNT_USER){
+            return success("해당 가정에 등록된 사람이 없습니다." );
+        }
+
+        return success("추가 성공");
+    }
+
+
     @GetMapping("/friends")
     @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )
     public ApiUtils.ApiResult<List<ConnectUser>> getConnectUsers(HttpServletRequest request) {
@@ -142,20 +155,6 @@ public class UserController {
         }
         return success("해당 지인의 별명이 수정되었습니다.");
     }
-
-
-
-
-    @GetMapping
-    @Operation(summary = "서버 정보 조회 테스트", description = "서버내의 MariaDB 접근을 테스트합니다" )
-    public ApiUtils.ApiResult<User> getUser(@RequestParam("user_id") Long userId) {
-        User exUser = userService.getUser(userId);
-        System.out.println(exUser.toString());
-        return success(exUser);
-    }
-
-
-
 
 
 }
