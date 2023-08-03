@@ -29,6 +29,13 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 @Tag(name = "user", description = "유저 프로필 관련 API")
 public class UserController {
 
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/profile")
     @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
     public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
@@ -39,9 +46,6 @@ public class UserController {
         return success(userInfo);
     }
 
-
-    @Autowired
-    private UserService userService;
 
     @GetMapping("/profile/img")
     @Operation(summary = "Profile 이미지 조회", description = "프로필이미지의 encoding값을 조회합니다. ")
