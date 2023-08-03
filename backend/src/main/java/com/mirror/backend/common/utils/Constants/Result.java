@@ -7,6 +7,7 @@ public class Result {
 
     //Detail Fails
     public static final int NOT_FOUNT_USER = 0;
+    public static final int REDIS_INSERT_ERROR = 0;
 
 
 }
