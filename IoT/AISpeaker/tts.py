@@ -39,9 +39,11 @@ def text_to_speech(tts_text):
 	with open("output.mp3", "wb") as out:
 	    # Write the response to the output file.
 	    out.write(response.audio_content)
-	    print('Audio content written to file "output.mp3"')
+	    # print('Audio content written to file "output.mp3"')
+	print(tts_text)
+	playsound("output.mp3")
 	
 	
 if __name__ == '__main__':    
 	text_to_speech("안녕하세요, 무엇을 도와 드릴까요")
-	playsound("output.mp3")
+	
