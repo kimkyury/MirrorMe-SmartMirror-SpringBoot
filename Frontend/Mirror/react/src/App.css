@@ -94,3 +94,19 @@ h4 {
     transform: rotate(360deg);
   }
 }
+
+.transition {
+  transition: transform 0.5s ease-in-out;
+}
+.slide-enter {
+  transform: translateX(100%);
+}
+.slide-enter-active {
+  transform: translateX(0);
+}
+.slide-exit {
+  transform: translateX(0);
+}
+.slide-exit-active {
+  transform: translateX(-100%);
+}
