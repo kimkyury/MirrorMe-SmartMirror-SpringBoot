@@ -11,6 +11,7 @@ function Last(props) {
         <NavBar></NavBar>
       </div>
       <div>
+        {/* 배치 형태에 따라서 Emotions 내의 각 div들을 component화 해야할 수도 있음  */}
         <Emotions></Emotions>
       </div>
     </div>
