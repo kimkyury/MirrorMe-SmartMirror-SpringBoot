@@ -9,6 +9,7 @@ import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.MirrorRepository;
 import com.mirror.backend.api.repository.UserRepository;
+import com.mirror.backend.common.utils.IotEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class IotService {
     private ConnectUserRepository connectUserRepository;
     private RedisTemplate<String, String> redisTemplate;
 
+
+
     private Long mirror_group_id;
 
     @Autowired
@@ -39,8 +42,9 @@ public class IotService {
     }
 
 
-    public boolean findMirror(String mirrorId){
+    public boolean findMirror(String encryptedCode){
 
+        String mirrorId = IotEncryption.decryptionText(encryptedCode);
         Optional<Mirror> mirror = mirrorRepository.findByMirrorId(mirrorId);
         mirror_group_id = mirror.get().getMirrorGroupId();
 
@@ -49,9 +53,11 @@ public class IotService {
         return true;
     }
 
-    public List<IotResponseUserDto> fineUsersInfo(String mirrorId) {
+    public List<IotResponseUserDto> fineUsersInfo(String encryptedCode) {
 
         // 1. Mirror 테이블에서 해당 Mirrorid를 찾아온다
+        String mirrorId = IotEncryption.decryptionText(encryptedCode);
+
         // 2. {mirrorId}의 {mirror_group_id}를 찾아온다
 
 
@@ -120,5 +126,10 @@ public class IotService {
 
         return userRepository.findByUserId(userId).get().getUserEmail();
     }
+
+
+
+
+
 
 }
