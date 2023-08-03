@@ -14,4 +14,7 @@ public class ShortTermForecast {
     private double TMP; // 1시간 기온
     private double TMN; // 일 최저 기온
     private double TMX; // 일 최고 기온
+    private String category;
+    private String fcstDate; // 발표 날짜
+    private String fcstTime; // 발표 시간
 }

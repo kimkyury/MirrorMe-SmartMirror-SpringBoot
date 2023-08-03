@@ -57,37 +57,61 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public List<ShortTermForecast> getShortTermForecast(JSONArray weatherInfo, String date) {
-        List<ShortTermForecast> shortTermForecast = new ArrayList<>();
+        List<ShortTermForecast> list = new ArrayList<>();
         for(int i=0; i<weatherInfo.size(); i++) {
             JSONObject object = (JSONObject) weatherInfo.get(i);
             String category = (String) object.get("category");
             String fcstValue = (String) object.get("fcstValue");
+            String fcstDate = (String) object.get("fcstDate");
+            String fcstTime = (String) object.get("fcstTime");
+            ShortTermForecast shortTermForecast = new ShortTermForecast();
+            boolean chk = false;
             switch (category) {
                 case "POP":
-                    shortTermForecast.get(i).setPOP(Integer.parseInt(fcstValue));
+                    shortTermForecast.setPOP(Integer.parseInt(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "PTY":
-                    shortTermForecast.get(i).setPTY(Integer.parseInt(fcstValue));
+                    shortTermForecast.setPTY(Integer.parseInt(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "REH":
-                    shortTermForecast.get(i).setREH(Integer.parseInt(fcstValue));
+                    shortTermForecast.setREH(Integer.parseInt(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "SKY":
-                    shortTermForecast.get(i).setSKY(Integer.parseInt(fcstValue));
+                    shortTermForecast.setSKY(Integer.parseInt(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "TMP":
-                    shortTermForecast.get(i).setTMP(Integer.parseInt(fcstValue));
+                    shortTermForecast.setTMP(Integer.parseInt(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "TMN":
-                    shortTermForecast.get(i).setTMN(Double.parseDouble(fcstValue));
+                    shortTermForecast.setTMN(Double.parseDouble(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
                 case "TMX":
-                    shortTermForecast.get(i).setTMX(Double.parseDouble(fcstValue));
+                    shortTermForecast.setTMX(Double.parseDouble(fcstValue));
+                    shortTermForecast.setFcstDate(fcstDate);
+                    shortTermForecast.setFcstTime(fcstTime);
                     break;
+                default:
+                    chk = true;
+
+                if(chk) continue;
+                shortTermForecast.setCategory(category);
+                shortTermForecast.setDate(date);
+                list.add(shortTermForecast);
             }
-            shortTermForecast.get(i).setDate(date);
         }
-        return shortTermForecast;
+        return list;
     }
 
     @Override
