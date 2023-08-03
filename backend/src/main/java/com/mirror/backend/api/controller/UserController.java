@@ -25,9 +25,20 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
 @RestController
-@RequestMapping("/users")
-@Tag(name = "users", description = "유저 정보 API")
+@RequestMapping("/user")
+@Tag(name = "user", description = "유저 프로필 관련 API")
 public class UserController {
+
+    @GetMapping("/profile")
+    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
+    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
+
+        return success(userInfo);
+    }
+
 
     @Autowired
     private UserService userService;
@@ -128,15 +139,7 @@ public class UserController {
         return success("해당 지인의 별명이 수정되었습니다.");
     }
 
-    @GetMapping("/profile")
-    @Operation(summary = "자신의 정보를 조회합니다(id제외).", description = "조회합니다." )
-    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
 
-        Long userId = (Long) request.getAttribute("user_id");
-        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
-
-        return success(userInfo);
-    }
 
 
     @GetMapping

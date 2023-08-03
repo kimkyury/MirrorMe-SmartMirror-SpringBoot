@@ -16,7 +16,7 @@ public class FilterConfig {
         registrationBean.addUrlPatterns("/schedule/*"); // 필터를 적용할 URL 패턴
         registrationBean.addUrlPatterns("/tasks/*");
 //        registrationBean.addUrlPatterns("/search/*");
-//        registrationBean.addUrlPatterns("/users/*");
+        registrationBean.addUrlPatterns("/user/*");
         registrationBean.addUrlPatterns("/signup/*");
 
 

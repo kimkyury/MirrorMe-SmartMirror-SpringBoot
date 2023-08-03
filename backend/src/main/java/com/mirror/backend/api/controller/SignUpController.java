@@ -18,9 +18,8 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
 @RequestMapping("/signup")
-@Tag(name = "MLM 최초 Google 로그인(회원가입)", description = "회원가입 진행시 필요한 API")
+@Tag(name = "signup", description = "최초 Google 로그인(회원가입)")
 public class SignUpController {
-
     private SignUpService signUpService;
 
     @Autowired
@@ -59,5 +58,10 @@ public class SignUpController {
         return success("User Profile Img 업데이트 성공");
     }
 
+    // household 등록
+
+    // household 조회
+
+    // Mirror 등록
 
 }

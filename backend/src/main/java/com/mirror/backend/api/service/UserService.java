@@ -44,9 +44,6 @@ public class UserService {
     }
 
 
-    int SUCCESS = 1;
-    int FAIL = 0;
-
     public User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() ->
