@@ -6,6 +6,7 @@ import com.mirror.backend.api.dto.ShortTermForecast;
 import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.api.service.WeatherService;
 import com.mirror.backend.common.utils.ApiUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ public class WeatherController {
     private WeatherService weatherService;
 
     @GetMapping("/short")
+    @Operation(summary = "단기 예보 조회", description = "새벽 2시로 해야 최저, 최고 기온 뜬다. 이 후 시간은 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회) 업데이트된다.")
     public ApiUtils.ApiResult<ShortTermForecast> shortTermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseTime) throws Exception {
         // user의 nx, ny 받아오는 로직 추가
         int nx = 55, ny = 127;
@@ -57,6 +59,7 @@ public class WeatherController {
     }
 
     @GetMapping("/ultra")
+    @Operation(summary = "초단기 실황 조회", description = "매시간 30분마다 업데이트 된다.")
     public ApiUtils.ApiResult<UltraShortTermForecast> ultraShortTermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseTime) throws Exception {
         // user의 nx, ny 받아오는 로직 추가
         int nx = 55, ny = 127;
@@ -80,6 +83,7 @@ public class WeatherController {
     }
 
     @GetMapping("/mid")
+    @Operation(summary = "중기 최저, 최고 기온 조회", description = "매일 오전 6시에 정보 뜬다. 6시에 조회하는 요청 들어가기")
     public ApiUtils.ApiResult<MidtermForecast> midtermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows) throws Exception{
         // user의 예보구역코드 받아오는 로직 추가
         String regId = "11H20201";
@@ -101,6 +105,7 @@ public class WeatherController {
     }
 
     @GetMapping("/mid/rain")
+    @Operation(summary = "중기 비 예보", description = "매일 18시에 정보 뜬다. 18시에 조회하는 요청 들어가기")
     public ApiUtils.ApiResult<MidtermWeatherForecast> midtermRainForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows) throws Exception{
         // user의 예보구역코드 받아오는 로직 추가
         String regId = "11H20201";
