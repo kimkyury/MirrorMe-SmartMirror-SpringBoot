@@ -89,8 +89,12 @@ public class SignUpController {
     @PostMapping("/household")
     @Operation(summary = "사용자의 가정 등록", description = "사용자가 새로운 가정을 등록합니다. ")
     public ApiUtils.ApiResult<String> registerHousehold(HttpServletRequest request,
-                                                        @RequestParam(name="createUserEmail", required = true) String createUserEmail) {
-        String userEmail = (String) request.getAttribute("user_email");
+                                                        @RequestParam(name="householdId", required = true) String householdId) {
+
+        Long userId = (Long) request.getAttribute("user_id");
+
+        int result = signUpService.registerHousehold(userId,householdId );
+
 
         return success("User Profile Img 업데이트 성공");
     }

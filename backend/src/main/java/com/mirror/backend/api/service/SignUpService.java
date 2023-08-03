@@ -132,4 +132,10 @@ public class SignUpService {
 
         return response;
     }
+
+    public int registerHousehold(Long userId, String householdId) {
+
+
+        return Result.SUCCESS;
+    }
 }
