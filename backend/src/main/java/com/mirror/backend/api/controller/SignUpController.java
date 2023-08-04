@@ -81,7 +81,11 @@ public class SignUpController {
 
         String userEmail = (String) request.getAttribute("user_email");
 
-        ResponseHouseholdDto result = signUpService.searchHousehold(createUserEmail );
+        ResponseHouseholdDto result = signUpService.searchHousehold(createUserEmail);
+
+        if ( result == null){
+            success("찾는 사용자가 없거나, 해당사용자가 만든 가정은 존재하지 않습니다.");
+        }
 
         return success(result);
     }
@@ -92,9 +96,7 @@ public class SignUpController {
                                                         @RequestParam(name="householdId", required = true) Long householdId) {
 
         Long userId = (Long) request.getAttribute("user_id");
-
         int result = signUpService.registerHousehold(userId,householdId );
-
 
         return success("사용자 가정 등록 및, 기존 사용자간 연락처 업데이트 완료 ");
     }

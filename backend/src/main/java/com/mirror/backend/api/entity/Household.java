@@ -29,10 +29,10 @@ public class Household {
     @JsonProperty("longitude")
     Double longitude;
     @JsonProperty("region")
-    Double region;
+    String region;
 
     @Builder
-    public Household(Long householdId, Long createUserId, String householdName, Double latitude, Double longitude, Double region) {
+    public Household(Long householdId, Long createUserId, String householdName, Double latitude, Double longitude, String region) {
         this.householdId = householdId;
         this.createUserId = createUserId;
         this.householdName = householdName;

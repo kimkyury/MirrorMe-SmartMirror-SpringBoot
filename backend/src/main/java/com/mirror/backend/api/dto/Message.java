@@ -1,6 +1,7 @@
 package com.mirror.backend.api.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,19 +11,19 @@ public class Message {
     private String text;
 
     @Getter
-    @AllArgsConstructor
     public static class ResponseMessage {
         private String videoFile;
-        private String voiceFile;
-        private int userId;
-        private int sendUserId;
+        private String userEmail;
+        private String sendUserEmail;
+        private String date;
+
+        @Builder
+        public ResponseMessage(String videoFile, String userEmail, String sendUserEmail, String date) {
+            this.videoFile = videoFile;
+            this.userEmail = userEmail;
+            this.sendUserEmail = sendUserEmail;
+            this.date = date;
+        }
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class RequestMessage {
-        private int userId;
-        private int sendUserId;
-    }
 }
