@@ -14,15 +14,15 @@ function Snackbars(props) {
   const [showWeekWeather, setShowWeekWeather] = useState(false);
 
   const handleWeatherButtonClick = () => {
-    setOpenWeatherSnackbar(true);
+    setOpenWeatherSnackbar(!openWeatherSnackbar);
   };
 
   const handleTasksButtonClick = () => {
-    setOpenTasksSnackbar(true);
+    setOpenTasksSnackbar(!openTasksSnackbar);
   };
 
   const handleSchedulesButtonClick = () => {
-    setOpenSchedulesSnackbar(true);
+    setOpenSchedulesSnackbar(!openSchedulesSnackbar);
   };
 
   const handleWeekWeatherClick = () => {
@@ -52,8 +52,8 @@ function Snackbars(props) {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           open={openWeatherSnackbar}
-          autoHideDuration={3000}
-          onClose={handleSnackbarClose}
+          autoHideDuration={10000}
+          onClose={handleWeatherButtonClick}
           message={
             <div>
               <TodayWeather />
@@ -79,8 +79,8 @@ function Snackbars(props) {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           open={openTasksSnackbar}
-          autoHideDuration={3000}
-          onClose={handleSnackbarClose}
+          autoHideDuration={10000}
+          onClose={handleTasksButtonClick}
           message={<Tasks />}
           style={{ marginTop: '80px' }}
         />
@@ -96,8 +96,8 @@ function Snackbars(props) {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           open={openSchedulesSnackbar}
-          autoHideDuration={3000}
-          onClose={handleSnackbarClose}
+          autoHideDuration={10000}
+          onClose={handleSchedulesButtonClick}
           message={<Schedules />}
           style={{ marginTop: '80px' }}
         />
