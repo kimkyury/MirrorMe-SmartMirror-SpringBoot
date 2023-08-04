@@ -3,34 +3,82 @@ import { Snackbar, Button } from '@mui/material';
 import { CSSTransition } from 'react-transition-group';
 
 import TodayWeather from './TodayWeather';
+import Tasks from './Tasks';
+import WeekWeather from './WeekWeather';
 
 function Snackbars(props) {
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openWeatherSnackbar, setOpenWeatherSnackbar] = useState(false);
+  const [openTasksSnackbar, setOpenTasksSnackbar] = useState(false);
+  const [showWeekWeather, setShowWeekWeather] = useState(false);
 
-  const handleButtonClick = () => {
-    setOpenSnackbar(true);
+  const handleWeatherButtonClick = () => {
+    setOpenWeatherSnackbar(true);
+  };
+
+  const handleTasksButtonClick = () => {
+    setOpenTasksSnackbar(true);
+  };
+
+  const handleWeekWeatherClick = () => {
+    setShowWeekWeather(true);
   };
 
   const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
+    setOpenWeatherSnackbar(false);
+    setOpenTasksSnackbar(false);
+    setShowWeekWeather(false);
   };
 
   return (
     <div>
-      <Button onClick={handleButtonClick} variant="contained" color="primary">날씨</Button>
+      <Button onClick={handleWeatherButtonClick} variant="contained" color="primary">
+        날씨
+      </Button>
+      <Button onClick={handleTasksButtonClick} variant="contained" color="primary">
+        할일
+      </Button>
+
+      {/* Weather Snackbar */}
       <CSSTransition
-        in={openSnackbar}
+        in={openWeatherSnackbar}
         timeout={300}
         classNames="slide"
         unmountOnExit
       >
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          open={openSnackbar}
+          open={openWeatherSnackbar}
           autoHideDuration={3000}
           onClose={handleSnackbarClose}
-          message={<TodayWeather />}
-          style={{ marginTop: '80px' }} // 추후 조정
+          message={
+            <div>
+              <TodayWeather />
+              {showWeekWeather && <WeekWeather />}
+              {showWeekWeather ? null : (
+                <Button onClick={handleWeekWeatherClick} variant="contained" color="primary">
+                  더 보기
+                </Button>
+              )}
+            </div>
+          }
+          style={{ marginTop: '80px' }}
+        />
+      </CSSTransition>
+
+      {/* Tasks Snackbar */}
+      <CSSTransition
+        in={openTasksSnackbar}
+        timeout={300}
+        classNames="slide"
+        unmountOnExit
+      >
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={openTasksSnackbar}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+          message={<Tasks />}
+          style={{ marginTop: '80px' }}
         />
       </CSSTransition>
     </div>
