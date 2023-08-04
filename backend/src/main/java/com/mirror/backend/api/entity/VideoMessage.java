@@ -1,28 +1,27 @@
 package com.mirror.backend.api.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@ToString
+@NoArgsConstructor
 @RedisHash(value = "video", timeToLive = 30)
 public class VideoMessage {
 
     @Id
-    private Integer userId;
-    private Integer sendUserId;
-    private String videoPath;
-    private String voicePath;
+    private String userEmail;
+    private String sendUserEmail;
+    private String fileName;
+    private String type;
+    private String date;
 
     @Builder
-    public VideoMessage(Integer userId, Integer sendUserId, String videoPath, String voicePath) {
-        this.userId = userId;
-        this.sendUserId = sendUserId;
-        this.videoPath = videoPath;
-        this.voicePath = voicePath;
+    public VideoMessage(String userEmail, String sendUserEmail, String fileName, String type, String date) {
+        this.userEmail = userEmail;
+        this.sendUserEmail = sendUserEmail;
+        this.fileName = fileName;
+        this.type = type;
+        this.date = date;
     }
 }

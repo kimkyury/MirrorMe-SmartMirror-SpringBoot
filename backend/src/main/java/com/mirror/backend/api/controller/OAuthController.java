@@ -1,9 +1,8 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.ResponseLoginDto;
-import com.mirror.backend.api.info.GoogleOAuth;
+import com.mirror.backend.api.dto.ResponseTokensDto;
 import com.mirror.backend.api.service.OAuthService;
-import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,61 +13,74 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
-
-@RequestMapping("/oauth")
+@RequestMapping()
 @RestController
-@Tag(name = "Oauth", description = "OAuth 최초로그인 및 UserToken 관련 API")
+@Tag(name = "OAuth", description = "OAuth 최초로그인 및 UserToken 관련 API")
 public class OAuthController {
 
-    @Autowired
-    private GoogleOAuth googleOAuth;
-    @Autowired
     private OAuthService oAuthService;
+
     @Autowired
-    private UserService userService;
-
-    static int SUCCESS = 1;
-    static int FAIL = 0;
-    static int INIT_LOGIN_USER = 2;
-
-    @GetMapping
-    @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
-    public ApiUtils.ApiResult<String> registerGoogle(HttpServletResponse response) throws Exception {
-
-        String requestUrl = oAuthService.getRequestUrlForAuthorizationCode();
-        response.sendRedirect(requestUrl.toString());
-
-        return success("Success Request Authorization Code to Google");
+    public OAuthController(OAuthService oAuthService) {
+        this.oAuthService = oAuthService;
     }
 
-    @GetMapping("/google/callback")
-    @Operation(summary = "Callback Token을 통한 로그인 진행", description = "" +
+    @GetMapping("/login")
+    @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
+    public void registerGoogleAccount(HttpServletResponse response) throws Exception {
+
+        String requestUrl = oAuthService.getRequestUrlForAuthorizationCode();
+        response.sendRedirect(requestUrl); //TODO: FrontUrl 로 변경
+
+    }
+
+    // 아래 메소드는 Front한테 위임되면서 삭제될 예정
+    @GetMapping("/oauth/google/callback")
+    @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
-            "이후 로그인을 진행합니다. \n "
- )
-    public ApiUtils.ApiResult<ResponseLoginDto> userLogin(
+            "이후 로그인을 진행합니다. \n ")
+    public ApiUtils.ApiResult<ResponseLoginDto> callback(
             @RequestParam(name = "code", required = false) String authCode,
-            @RequestParam(name = "error", required = false) String error
-    ) throws IOException {
-        ResponseLoginDto responseUserToken = null;
+            @RequestParam(name = "error", required = false) String error) {
 
         System.out.println("authCode: " + authCode);
+        ResponseLoginDto response = oAuthService.login(authCode);
+        return success(response);
+    }
 
-        if (error != null) {
-            System.out.println("Can't run AuthorizationCode");
+    @GetMapping("/login/auth")
+    @Operation(summary = "승인코드를 통한 유저 존재 확인 ",
+            description = "Authorization Code를 Access/Refresh토큰으로 교환합니다." +
+            "또한 유저 확인을 진행합니다.")
+    public ApiUtils.ApiResult<ResponseLoginDto> confirmExistUser(
+            @RequestParam(name = "code", required = false) String authCode) {
+
+        ResponseLoginDto response = oAuthService.login(authCode);
+
+        return success(response);
+    }
+
+
+    // TODO: 이 요청시에, 암호화를 넣어야할 것 같다.
+    @GetMapping("/tokens")
+    @Operation(summary= "(in Mirror) Refresh/Access Token 요청", description = "Mirror에서 특정 유저를 조회하기 위한 토큰입니다. ")
+    public ApiUtils.ApiResult<ResponseTokensDto> getTokens(
+            @RequestParam(name = "userEmail", required = false) String userEmail)  {
+
+        userEmail = userEmail.replace("%40", "@");
+        System.out.println("Email:" +userEmail);
+
+        ResponseTokensDto tokenDto = oAuthService.getTokensFromUserEmail(userEmail);
+        if ( tokenDto == null){
             return fail(null);
         }
 
-        ResponseLoginDto response = oAuthService.login(authCode);
-        System.out.println(response);
-        System.out.println("Json 파일 준비완료" );
-        return success(response);
+        return success(tokenDto);
     }
 
 
