@@ -34,4 +34,9 @@ public class VideoController {
         return success(video);
     }
 
+    @GetMapping("/message")
+    public ApiUtils.ApiResult<Message.ResponseMessage> getOneMessage(@RequestParam String userEmail, @RequestParam int index) {
+        Message.ResponseMessage video = videoService.getOneVideo(index, userEmail);0
+        return success(video);
+    }
 }

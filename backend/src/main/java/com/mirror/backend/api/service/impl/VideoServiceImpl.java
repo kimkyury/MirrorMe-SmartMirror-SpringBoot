@@ -37,7 +37,6 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public List<Message.ResponseMessage> getVideo(String userEmail) {
         List<String> sendIdList = getListFromHash(userEmail, "sendUserEmail");
-        List<String> videoPathList = getListFromHash(userEmail, "videoPath");
         List<String> dateList = getListFromHash(userEmail, "date");
 
         if(sendIdList == null) {
@@ -46,32 +45,46 @@ public class VideoServiceImpl implements VideoService {
 
         List<Message.ResponseMessage> responseMessages = new ArrayList<>();
         int size = sendIdList.size();
-        System.out.println("size = " + size);
         for(int i = 0; i < size; i++) {
             String sendUserEmail = sendIdList.get(i);
-            String videoPath = videoPathList.get(i);
             String date = dateList.get(i);
 
-            try {
-                InputStream inputStream = new FileInputStream(videoPath);
-                byte[] images = IOUtils.toByteArray(inputStream);
-                byte[] byteEnc64 = Base64.encodeBase64(images);
-                String imgStr = new String(byteEnc64, "UTF-8");
+            Message.ResponseMessage responseMessage = Message.ResponseMessage.builder()
+                    .idx(i)
+                    .userEmail(userEmail)
+                    .sendUserEmail(sendUserEmail)
+                    .date(date).build();
 
-                Message.ResponseMessage responseMessage = Message.ResponseMessage.builder()
-                        .videoFile(imgStr)
-                        .userEmail(userEmail)
-                        .sendUserEmail(sendUserEmail)
-                        .date(date).build();
-
-                responseMessages.add(responseMessage);
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            responseMessages.add(responseMessage);
         }
 
         return responseMessages;
+    }
+
+    @Override
+    public Message.ResponseMessage getOneVideo(int index, String userEmail) {
+        List<String> sendIdList = getListFromHash(userEmail, "sendUserEmail");
+        List<String> videoPathList = getListFromHash(userEmail, "videoPath");
+        List<String> dateList = getListFromHash(userEmail, "date");
+
+        try {
+            InputStream inputStream = new FileInputStream(videoPathList.get(index));
+            byte[] images = IOUtils.toByteArray(inputStream);
+            byte[] byteEnc64 = Base64.encodeBase64(images);
+            String imgStr = new String(byteEnc64, "UTF-8");
+
+            Message.ResponseMessage responseMessage = Message.ResponseMessage.builder()
+                    .videoFile(imgStr)
+                    .userEmail(userEmail)
+                    .sendUserEmail(sendIdList.get(index))
+                    .date(dateList.get(index)).build();
+
+            inputStream.close();
+            return responseMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
