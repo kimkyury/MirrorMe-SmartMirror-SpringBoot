@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './VideoMessage.css';
+import './css/VideoMessage.css';
 
 function VideoMessage(props) {
   const [user, setUser] = useState('이소정');
