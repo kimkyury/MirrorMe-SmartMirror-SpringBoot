@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// import './main_page.dart';
+import './main_page.dart';
 import './profile.dart';
 
 class Login extends StatelessWidget {
@@ -40,6 +40,16 @@ class Login extends StatelessWidget {
                   child: Text('구글 계정으로 로그인'),
                 ),
               ),
+            ),
+            SizedBox(height: 20), // Adding space between the two buttons
+            ElevatedButton( // "다른 페이지로 이동" 버튼 추가
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage()), // 새로운 페이지로 이동
+                );
+              },
+              child: Text('다른 페이지로 이동'),
             ),
           ],
         ),
