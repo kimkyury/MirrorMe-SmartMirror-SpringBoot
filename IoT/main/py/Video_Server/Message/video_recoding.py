@@ -2,9 +2,10 @@ import cv2
 import pyaudio
 import wave
 import time
+from Message import merge_video
 
-def recording_video(duration, output_path_v, output_path_a):
-    # 사운드
+def recording(duration, output_path_video, output_path_audio):
+    # Sound recording settings
     CHUNK = 2048
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
@@ -14,26 +15,26 @@ def recording_video(duration, output_path_v, output_path_a):
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
-
     frames = []
 
-    #영상
+    # Video recording settings
     cap = cv2.VideoCapture(0)
-
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     fps = 22.0
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
-    print(frame_width,frame_height)
-    out = cv2.VideoWriter(output_path_v, fourcc, fps, (frame_width, frame_height))
+    out = cv2.VideoWriter(output_path_video, fourcc, fps, (frame_width, frame_height))
 
+    # Recording start time
     start_time = time.time()
-    print("녹화 시작")
+
+    print("start video recording...")
 
     while True:
         ret, frame = cap.read()
         out.write(frame)
 
+        # Calculate the elapsed recording time by finding the difference between the current time and the start time
         current_time = time.time()
         elapsed_time = current_time - start_time
         if elapsed_time > duration:
@@ -42,30 +43,30 @@ def recording_video(duration, output_path_v, output_path_a):
         data = stream.read(CHUNK)
         frames.append(data)
 
-    print("녹화 종료")
+    print("video recording finished!! ")
 
-    # 영상
+    # Release video and audio resources
     cap.release()
     out.release()
     cv2.destroyAllWindows()
 
-    # 사운드
     stream.stop_stream()
     stream.close()
     audio.terminate()
 
-    wf = wave.open(output_path_a, 'wb')
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(audio.get_sample_size(FORMAT))
-    wf.setframerate(RATE)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+    # Save the recorded audio as a WAV file
+    wav_file = wave.open(output_path_audio, 'wb')
+    wav_file.setnchannels(CHANNELS)
+    wav_file.setsampwidth(audio.get_sample_size(FORMAT))
+    wav_file.setframerate(RATE)
+    wav_file.writeframes(b''.join(frames))
+    wav_file.close()
 
 
-def recording():
-    RECORDINGDURATION= 5  # 녹화 시간(초)
-    OUTPUTVIDEOFILE = "./Video_Server/Message/recorded_video.avi"  # 저장할 비디오 파일 이름
-    OUTPUTAUDIOFILE = "./Video_Server/Message/recorded_audio.wav"  # 저장할 오디오 파일 이름
+def recordingVideo(sender_email, recipient_email):
+    RECORDINGDURATION= 5  # Recording duration in seconds
+    OUTPUTVIDEOFILE = "./Message/recorded_video.avi"  # File name to save the recorded video
+    OUTPUTAUDIOFILE = "./Message/recorded_audio.wav"  # File name to save the recorded audio
 
-    recording_video(RECORDINGDURATION, OUTPUTVIDEOFILE, OUTPUTAUDIOFILE)
-    print("녹화 및 녹음이 완료되었습니다.")
+    recording(RECORDINGDURATION, OUTPUTVIDEOFILE, OUTPUTAUDIOFILE)
+    merge_video.mergeAudioAndVideo(sender_email, recipient_email)

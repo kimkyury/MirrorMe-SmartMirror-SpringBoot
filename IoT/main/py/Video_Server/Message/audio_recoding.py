@@ -5,14 +5,13 @@ import string
 import random
 import json
 
-def record_audio(sender, recipient):
-    # 파일 이름 난수 생성
+def recordingAudio(sender_email, recipient_email):
+    # Generate a random file name
     chars = string.ascii_letters + string.digits
-    file_name = ''.join(random.choice(chars) for _ in range(10))
+    file_name = "".join(random.choice(chars) for _ in range(10))
 
     DURATION = 5
-    OUTPUT_PATH = './message/temp/'
-
+    OUTPUT_PATH = "./Message/To_Be_Sent/"
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
@@ -20,50 +19,54 @@ def record_audio(sender, recipient):
 
     audio = pyaudio.PyAudio()
 
-    # 오디오 녹음 스트림 열기
+    # Open an audio recording stream
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
 
     frames = []
 
-    # 녹음 시작 시간
+    # Record start time
     start_time = time.time()
 
-    print("녹음 시작...")
+    print("start audio recording...")
 
     while True:
-        # 오디오 프레임을 읽어서 리스트에 추가
+        # Read audio frames and append them to the list
         data = stream.read(CHUNK)
         frames.append(data)
 
-        # 현재 시간과 시작 시간의 차이를 구해서 녹음 시간을 체크합니다.
+        # Calculate the elapsed recording time by finding the difference between the current time and the start time
         current_time = time.time()
         elapsed_time = current_time - start_time
         if elapsed_time > DURATION:
             break
 
-    print("녹음 종료...")
+    print("audio recording finished!!")
 
-    # 오디오 스트림 닫기
+    # Close the audio stream
     stream.stop_stream()
     stream.close()
     audio.terminate()
 
-    # 녹음된 음성을 WAV 파일로 저장
-    wf = wave.open(OUTPUT_PATH + file_name + '.wav', 'wb')
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(audio.get_sample_size(FORMAT))
-    wf.setframerate(RATE)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+    # Save the recorded audio as a WAV file
+    wav_file = wave.open(OUTPUT_PATH + file_name + ".wav", "wb")
+    wav_file.setnchannels(CHANNELS)
+    wav_file.setsampwidth(audio.get_sample_size(FORMAT))
+    wav_file.setframerate(RATE)
+    wav_file.writeframes(b"".join(frames))
+    wav_file.close()
 
-    temp = dict()
-    temp['userId'] = sender
-    temp['sendUserId'] = recipient
-    temp['file_name'] = file_name + '.wav'
-    temp['type'] = 'audio'
+    # Save information about the file as JSON
+    info_dict = dict()
+    info_dict["userEmail"] = recipient_email
+    info_dict["sendUserEmail"] = sender_email
+    info_dict["file_name"] = file_name + ".wav"
+    info_dict["type"] = "a"
 
-    json_data = json.dumps(temp)
-    with open(OUTPUT_PATH + file_name + '.json', 'w') as f:
-        f.write(json_data)
+    # Create a JSON file
+    info_json = json.dumps(info_dict)
+    with open(OUTPUT_PATH + file_name + ".json", "w") as f:
+        f.write(info_json)
+    
+    print("audio saved")
