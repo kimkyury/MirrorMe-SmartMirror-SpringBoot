@@ -119,14 +119,19 @@ public class SignUpService {
         return response;
     }
 
-    public ResponseHouseholdDto searchHousehold(String createUserEmail) {
+    public  ResponseHouseholdDto searchHousehold(String createUserEmail) {
 
-        Optional<User> createUser = userRepository.findByUserEmail(createUserEmail);
-        Optional<Household> targetHousehold = householdRepository.findByCreateUserId(createUser.get().getUserId());
+        Optional<User> createUserOptional = userRepository.findByUserEmail(createUserEmail);
+        if (createUserOptional.isEmpty()) return null;
+
+        User createUser = createUserOptional.get();
+        System.out.println(createUser.getUserId());
+
+        Optional<Household> targetHousehold = householdRepository.findByCreateUserId(createUser.getUserId());
 
         ResponseHouseholdDto response = ResponseHouseholdDto.builder()
-                .createUserName(createUser.get().getUserName())
-                .createUserEmail(createUser.get().getUserEmail())
+                .createUserName(createUser.getUserName())
+                .createUserEmail(createUser.getUserEmail())
                 .householdId(targetHousehold.get().getHouseholdId())
                 .householdName(targetHousehold.get().getHouseholdName())
                 .build();
