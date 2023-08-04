@@ -32,8 +32,6 @@ public class BackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
     }
-<<<<<<< HEAD
-=======
 
     @Scheduled(cron = "0 * * * * *")
     public void run() throws IOException {
@@ -82,5 +80,4 @@ public class BackendApplication {
         String innerValuesStr = hashOperations.get(hashKey, innerKey);
         hashOperations.put(hashKey, innerKey, innerValuesStr + "," + innerValue);
     }
->>>>>>> ba57284a7d75600675e322eba970bfec7e990c74
 }
