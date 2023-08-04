@@ -1,39 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { Button, Snackbar } from '@mui/material';
+
 import './App.css';
 
+import Snackbars from './components/SnackBars'
 import TodayWeather from './components/TodayWeather';
 import WeekWeather from './components/WeekWeather';
 
 function App() {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const options = { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" };
+  const formattedTime = currentTime.toLocaleTimeString("en-US", options);
+
+  const [timePart, AMPM] = formattedTime.split(" ");
+  const formattedTimeWithAmPm = `${AMPM} ${timePart}`;
+
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => {
     setIsVisible(prevState => !prevState);
   };
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const handleButtonClick = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
     <div>
-      <button onClick={toggleVisibility}>토글 컴포넌트</button>
-      <div className="animated-container">
-        <CSSTransition
+      <script src="your-react-app.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.0/dist/umd/mui.min.js" integrity="sha384-8LrLtBm6EuPDcO0B8kxyb3C35R4fOugpzzB9TQo49x/UTgBzw8j08LfkrDiOHl5" crossorigin="anonymous"></script>
+      <div className="time">{formattedTimeWithAmPm}</div>
+      {/* <div className="btn-container">
+        <button className="btn" onClick={toggleVisibility}>QR</button>
+        <button className="btn" onClick={toggleVisibility}>메세지</button>
+        <button className="btn" onClick={toggleVisibility}>날씨</button>
+        <button className="btn" onClick={toggleVisibility}>일정</button>
+        <button className="btn" onClick={toggleVisibility}>할일</button>
+        <button className="btn" onClick={toggleVisibility}>뉴스</button>
+        <button className="btn" onClick={toggleVisibility}>가족</button>
+        <button className="btn" onClick={toggleVisibility}>감정</button>
+      </div> */}
+      <div className="btn-container"> 
+      <Snackbars></Snackbars>
+      </div>
+
+      <CSSTransition
           in={isVisible}
           timeout={300}
           classNames="slide"
           unmountOnExit
-        >
+      >
+        <div className="animated-container">
           <div className="animated-content">
             <div className="bordered">
               <TodayWeather />
             </div>
-            <div className="bordered">
+            {/* <div className="bordered">
               <WeekWeather />
-            </div>
+            </div> */}
           </div>
+        </div>
         </CSSTransition>
-      </div>
     </div>
   );
 }
 
 export default App;
+
