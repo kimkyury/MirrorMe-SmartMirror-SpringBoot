@@ -5,24 +5,23 @@ import websockets
 async def connect():
     # 웹 소켓에 접속을 합니다.
 
-  # try:
-  async with websockets.connect("ws://localhost:9998") as websocket:
-    await websocket.send("audio")
-    await asyncio.sleep(10)
-    # session_id = await websocket.recv()
-    # print("============================================")
-    # print(session_id)
-    # print("============================================")
-    
-    # for i in range(5):
-    #   await websocket.send("명령어")
-    #   print("보냈다")
-    #   await asyncio.sleep(1)
-    #   print("에러났냐?")
-    # websocket.close()
+  try:
+    async with websockets.connect("ws://localhost:9998") as websocket:
+      await websocket.send("audio")
+      session_id = await websocket.recv()
+      print("============================================")
+      print(session_id)
+      print("============================================")
+      
+      for i in range(5):
+        await websocket.send("명령어")
+        print("보냈다")
+        await asyncio.sleep(1)
+        print("에러났냐?")
+      await websocket.close()
 
-  # except websockets.exceptions.ConnectionClosed:
-  #   print("error")
+  except websockets.exceptions.ConnectionClosed:
+    print("error")
 
 
 # 비동기로 서버에 접속한다.

@@ -1,3 +1,5 @@
+# 파이썬 버전 3.8.10
+
 # 비동기 처리 모듈
 import asyncio
 # 세션 발급용 모듈
@@ -5,11 +7,14 @@ import uuid
 # 웹 소켓 모듈을 선언한다.
 import websockets
 
-
-
+###############################################################################################
+###############################################################################################
+# 접속된 클라이언트를 저장하는 딕셔너리
 client = {}
+# 역할에 따른 세션 번호를 구분하는 딕셔너리
 client_role = {}
-# 클라이언트 접속이 되면 호출된다.
+
+# 클라이언트 접속이 되면 호출되고 종료되면 연결이 끊어진다.
 async def accept(websocket, path):
     # 클라이언트 연결 시 2초 이내로 신호를 보내야됨
     try:
@@ -37,11 +42,13 @@ async def accept(websocket, path):
     client_role[role] = session_id
     # 세션 코드 발급
     await websocket.send(session_id)
-    print(client)
-    print(client_role)
 
-    print("연결 성공")
+    # 따로 서버가 끊길때 까지 대기
+    await websocket.wait_closed()
+    del client[session_id]
     
+###############################################################################################
+###############################################################################################
 
 WAITTING = 0
 CALL_MIRROR = 100
@@ -54,43 +61,43 @@ MESSAGE_SHOW = 103
 order = asyncio.Queue()
 connect_check = {"audio" : asyncio.Event(), "video" : asyncio.Event()}
 
-
 # 음성인식 혹은 제스쳐 명령을 받아와서 큐에 저장
-async def hear_order(audio_or_video):
+async def hearOrder(audio_or_video):
     print(f"{audio_or_video} 연결 대기")
     # 클라이언트가 접속할때까지 대기 후
     # 이벤트 꺼줌
     await connect_check[audio_or_video].wait()
     print(f"{audio_or_video} 연결 성공")
     connect_check[audio_or_video].clear()
-
+    
     while True:
         try:
-            print("데이터 받을 준비")
             catch_order = await client[client_role[audio_or_video]].recv()
-            print("체크한번 해보자")
-            print(catch_order)
+            # print(catch_order)
             await order.put(catch_order)
     
         # 연결이 끊겼을 때 새로 연결되어 호출 될때까지 대기
         except websockets.exceptions.ConnectionClosedOK:
-            print("연결 끊김")기
-            del client[client_role[audio_or_video]]
+            print(f"{audio_or_video} 연결 끊김")
             await connect_check[audio_or_video].wait()
             connect_check[audio_or_video].clear()
 
-
-async def main():
-    await asyncio.gather(
-        hear_order("audio"),
-        hear_order("video"),
-    )
+# 큐에 쌓인 명령을 가져와 하나씩 수행
+async def doOrder():
     while True:
         # 명령을 받아 옴
         received_event = await order.get()
         print(received_event)
 
+async def main():
+    await asyncio.gather(
+        hearOrder("audio"),
+        hearOrder("video"),
+        doOrder()
+    )
 
+###############################################################################################
+###############################################################################################
 
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 
 start_server = websockets.serve(accept, "localhost", 9998);
