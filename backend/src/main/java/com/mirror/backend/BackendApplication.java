@@ -41,18 +41,13 @@ public class BackendApplication {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
 
         String imsi = "2308011033/";
-        String folderPath = "/home/ubuntu/message/" + imsi;
-
-        System.out.println("folderPath = " + folderPath);
+        String folderPath = "/message/" + imsi;
 
         File fileDirectory = new File(folderPath);
         System.out.println("fileDirectory.listFiles() = " + fileDirectory.listFiles());
-        System.out.println("fileDirectory.length() = " + fileDirectory.length());
-        System.out.println("fileDirectory.isDirectory() = " + fileDirectory.isDirectory());
 
         File[] files = fileDirectory.listFiles((dir, name) -> name.endsWith(".json"));
         if (files != null) {
-            System.out.println(" check ");
             for (File file : files) {
                 System.out.println("Found JSON file: " + file.getAbsolutePath());
 
