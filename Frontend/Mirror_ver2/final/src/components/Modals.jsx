@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@mui/material';
 
 import '../css/Modals.css';
+import VideoMessage from './VideoMessage';
 
 function ModalBottons(props) {
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
@@ -45,8 +46,8 @@ function ModalBottons(props) {
       {isMessageModalOpen && (
         <div className="modal">
           {/* Add Message modal content here */}
-          <h2>메세지 모달</h2>
-          <p>메세지를 여기에 표시합니다.</p>
+          {/* <h2>메세지 모달</h2> */}
+          <VideoMessage />
         </div>
       )}
 
