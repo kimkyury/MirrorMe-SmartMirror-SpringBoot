@@ -1,5 +1,63 @@
 .App {
   text-align: center;
+  border: 5px solid black;
+  margin: 10px;
+}
+
+.bordered {
+  margin: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.CurrentDate {
+  width: 33%;
+  padding: 10px;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Mirror Area */
+
+.mirror-area {
+  padding: 30%;
+}
+
+/* Weather */
+
+.weather {
+  width: 33%;
+  padding: 10px;
+}
+
+.weather-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.weather-left {
+  padding: 10px;
+}
+
+.weather-right {
+  padding: 10px;
+}
+
+.weather-icon {
+  height: 70%;
+  background-color: lightblue;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+h4 {
+  font-size: 1.5rem;
 }
 
 .App-logo {
@@ -36,3 +94,51 @@
     transform: rotate(360deg);
   }
 }
+
+/* 애니메이션 클래스 정의 */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* 애니메이션 적용 */
+.slide-enter {
+  transform: translateX(100%);
+}
+
+.slide-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
+
+.slide-exit {
+  transform: translateX(0);
+}
+
+.slide-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms ease-in-out;
+}
+
+/* 나머지 스타일 */
+.animated-container {
+  overflow: hidden;
+}
+
+.animated-content {
+  display: flex;
+}
+
