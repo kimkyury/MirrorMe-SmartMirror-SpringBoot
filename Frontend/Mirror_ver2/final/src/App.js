@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import { CSSTransition } from 'react-transition-group';
+
 import './App.css';
+
+import TodayWeather from './components/TodayWeather';
+import WeekWeather from './components/WeekWeather';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -21,11 +25,33 @@ function App() {
   const [timePart, AMPM] = formattedTime.split(" ");
   const formattedTimeWithAmPm = `${AMPM} ${timePart}`;
 
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => {
+    setIsVisible(prevState => !prevState);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="time">{formattedTimeWithAmPm}</div>
-      </header>
+    <div>
+      <div className="time">{formattedTimeWithAmPm}</div>
+      <div className="btn-container"><button className="btn" onClick={toggleVisibility}>토글 컴포넌트</button>\</div>
+      <div className="animated-container">
+        <CSSTransition
+          in={isVisible}
+          timeout={300}
+          classNames="slide"
+          unmountOnExit
+        >
+          <div className="animated-content">
+            <div className="bordered">
+              <TodayWeather />
+            </div>
+            <div className="bordered">
+              <WeekWeather />
+            </div>
+          </div>
+        </CSSTransition>
+      </div>
     </div>
   );
 }
