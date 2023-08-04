@@ -28,18 +28,9 @@ public class VideoController {
         return success(videoService.matchVideo(text.getText()));
     }
 
-    @PostMapping
-    public ApiUtils.ApiResult<Integer> postMessage(MultipartFile videoFile, MultipartFile voiceFile, @RequestPart("RequestMessage") Message.RequestMessage requestMessage) {
-        String videoPath = videoService.transferFile(videoFile, filePath);
-        String voicePath = videoService.transferFile(voiceFile, filePath);
-
-        videoService.saveVideo(videoPath, voicePath, requestMessage);
-        return success(1);
-    }
-
     @GetMapping
-    public ApiUtils.ApiResult<List<Message.ResponseMessage>> getMessage(@RequestParam int userId) {
-        List<Message.ResponseMessage> video = videoService.getVideo(userId);
+    public ApiUtils.ApiResult<List<Message.ResponseMessage>> getMessage(@RequestParam String userEmail) {
+        List<Message.ResponseMessage> video = videoService.getVideo(userEmail);
         return success(video);
     }
 
