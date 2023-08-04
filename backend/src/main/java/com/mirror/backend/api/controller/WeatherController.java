@@ -6,6 +6,7 @@ import com.mirror.backend.api.dto.ShortTermForecast;
 import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.api.service.WeatherService;
 import com.mirror.backend.common.utils.ApiUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
@@ -34,29 +36,27 @@ public class WeatherController {
     private WeatherService weatherService;
 
     @GetMapping("/short")
-    public ApiUtils.ApiResult<ShortTermForecast> shortTermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseTime) throws Exception {
+    @Operation(summary = "단기 예보 조회", description = "새벽 2시로 해야 최저, 최고 기온 뜬다. 이 후 시간은 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회) 업데이트된다.")
+    public ApiUtils.ApiResult<List<ShortTermForecast>> shortTermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseDate, @RequestParam String baseTime) throws Exception {
         // user의 nx, ny 받아오는 로직 추가
         int nx = 55, ny = 127;
 
-        String date = LocalDate.now().toString().replaceAll("-", "");
         StringBuilder urlBuilder = new StringBuilder(weatherUrl + "/getVilageFcst"); /*URL*/
         urlBuilder.append("?" +  "serviceKey=" + serviceKey);
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode(pageNo, "UTF-8")); /*페이지번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8")); /*한 페이지 결과 수*/
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) */
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(date, "UTF-8"));
+        urlBuilder.append("&base_date=" + baseDate);
         urlBuilder.append("&base_time=" + baseTime);
         urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(String.valueOf(nx), "UTF-8")); /*예보지점의 X 좌표값*/
         urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf(ny), "UTF-8")); /*예보지점의 Y 좌표값*/
 
         JSONArray weatherInfo = weatherService.getWeatherInfo(urlBuilder);
-        ShortTermForecast shortTermForecast = weatherService.getShortTermForecast(weatherInfo);
-
-        shortTermForecast.setDate(date);
-        return success(shortTermForecast);
+        return success(weatherService.getShortTermForecast(weatherInfo, baseDate));
     }
 
     @GetMapping("/ultra")
+    @Operation(summary = "초단기 실황 조회", description = "매시간 30분마다 업데이트 된다.")
     public ApiUtils.ApiResult<UltraShortTermForecast> ultraShortTermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseTime) throws Exception {
         // user의 nx, ny 받아오는 로직 추가
         int nx = 55, ny = 127;
@@ -80,6 +80,7 @@ public class WeatherController {
     }
 
     @GetMapping("/mid")
+    @Operation(summary = "중기 최저, 최고 기온 조회", description = "매일 오전 6시에 정보 뜬다. 6시에 조회하는 요청 들어가기")
     public ApiUtils.ApiResult<MidtermForecast> midtermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows) throws Exception{
         // user의 예보구역코드 받아오는 로직 추가
         String regId = "11H20201";
@@ -93,7 +94,6 @@ public class WeatherController {
         urlBuilder.append("&" + URLEncoder.encode("regId","UTF-8") + "=" + URLEncoder.encode(regId, "UTF-8")); // 예보구역코드
         urlBuilder.append("&tmFc=" + date);
 
-        System.out.println("urlBuilder = " + urlBuilder.toString());
         JSONArray weatherInfo = weatherService.getWeatherInfo(urlBuilder);
         MidtermForecast midtermForecast = weatherService.getMidtermForecast(weatherInfo);
 
@@ -101,6 +101,7 @@ public class WeatherController {
     }
 
     @GetMapping("/mid/rain")
+    @Operation(summary = "중기 비 예보", description = "매일 18시에 정보 뜬다. 18시에 조회하는 요청 들어가기")
     public ApiUtils.ApiResult<MidtermWeatherForecast> midtermRainForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows) throws Exception{
         // user의 예보구역코드 받아오는 로직 추가
         String regId = "11H20201";
@@ -112,7 +113,6 @@ public class WeatherController {
         }
 
         date += "1800";
-        System.out.println("date = " + date);
 
         StringBuilder urlBuilder = new StringBuilder(midWeatherUrl + "/getMidLandFcst"); /*URL*/
         urlBuilder.append("?" +  "serviceKey=" + serviceKey);

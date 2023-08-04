@@ -18,13 +18,21 @@ jpa:
   show-sql: true
 
 google:
-  client-id: ${CLINETID}
-  client-secret: ${CLIENTSECRET}
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
   redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/google/callback
+
+iot:
+  N: ${N}
+  RSA: ${RSA}
+  RSB: ${RSB}
 
 server:
   address: 0.0.0.0
   port: 8090
 
 data:
-  service-key: ${SERVICEKEY}
+  service-key: ${SERVICE_KEY}
+
+chatgpt:
+  api-key: ${CHATGPT-API-KEY}

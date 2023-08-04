@@ -7,9 +7,11 @@ import com.mirror.backend.api.dto.ShortTermForecast;
 import com.mirror.backend.api.dto.UltraShortTermForecast;
 import org.json.simple.JSONArray;
 
+import java.util.List;
+
 public interface WeatherService {
     JSONArray getWeatherInfo(StringBuilder urlBuilder) throws Exception;
-    ShortTermForecast getShortTermForecast(JSONArray jsonArray);
+    List<ShortTermForecast> getShortTermForecast(JSONArray jsonArray, String date);
     UltraShortTermForecast getUltraShortTermForecast(JSONArray jsonArray);
     MidtermForecast getMidtermForecast(JSONArray jsonArray) throws JsonProcessingException;
     MidtermWeatherForecast getMidtermWeatherForecast(JSONArray jsonArray) throws JsonProcessingException;
