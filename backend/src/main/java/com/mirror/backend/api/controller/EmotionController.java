@@ -24,7 +24,7 @@ public class EmotionController {
     }
 
     @GetMapping
-    public ApiUtils.ApiResult<List<Emotion>> getMyEmotion() {
+    public ApiUtils.ApiResult<List<EmotionDto.EmotionRes>> getMyEmotion() {
         // 유저 가져오기
         return success(emotionService.getMyEmotion(1L));
     }

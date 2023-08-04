@@ -4,6 +4,8 @@ import com.mirror.backend.api.entity.EmotionCount;
 import com.mirror.backend.api.entity.keys.EmotionKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EmotionCountRepository extends JpaRepository<EmotionCount, EmotionKey> {
+import java.util.List;
 
+public interface EmotionCountRepository extends JpaRepository<EmotionCount, EmotionKey> {
+    List<EmotionCount> findAllByEmotionKeyEmotionId(Long emotionId);
 }

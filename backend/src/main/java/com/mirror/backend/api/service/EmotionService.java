@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface EmotionService {
     Long saveEmotion(EmotionDto.EmotionReq emotionReq);
-    List<Emotion> getMyEmotion(Long userId);
+    List<EmotionDto.EmotionRes> getMyEmotion(Long userId);
 
 }
