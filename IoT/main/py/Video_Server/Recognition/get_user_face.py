@@ -11,7 +11,7 @@ def resizeFaceRegion(image, temp):
     return image[int(temp.ymin * image.shape[0]):y_max, int(temp.xmin * image.shape[1]):x_max]
 
 def getUserFaceImage():
-    PATH_DIR = './'
+    PATH_DIR = './Recognition/'
 
     # Get the list of files in the directory.
     file_list = os.listdir(PATH_DIR + 'Image/')
@@ -49,5 +49,5 @@ def getUserFaceImage():
     for i in file_list:
         os.remove(PATH_DIR + 'Image/' + i)
 
-if __name__ == "__main__":
-    getUserFaceImage()
+# if __name__ == "__main__":
+#     getUserFaceImage()

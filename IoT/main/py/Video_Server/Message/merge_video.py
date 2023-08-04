@@ -4,39 +4,40 @@ import string
 import random
 from moviepy.editor import VideoFileClip, AudioFileClip
 
+def mergeAudioAndVideo(sender_email, recipient_email):
+    # Paths to the video and audio files
+    PATH_VIDEO = "./Message/recorded_video.avi"
+    PATH_AUDIO = "./Message/recorded_audio.wav"
 
-def merge(From, To):
-    # 영상 파일과 음성 파일 경로
-    PATH_VIDEO = './Video_Server/Message/recorded_video.avi'
-    PATH_AUDIO = './Video_Server/Message/recorded_audio.wav'
-
-    # 동영상과 음성 파일 불러오기
+    # Load the video and audio clips
     video_clip = VideoFileClip(PATH_VIDEO)
     audio_clip = AudioFileClip(PATH_AUDIO)
 
-    # 영상과 음성 합치기
+    # Merge the video and audio
     final_clip = video_clip.set_audio(audio_clip)
 
-    # 파일 이름 난수 생성
+    # Generate a random file name
     chars = string.ascii_letters + string.digits
-    file_name = ''.join(random.choice(chars) for _ in range(10))
+    file_name = "".join(random.choice(chars) for _ in range(10))
 
+    # Save the merged video
+    final_output_path = "./Message/To_Be_Sent/" + file_name + ".mp4"
+    final_clip.write_videofile(final_output_path, codec="mpeg4")
 
-    # 합쳐진 동영상 저장
-    final_output_path = './Video_Server/Message/To_Be_Sent/' + file_name + '.mp4'
-    final_clip.write_videofile(final_output_path, codec='mpeg4')
+    # Save information about the video as JSON
+    info_dict = dict()
+    info_dict["userId"] = sender_email
+    info_dict["sendUserId"] = recipient_email
+    info_dict["fileName"] = file_name + ".mp4"
+    info_dict["type"] = "v"
 
-    temp = dict()
-    temp['userId'] = From
-    temp['sendUserId'] = To
-    temp['fileName'] = file_name + '.mp4'
-    temp['type'] = 'video'
+    # Create a JSON file
+    info_json = json.dumps(info_dict)
+    with open("./Message/To_Be_Sent/" + file_name + ".json", "w") as f:
+        f.write(info_json)
 
-    json_data = json.dumps(temp)
-    with open('./message/temp/' + file_name + '.json', 'w') as f:
-        f.write(json_data)
-
-    # 영상 및 음성 파일 삭제
+    # Delete the video and audio files
     os.remove(PATH_VIDEO)
     os.remove(PATH_AUDIO)
 
+    print("video saved")
