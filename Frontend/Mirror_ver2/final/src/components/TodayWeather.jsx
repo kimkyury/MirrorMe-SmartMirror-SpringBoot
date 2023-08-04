@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function Weather(props) {
+function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
@@ -112,4 +112,4 @@ function Weather(props) {
   );
 }
 
-export default Weather;
+export default TodayWeather;
