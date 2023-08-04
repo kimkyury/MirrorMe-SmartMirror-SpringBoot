@@ -1,7 +1,7 @@
 body {
-  margin: 0;
+  margin: 24px;
   padding: 0;
-  background-color: black; /* 검정색으로 변경 */
+  background-color: black;
 }
 
 .App {
@@ -27,7 +27,7 @@ body {
 
 .btn-container {
   display: flex;
-  justify-content: flex-end; /* 내용을 오른쪽으로 정렬합니다 */
+  justify-content: flex-end;
 }
 
 .btn {
