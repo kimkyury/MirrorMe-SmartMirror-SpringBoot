@@ -77,9 +77,6 @@ def listen_print_loop(responses):
         if not response.results:
             continue
 
-        # The `results` list is consecutive. For streaming, we only care about
-        # the first result being considered, since once it's `is_final`, it
-        # moves on to considering the next utterance.
         # 최종적인 결과값은 언제나 results[0]에 반영되므로 result[0]만 고려.
         result = response.results[0]
         if not result.alternatives:
@@ -130,6 +127,7 @@ def main():
                     for content in audio_generator) # generator expression. 요청 생성
 
         responses = client.streaming_recognize(streaming_config, requests)  # 요청 전달 & 응답 가져옴
+        print(type(responses))
         listen_print_loop(responses)    # 결과 출력. requests, responses 모두 iterable object
 
 
