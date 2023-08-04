@@ -1,7 +1,10 @@
 package com.mirror.backend.api.dto;
 
+import com.mirror.backend.api.entity.EmotionCount;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class EmotionDto {
@@ -13,5 +16,18 @@ public class EmotionDto {
         private List<Integer> emotionList;
         private int emotionCode;
     }
+
+    @Getter
+    public static class EmotionRes {
+        private String emotionDate;
+        private List<EmotionCountDto.EmotionCountRes> emotionList;
+
+        @Builder
+        public EmotionRes(String emotionDate, List<EmotionCountDto.EmotionCountRes> emotionList) {
+            this.emotionDate = emotionDate;
+            this.emotionList = emotionList;
+        }
+    }
+
 
 }

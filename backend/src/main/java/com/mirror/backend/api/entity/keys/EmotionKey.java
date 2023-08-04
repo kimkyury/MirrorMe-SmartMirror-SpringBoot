@@ -1,11 +1,13 @@
 package com.mirror.backend.api.entity.keys;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
+@Getter
 @Embeddable
 @NoArgsConstructor
 public class EmotionKey implements Serializable {

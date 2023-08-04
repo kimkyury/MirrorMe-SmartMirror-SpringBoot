@@ -1,5 +1,6 @@
 package com.mirror.backend.api.service.impl;
 
+import com.mirror.backend.api.dto.EmotionCountDto;
 import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.entity.Emotion;
 import com.mirror.backend.api.entity.EmotionCount;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmotionServiceImpl implements EmotionService {
@@ -60,12 +63,27 @@ public class EmotionServiceImpl implements EmotionService {
     }
 
     @Override
-    public List<Emotion> getMyEmotion(Long userId) {
+    public List<EmotionDto.EmotionRes> getMyEmotion(Long userId) {
         // 일주일간의 감정 보여주기
         LocalDate now = LocalDate.now();
         LocalDate sevenDayAgo = now.minusDays(7);
 
         List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetween(sevenDayAgo, now);
-        return myEmotionList;
+
+        // emotion 1개당 emotion count 조회
+        List<EmotionDto.EmotionRes> emotionResList = new ArrayList<>();
+        for(Emotion emotion: myEmotionList) {
+            Long emotionId = emotion.getEmotionId();
+            List<EmotionCount> emotionCountList = emotionCountRepository.findAllByEmotionKeyEmotionId(emotionId);
+            List<EmotionCountDto.EmotionCountRes> transformCountList = emotionCountList.stream().map(EmotionCountDto.EmotionCountRes::new)
+                    .collect(Collectors.toList());
+
+            EmotionDto.EmotionRes emotionOneDay = EmotionDto.EmotionRes.builder()
+                    .emotionDate(emotion.getEmotionDate().toString())
+                    .emotionList(transformCountList)
+                    .build();
+            emotionResList.add(emotionOneDay);
+        }
+        return emotionResList;
     }
 }

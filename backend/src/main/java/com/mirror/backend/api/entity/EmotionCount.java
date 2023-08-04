@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @Table(name = "emotion_count")
 public class EmotionCount {
