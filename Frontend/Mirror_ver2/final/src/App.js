@@ -4,7 +4,7 @@ import { Button, Snackbar } from '@mui/material';
 
 import './App.css';
 
-import SliderTest from './components/SnackBars'
+import Snackbars from './components/SnackBars'
 import TodayWeather from './components/TodayWeather';
 import WeekWeather from './components/WeekWeather';
 
@@ -59,7 +59,7 @@ function App() {
         <button className="btn" onClick={toggleVisibility}>감정</button>
       </div> */}
       <div className="btn-container"> 
-      <SliderTest></SliderTest>
+      <Snackbars></Snackbars>
       </div>
 
       <CSSTransition
