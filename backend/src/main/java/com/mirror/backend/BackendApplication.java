@@ -1,7 +1,6 @@
 package com.mirror.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.Message;
 import com.mirror.backend.api.entity.VideoMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -10,17 +9,11 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
 
 @EnableScheduling
 @SpringBootApplication
@@ -35,44 +28,41 @@ public class BackendApplication {
 
     @Scheduled(cron = "0 * * * * *")
     public void run() throws IOException {
-        Date now = new Date();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
+        LocalDateTime minusMinuteDate = LocalDateTime.now().minusMinutes(1);
+        String dateMinusNow = minusMinuteDate.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
 
-        String imsi = "2308011033/";
-        String folderPath = "/message/" + imsi;
+        System.out.println("dateNow = " + dateMinusNow);
+        String folderPath = "/message/" + dateMinusNow;
 
         File fileDirectory = new File(folderPath);
-        System.out.println("fileDirectory.listFiles() = " + fileDirectory.listFiles());
 
         File[] files = fileDirectory.listFiles((dir, name) -> name.endsWith(".json"));
         if (files != null) {
             for (File file : files) {
-                System.out.println("Found JSON file: " + file.getAbsolutePath());
-
                 // redis 에 저장하는 로직
+                System.out.println("file = " + file);
                 VideoMessage videoMessage = objectMapper.readValue(file, VideoMessage.class);
 
-                String videoPath = folderPath + videoMessage.getFileName();
-                System.out.println("videoPath = " + videoPath);
-                saveVideo(videoPath, videoMessage);
+                String videoPath = folderPath + "/" + videoMessage.getFileName();
+                saveVideo(videoPath, videoMessage, dateMinusNow);
             }
-        }
-        else {
-            System.out.println("files = " + files);
         }
     }
 
-    public void saveVideo(String videoPath, VideoMessage videoMessage) {
-        saveListToHash(videoMessage.getUserEmail(), "sendUserId", videoMessage.getSendUserEmail());
-        saveListToHash(videoMessage.getUserEmail(), "videoPath", videoPath);
-        saveListToHash(videoMessage.getUserEmail(), "type", videoMessage.getType());
+    public void saveVideo(String videoPath, VideoMessage videoMessage, String date) {
+        System.out.println("videoMessage = " + videoMessage.getUserEmail());
+        saveListToHash(videoMessage.getSendUserEmail(), "sendUserEmail", videoMessage.getUserEmail());
+        saveListToHash(videoMessage.getSendUserEmail(), "videoPath", videoPath);
+        saveListToHash(videoMessage.getSendUserEmail(), "type", videoMessage.getType());
+        saveListToHash(videoMessage.getSendUserEmail(), "date", date);
     }
 
     public void saveListToHash(String hashKey, String innerKey, String innerValue) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         String innerValuesStr = hashOperations.get(hashKey, innerKey);
-        hashOperations.put(hashKey, innerKey, innerValuesStr + "," + innerValue);
+        if(innerValuesStr == null) hashOperations.put(hashKey, innerKey, innerValue);
+        else hashOperations.put(hashKey, innerKey, innerValuesStr + "," + innerValue);
     }
 }
