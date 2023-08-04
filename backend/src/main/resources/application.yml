@@ -33,3 +33,6 @@ server:
 
 data:
   service-key: ${SERVICE_KEY}
+
+chatgpt:
+  api-key: ${CHATGPT-API-KEY}
