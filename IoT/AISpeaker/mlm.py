@@ -10,15 +10,11 @@ LISTEN_ORDER = 200
 STATE = 100
 
 def listen_print_loop(responses):
-    global STATE, WAITING, LISTEN_ORDER
     num_chars_printed = 0
     for response in responses:
         if not response.results:
             continue
 
-        # The `results` list is consecutive. For streaming, we only care about
-        # the first result being considered, since once it's `is_final`, it
-        # moves on to considering the next utterance.
         # 최종적인 결과값은 언제나 results[0]에 반영되므로 result[0]만 고려.
         result = response.results[0]
         if not result.alternatives:
@@ -51,7 +47,7 @@ def listen_print_loop(responses):
 
             elif STATE == LISTEN_ORDER:
                 temp, order = nla(transcript)
-                text_to_speech()
+                text_to_speech(order)
                 if temp != -1:
                     STATE = WAITING
                 print("##################################")

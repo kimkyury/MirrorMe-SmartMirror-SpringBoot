@@ -1,5 +1,5 @@
 from google.cloud import language_v1
-
+import re
 #######################################################################################    
 #######################################################################################
 # 구문 분석
@@ -112,12 +112,12 @@ family = {"아빠" : 0, "엄마" : 1, "아버지" : 0, "어머니" : 1, "누나"
 
 def expect_youtube(response):
     # print("유튜브 보여주기")
-    return "유튜브 검색 결과입니다."
+    return "YOUTUBE\n\r검색어"
     # search_keyword = ""
 
 def expect_message_show(response):
     # print("메세지 보여주기")
-    return "메세지를 보여드리겠습니다."
+    return "MESSAGESHOW"
 
 def expect_message_cap(response):
     target_post = ["에", "에게", "께", "한테"]
@@ -130,22 +130,22 @@ def expect_message_cap(response):
         target_expect = token.text.content
     if target_expect not in family:
         # print("누구에게 보내는지 모르겠어요")
-        return "누구에게 보내는지 모르겠어요"
+        return "MESSAGESEND\n\rTARGETMISS"
 
     # print(f"{target_expect}님께 보낼 메세지 녹화")
-    return f"{target_expect}님께 보낼 메세지를 녹화하겠습니다."
+    return f"MESSAGESEND\n\r{target_expect}"
 
-def expect_weather(*response):
+def expect_weather(response):
     # print("날씨 관련 요청")
-    return "날씨 관련 요청을 받았습니다."
+    return "WEATHER"
 
-def expect_news(*response):
+def expect_news(response):
     # print("뉴스 관련 요청")
-    return "뉴스 관련 요청을 받았습니다"
+    return "NEWS"
 
-def cant_understand(*response):
+def cant_understand(response):
     # print("이해하지 못 했어요")
-    return "이해하지 못 했어요"
+    return "CANTUNDERSTAND"
 
 
 
@@ -155,6 +155,9 @@ functoins = [expect_youtube, expect_message_show, expect_message_cap, expect_wea
 #######################################################################################
 
 def my_analyze(text_content):
+    if re.search(r'\b(거울아)\b', text_content, re.I):
+        return "CALL"
+
     # print(text_content)
     client = language_v1.LanguageServiceClient()
 
@@ -206,7 +209,7 @@ def my_analyze(text_content):
             break
 
 
-    return temp, functoins[temp](response)
+    return functoins[temp](response)
             
 
 
