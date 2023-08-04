@@ -29,30 +29,16 @@ public class VideoServiceImpl implements VideoService {
         }
         return 0;
     }
-
-    @Override
-    public void saveVideo(String videoPath, String voicePath, Message.RequestMessage requestMessage) {
-        saveListToHash(requestMessage.getUserId()+"", "sendUserId", requestMessage.getSendUserId() + "");
-        saveListToHash(requestMessage.getUserId()+"", "videoPath", videoPath);
-        saveListToHash(requestMessage.getUserId()+"", "voicePath", voicePath);
-    }
-
-    public void saveListToHash(String hashKey, String innerKey, String innerValue) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String innerValuesStr = hashOperations.get(hashKey, innerKey);
-        hashOperations.put(hashKey, innerKey, innerValuesStr + "," + innerValue);
-    }
-
     public List<String> getListFromHash(String hashKey, String innerKey) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         String innerValuesStr = hashOperations.get(hashKey, innerKey);
         return List.of(innerValuesStr.split(","));
     }
     @Override
-    public List<Message.ResponseMessage> getVideo(int userId) {
-        List<String> sendIdList = getListFromHash(userId + "", "sendUserId");
-        List<String> videoPathList = getListFromHash(userId + "", "videoPath");
-        List<String> voicePathList = getListFromHash(userId + "", "voicePath");
+    public List<Message.ResponseMessage> getVideo(String userEmail) {
+        List<String> sendIdList = getListFromHash(userEmail, "sendUserEmail");
+        List<String> videoPathList = getListFromHash(userEmail, "videoPath");
+        List<String> dateList = getListFromHash(userEmail, "date");
 
         if(sendIdList == null) {
             return null;
@@ -60,10 +46,11 @@ public class VideoServiceImpl implements VideoService {
 
         List<Message.ResponseMessage> responseMessages = new ArrayList<>();
         int size = sendIdList.size();
+        System.out.println("size = " + size);
         for(int i = 0; i < size; i++) {
-            String sendId = sendIdList.get(i);
+            String sendUserEmail = sendIdList.get(i);
             String videoPath = videoPathList.get(i);
-            String voicePath = voicePathList.get(i);
+            String date = dateList.get(i);
 
             try {
                 InputStream inputStream = new FileInputStream(videoPath);
@@ -71,12 +58,13 @@ public class VideoServiceImpl implements VideoService {
                 byte[] byteEnc64 = Base64.encodeBase64(images);
                 String imgStr = new String(byteEnc64, "UTF-8");
 
-                inputStream = new FileInputStream(voicePath);
-                images = IOUtils.toByteArray(inputStream);
-                byteEnc64 = Base64.encodeBase64(images);
-                String imgStr2 = new String(byteEnc64, "UTF-8");
+                Message.ResponseMessage responseMessage = Message.ResponseMessage.builder()
+                        .videoFile(imgStr)
+                        .userEmail(userEmail)
+                        .sendUserEmail(sendUserEmail)
+                        .date(date).build();
 
-                responseMessages.add(new Message.ResponseMessage(imgStr, imgStr2, userId, Integer.parseInt(sendId)));
+                responseMessages.add(responseMessage);
                 inputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
