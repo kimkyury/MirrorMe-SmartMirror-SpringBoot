@@ -2,8 +2,8 @@ spring:
   datasource:
     url: jdbc:mariadb://i9e101.p.ssafy.io:3306/mlm
     driver-class-name: org.mariadb.jdbc.Driver
-    username: ${USERNAME}
-    password: ${PASSWORD}
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
   redis:
     host: i9e101.p.ssafy.io
     port: 6379
