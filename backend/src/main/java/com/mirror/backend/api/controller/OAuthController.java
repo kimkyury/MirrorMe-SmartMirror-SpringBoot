@@ -30,7 +30,7 @@ public class OAuthController {
         this.oAuthService = oAuthService;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/oauth/login")
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
     public void registerGoogleAccount(HttpServletResponse response) throws Exception {
 
@@ -40,7 +40,7 @@ public class OAuthController {
     }
 
     // 아래 메소드는 Front한테 위임되면서 삭제될 예정
-    @GetMapping("/oauth/google/callback")
+    @GetMapping("/oauth/token")
     @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
             "이후 로그인을 진행합니다. \n ")
@@ -53,6 +53,7 @@ public class OAuthController {
         return success(response);
     }
 
+    // 아래 메소드는 oauth/token으로 옮겨질 내용임 (Front연결이후)
     @GetMapping("/login/auth")
     @Operation(summary = "승인코드를 통한 유저 존재 확인 ",
             description = "Authorization Code를 Access/Refresh토큰으로 교환합니다." +
