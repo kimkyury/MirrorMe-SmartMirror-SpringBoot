@@ -103,11 +103,7 @@ public class IotService {
     private List<Alias> findConnectUserAlias(Long userId){
 
         List<Alias> aliases = new ArrayList<>();
-
         List<ConnectUser> connectUsers = connectUserRepository.findByIdUserId(userId);
-
-        System.out.println( userId + "'s connectUsers: " + connectUsers);
-
 
         for(ConnectUser connectUser : connectUsers){
             String connectUserEmail = findUserName(connectUser.getId().getConnectUserId());
