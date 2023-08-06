@@ -10,6 +10,7 @@ import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.Constants.Result;
+import com.mirror.backend.common.utils.IotEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -125,7 +126,6 @@ public class SignUpService {
         if (createUserOptional.isEmpty()) return null;
 
         User createUser = createUserOptional.get();
-        System.out.println(createUser.getUserId());
 
         Optional<Household> targetHousehold = householdRepository.findByCreateUserId(createUser.getUserId());
 
@@ -190,15 +190,16 @@ public class SignUpService {
 
     public int registerMirror(Long userId, RequestMirrorDto requestMirrorDto) {
 
-        //TODO: mirrorId가 암호화되어 온다면, 이를 Decoding하는 과정을 진행할 것
         String mirrorId = requestMirrorDto.getMirrorId();
+        String mirrorIdDecryption = IotEncryption.decryptionText(mirrorId);
+
         Long mirrorPlaceCode = requestMirrorDto.getMirrorPlaceCode();
 
         // 1. user의 householdId조희
         Optional<User> user = userRepository.findByUserId(userId);
 
         Mirror mirror = Mirror.builder()
-                .mirrorId(mirrorId)
+                .mirrorId(mirrorIdDecryption)
                 .mirrorGroupId(user.get().getHouseholdId())
                 .mirrorPlaceCode(mirrorPlaceCode)
                 .build();
