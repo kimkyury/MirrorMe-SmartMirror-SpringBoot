@@ -73,7 +73,9 @@ public class TokenAuthenticationFilter implements Filter {
             returnNode = mapper.readTree(responseEntity.getBody());
 
             userEmail = returnNode.get("email").asText();
+//            System.out.println("in Filter, userEmail: " + userEmail);
             userId = getUserIdFromUserEmail(userEmail);
+//            System.out.println("in Filter, userId: " + userId);
 
             servletRequest.setAttribute("user_email", userEmail);
             servletRequest.setAttribute("user_id", userId);
