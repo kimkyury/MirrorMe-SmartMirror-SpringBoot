@@ -1,6 +1,7 @@
 package com.mirror.backend.api.controller;
 
 import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.service.VideoService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,6 @@ public class VideoController {
     @Autowired
     private VideoService videoService;
 
-    @Value("${spring.servlet.multipart.location}")
-    private String filePath;
 
     @PostMapping("/message")
     public ApiUtils.ApiResult<Integer> getMessageCheck(@RequestBody Message text) {
@@ -29,14 +28,15 @@ public class VideoController {
     }
 
     @GetMapping
-    public ApiUtils.ApiResult<List<Message.ResponseMessage>> getMessage(@RequestParam String userEmail) {
-        List<Message.ResponseMessage> video = videoService.getVideo(userEmail);
+    public ApiUtils.ApiResult<List<VideoMessage>> getMessage(@RequestParam String userEmail) {
+        List<VideoMessage> video = videoService.getVideo(userEmail);
         return success(video);
     }
 
     @GetMapping("/message")
-    public ApiUtils.ApiResult<Message.ResponseMessage> getOneMessage(@RequestParam String userEmail, @RequestParam int index) {
-        Message.ResponseMessage video = videoService.getOneVideo(index, userEmail);0
+    public ApiUtils.ApiResult<Message.ResponseMessageDetail> getOneMessage(@RequestParam Long videoId) {
+        Message.ResponseMessageDetail video = videoService.getVideoDetail(videoId);
         return success(video);
     }
+
 }
