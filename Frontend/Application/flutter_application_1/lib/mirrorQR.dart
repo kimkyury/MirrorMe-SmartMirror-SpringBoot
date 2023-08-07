@@ -6,10 +6,9 @@ class MirrorQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const SelectMirrorPlace();
   }
 }
-
 
 class SelectMirrorPlace extends StatefulWidget {
   const SelectMirrorPlace({Key? key}) : super(key: key);

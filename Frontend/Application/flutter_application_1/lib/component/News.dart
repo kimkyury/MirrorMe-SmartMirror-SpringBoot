@@ -36,21 +36,21 @@ class News extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                   Row( // 뉴스 기사 2
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                   Row( // 뉴스 기사 3
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                 ],
@@ -91,21 +91,21 @@ class News extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                   Row( // 뉴스 기사 2
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                   Row( // 뉴스 기사 3
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('기사 제목 줄여서 출력하기 위한 예시로 글을 적음...'),
-                      Text('언론사 이름')
+                      Text('언론사')
                     ],
                   ),
                 ],
