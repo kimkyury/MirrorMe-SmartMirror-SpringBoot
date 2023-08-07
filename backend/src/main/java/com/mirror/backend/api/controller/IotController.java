@@ -20,7 +20,7 @@ import static com.mirror.backend.common.utils.ApiResponse.success;
 
 @RequestMapping("/api/iot")
 @RestController
-@Tag(name = "iot를 위한 APIs", description = "IOT전용")
+@Tag(name = "iot", description = "IOT전용")
 public class IotController {
 
     private IotService iotService;
@@ -44,8 +44,6 @@ public class IotController {
             return ApiResponse.notFountMirror();
 
         List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
-
         return success("usersInSameHousehold", users);
-
     }
 }
