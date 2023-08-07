@@ -1,5 +1,7 @@
 package com.mirror.backend.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.dto.ResponseGoogleOAuthDto;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -195,5 +198,35 @@ public class OAuthService {
 
         return tokenDto;
     }
+
+    public String getUserEmailFromAccessToken(String accessToken){
+        RestTemplate restTemplate = new RestTemplate();
+        StringBuilder googleRequestURL = new StringBuilder();
+        googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
+                .append("?access_token=").append(accessToken);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        ResponseEntity<String> responseEntity = null;
+        JsonNode returnNode = null;
+        String userEmail = "";
+
+        try {
+            responseEntity = restTemplate.getForEntity(googleRequestURL.toString(), String.class);
+            returnNode = mapper.readTree(responseEntity.getBody());
+            userEmail = returnNode.get("email").asText();
+
+        }catch (HttpClientErrorException e){
+            e.getStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
+        return userEmail;
+    }
+
 }
 
