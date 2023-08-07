@@ -7,7 +7,9 @@ import uuid
 # 웹 소켓 모듈을 선언한다.
 import websockets
 
-from main/py/AISpeaker_Client import tts
+import sys
+sys.path.append("./main/py/AISpeaker_Client/")
+from tts import text_to_speech as tts
 import random
 
 ###############################################################################################
@@ -59,7 +61,7 @@ YOUTUBE = 101
 MESSAGE_CAP = 102
 MESSAGE_SHOW = 103
 
-STATUS = 0
+STATUS = WAITTING
 
 
 # 명령이 쌓이게 되는 큐
@@ -100,21 +102,100 @@ async def doOrder():
     while True:
         # 명령을 받아 옴
         received_event = await order.get()
-        print(received_event)
+        asyncio.create_task(carryOutOrder(received_event))
 
-# 거울을 호출 했을때 실행되는 코루틴
-async def call():
+
+async def carryOutOrder(received_event):
+    commend, *arg = received_event.split("\n\r")
+    print(commend)
+
+    if order_fun.get(commend, False):
+        order_fun[commend](*arg)
+
+    
+
+# 거울을 호출 했을때 실행되는
+def call(*arg):
+    global STATUS
     if STATUS != WAITTING:
         return
 
     answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
     # 대답 후 상태 변경
-    tts.text_to_speech(random.choice(answer))
+    tts(random.choice(answer))
+    STATUS = CALL_MIRROR
+# arg로 메세지 보내기
+def messageSend(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
 
-    
+    tts(f"{arg[0]}님께 보낼 영상메세지 촬영을 시작합니다.")
+
+    # 메세지 녹화 동기로 실행
+    STATUS = WAITTING
+# 메세지 확인하기
+def messageShow(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
+
+    tts("메세지를 보여드릴게요")
+
+    # 메세지 보기 처리
+    # react로 보내기
+
+    STATUS = WAITTING
+# arg로 유튜브 검색하기
+def youtube(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
+    tts(f"{arg[0]}를 유튜브에 검색해 볼게요")
+
+    STATUS = WAITTING
+    return 
+# 날씨 확인하기
+def weather(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
+
+    tts("오늘의 날씨 입니다.")
+    # react로 데이터 보내고,
+    # 날씨관련 받아서
+    # 음성으로 출력하기
+
+    STATUS = WAITTING
+# 뉴스 확인하기
+def news(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
+
+    tts("뉴스를 확인합니다.")
+
+    STATUS = WAITTING
+
+    # react로 보냄
+# 모르겠는건 chatgpt보내기
+def chatgpt(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        return
+
+    tts("뭐래는거야 챗지피티 도와줘")
+
+    STATUS = WAITTING
 
 
-
+order_fun = {"CALL" : call,
+            "MESSAGESEND" : messageSend,
+            "MESSAGESHOW" : messageShow,
+            "WEATHER" : weather,
+            "NEWS" : news,
+            "YOUTUBE" : youtube,
+            "CANTUNDERSTAND" : chatgpt}
 
 async def main():
     await asyncio.gather(
