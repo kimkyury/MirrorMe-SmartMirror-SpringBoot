@@ -1,67 +1,77 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function VideoMessage(props) {
-  const [user, setUser] = useState('이소정');
-  const [playlist, setPlaylist] = useState([]); // 메세지 재생목록
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // 현재 재생 인덱스
-  
-  // ref를 사용하여 video 요소 가져오기
-  const videoRef = useRef(null);
+function VideoMessage() {
+  const [messageList, setMessageList] = useState([]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [currentMessage, setCurrentMessage] = useState(null);
+  const userEmail = 'test2@google.com'; // 사용자 이메일
 
-  // 메세지 재생목록 업데이트
-  const fetchPlaylist = () => {
-    const tempPlaylist = [
-      "video/video1.mp4",
-      "video/video2.mp4",
-    ];
-    setPlaylist(tempPlaylist);
-  };
-
-  // 컴포넌트 마운트 시 메세지 재생목록 업데이트
   useEffect(() => {
-    fetchPlaylist();
+    // 전체 메세지 리스트 받아오는 함수
+    const fetchMessageList = async () => {
+      try {
+        const res = await axios.get('video', {
+          params: { userEmail: userEmail },
+        });
+        setMessageList(res.data.response); // 전체 메세지 리스트 업데이트
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMessageList();
   }, []);
 
-  // 이전 메세지 재생
-  const playPreviousVideo = () => {
-    if (currentVideoIndex > 0) {
-      setCurrentVideoIndex((prevIndex) => prevIndex - 1);
-      if (videoRef.current) {
-        videoRef.current.pause(); // 이전 메세지로 이동 시 일시 정지
-        videoRef.current.load();
-        videoRef.current.play(); // 이전 메세지 재생
+  useEffect(() => {
+    // 개별 메세지 받아오는 함수
+    const fetchIndividualMessage = async (videoId, userEmail) => {
+      try {
+        const res = await axios.get('video/message', {
+          params: { videoId: videoId, userEmail: userEmail },
+        });
+        setCurrentMessage(res.data.content); // 개별 메세지 컨텐츠 업데이트
+      } catch (error) {
+        console.error(error);
       }
-    } else {
-      alert("이전 메세지가 없습니다.");
+    };
+  
+    if (messageList.length > 0) {
+      const filteredMessage = messageList.find(message => message.videoId === currentMessageIndex);
+      if (filteredMessage) {
+        const { videoId, userEmail } = filteredMessage;
+        fetchIndividualMessage(videoId, userEmail);
+      }
+    }
+  }, [currentMessageIndex, messageList]);
+
+  const handlePrevMessage = () => {
+    if (currentMessageIndex > 0) {
+      setCurrentMessageIndex(currentMessageIndex - 1);
     }
   };
 
-  // 다음 메세지 재생
-  const playNextVideo = () => {
-    if (currentVideoIndex < playlist.length - 1) {
-      setCurrentVideoIndex((prevIndex) => prevIndex + 1);
-      if (videoRef.current) {
-        videoRef.current.pause(); // 다음 메세지로 이동 시 일시 정지
-        videoRef.current.load();
-        videoRef.current.play(); // 다음 메세지 재생
-      }
-    } else {
-      alert("다음 메세지가 없습니다.");
+  const handleNextMessage = () => {
+    if (currentMessageIndex < messageList.length - 1) {
+      setCurrentMessageIndex(currentMessageIndex + 1);
     }
   };
-
-  const handleClose = () => { // 모달창 닫기 함수
-    props.onClose();
-  }
 
   return (
-    <div className="modal-overlay">
-      <h2>메세지 모달</h2>
-      <video ref={videoRef} controls style={{ width: '800px', height: '400px' }}>
-          <source src={playlist[currentVideoIndex]} type="video/mp4" />
-      </video>
-      <button onClick={playPreviousVideo}>이전 메세지</button>
-      <button onClick={playNextVideo}>다음 메세지</button>
+    <div className="video-message-container">
+      <div className="message-content">
+        {currentMessage ? (
+          <div className="message">
+            <p>{currentMessage}</p>
+          </div>
+        ) : (
+          <p>메세지가 없습니다.</p>
+        )}
+      </div>
+      <div className="message-navigation">
+        <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>이전 메세지</button>
+        <button onClick={handleNextMessage} disabled={currentMessageIndex === messageList.length - 1}>다음 메세지</button>
+      </div>
     </div>
   );
 }
