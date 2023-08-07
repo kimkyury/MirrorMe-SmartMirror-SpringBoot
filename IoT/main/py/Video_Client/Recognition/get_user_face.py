@@ -26,6 +26,7 @@ def getUserFaceImage():
 
     # Process each file, perform face detection, and resize the faces.
     for i in file_list:
+        if i[-3:] == 'txt': continue
         image_path = PATH_DIR + 'Image/' + i
         image = cv2.imread(image_path)
 
