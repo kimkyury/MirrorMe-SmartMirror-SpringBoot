@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import './main_page.dart';
 import './profile.dart';
-import './webview_page.dart';
 
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
@@ -24,7 +23,9 @@ class Login extends StatelessWidget {
                 child: Text('로고'),
               ),
             ),
-            SizedBox(height: 20), // Adding some space between the logo and the login button
+            SizedBox(
+                height:
+                    20), // Adding some space between the logo and the login button
             Container(
               height: 50,
               width: 200,
@@ -34,28 +35,24 @@ class Login extends StatelessWidget {
               ),
               child: Center(
                 child: ElevatedButton(
-                  onPressed: () async {
-                    // Call the Google login function
-                    var apiUrl = "http://YOUR_SERVER_IP:PORT"; // 여기에 서버 주소를 입력하세요.
-                    final result = await Navigator.push(
+                  onPressed: () {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => WebViewPage(apiUrl)),
+                      MaterialPageRoute(builder: (context) => Profile()),
                     );
-                    if (result != null) {
-                      // 웹뷰 페이지에서 반환한 데이터 처리. 예를 들어 로그인 상태 저장 등
-                      print("Received from WebView: $result");
-                    }
                   },
                   child: Text('구글 계정으로 로그인'),
                 ),
               ),
             ),
             SizedBox(height: 20), // Adding space between the two buttons
-            ElevatedButton( // "다른 페이지로 이동" 버튼 추가
+            ElevatedButton(
+              // "다른 페이지로 이동" 버튼 추가
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()), // 새로운 페이지로 이동
+                  MaterialPageRoute(
+                      builder: (context) => MyHomePage()), // 새로운 페이지로 이동
                 );
               },
               child: Text('다른 페이지로 이동'),
