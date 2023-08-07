@@ -23,6 +23,7 @@ body {
   color: #ffffff;
   text-align: end;
   justify-self: baseline;
+  font-size:100px;
 }
 
 .btn-container {
