@@ -1,5 +1,6 @@
 from Recognition import find_user, gesture, get_user_face
 from Message import audio_recoding, video_recoding
+import threading
 import websockets
 import asyncio
 
@@ -17,6 +18,7 @@ async def connect():
             session_id = await ws.recv()
             websocket = ws
             while True:
+                print("신호 대기")
                 recv = await ws.recv()
 
                 if recv == 'Recording Audio':
@@ -36,18 +38,18 @@ async def connect():
 #################################################################
 
 
-async def get_gesture():
+def get_gesture():
+    loop = asyncio.new_event_loop()
+
     while True:
-        global websocket
+        global websocket, do
         # GESTURE
         do = gesture.getgesture()
-        print(do)
-        if do != None and websocket != None:
-            await websocket.send(do)
-        
 
-async def task():
-    await asyncio.gather(connect(),get_gesture())
+        if do != None and websocket != None:
+            loop.run_until_complete(websocket.send(do))
+            print(do)
+
 
 if __name__ == "__main__":
     print("start...")
@@ -62,6 +64,9 @@ if __name__ == "__main__":
     websocket = None
     # Web socket connect
 
-    asyncio.run(task())
+    ges = threading.Thread(target=get_gesture)
+    ges.start()
+    
+    asyncio.run(connect())
 
     print('이상해')

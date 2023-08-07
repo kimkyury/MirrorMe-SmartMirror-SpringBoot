@@ -7,7 +7,7 @@ import uuid
 # 웹 소켓 모듈을 선언한다.
 import websockets
 
-from main/py/AISpeaker_Client import tts
+# from main/py/AISpeaker_Client import tts
 import random
 
 ###############################################################################################
@@ -103,13 +103,13 @@ async def doOrder():
         print(received_event)
 
 # 거울을 호출 했을때 실행되는 코루틴
-async def call():
-    if STATUS != WAITTING:
-        return
+# async def call():
+#     if STATUS != WAITTING:
+#         return
 
-    answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
-    # 대답 후 상태 변경
-    tts.text_to_speech(random.choice(answer))
+#     answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
+#     # 대답 후 상태 변경
+#     tts.text_to_speech(random.choice(answer))
 
     
 
