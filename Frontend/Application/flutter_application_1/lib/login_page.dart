@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
 
 import './main_page.dart';
 import './profile.dart';
+import './webview_page.dart';
 
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
@@ -31,11 +34,17 @@ class Login extends StatelessWidget {
               ),
               child: Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push( // 구글 로그인 버튼이 눌렸을 때 Profile 페이지로 이동합니다.
+                  onPressed: () async {
+                    // Call the Google login function
+                    var apiUrl = "http://YOUR_SERVER_IP:PORT"; // 여기에 서버 주소를 입력하세요.
+                    final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Profile()),
+                      MaterialPageRoute(builder: (context) => WebViewPage(apiUrl)),
                     );
+                    if (result != null) {
+                      // 웹뷰 페이지에서 반환한 데이터 처리. 예를 들어 로그인 상태 저장 등
+                      print("Received from WebView: $result");
+                    }
                   },
                   child: Text('구글 계정으로 로그인'),
                 ),
