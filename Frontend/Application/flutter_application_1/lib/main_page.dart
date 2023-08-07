@@ -16,7 +16,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 2; // 기본 페이지 홈으로 설정
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(initialPage: 2);
 
   final List<Widget> _pages = [
     News(),
