@@ -61,9 +61,10 @@ public class TokenAuthenticationFilter implements Filter {
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
             .append("?access_token=").append(accessToken);
 
+        ObjectMapper mapper = new ObjectMapper();
+
         ResponseEntity<String> responseEntity = null;
         JsonNode returnNode = null;
-        ObjectMapper mapper = new ObjectMapper();
 
         String userEmail = "";
         Long userId;
