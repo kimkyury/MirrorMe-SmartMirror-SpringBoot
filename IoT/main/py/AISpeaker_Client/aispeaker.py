@@ -1,6 +1,7 @@
 from nlp import my_analyze as nla
 from stt_streaming import *
 import stt_streaming
+import threading
 
 import websockets
 import asyncio
@@ -13,7 +14,8 @@ async def connect():
     # 웹 소켓에 접속을 합니다.
     try:
         async with websockets.connect("ws://localhost:9998") as ws:
-            print("왜 안됨?")
+            print("연결 성공")
+            global websocket
             websocket = ws
             await ws.send("audio")
             session_id = await ws.recv()
@@ -29,7 +31,8 @@ async def connect():
 #################################################################
 #################################################################
 # 마이크를 통해 오디오를 인식하는 코루틴
-async def senMicrophone():
+def senMicrophone():
+    print("?")
     # STT를 위한 세팅
     RATE = 16000
     CHUNK = int(RATE / 10) 
@@ -46,6 +49,8 @@ async def senMicrophone():
         config=config,
         interim_results=True)
 
+    loop = asyncio.new_event_loop()
+
 
     with MicrophoneStream(RATE, CHUNK) as stream:
         # 오디오 생성기
@@ -57,13 +62,13 @@ async def senMicrophone():
         # api요청
         responses = client.streaming_recognize(streaming_config, requests)
         #  결과를 main으로 보냄
-        await sendMain(responses)
+        sendMain(responses, loop)
 
 
 #################################################################
 #################################################################
 # 결과를 전달받아 자연어 처리후 main으로 보내는 함수
-async def sendMain(responses):
+def sendMain(responses, event_loop):
     num_chars_printed = 0
 
     for response in responses:
@@ -96,7 +101,9 @@ async def sendMain(responses):
             # 전역에 저장된 웹소켓으로 신호를 보낸다.
             global websocket
             if websocket is not None:
-                await websocket.send(nla(transcript))
+                send_message = nla(transcript)
+                event_loop.run_until_complete(websocket.send(send_message))
+                print(send_message)
 
             num_chars_printed = 0
 
@@ -105,9 +112,8 @@ async def sendMain(responses):
 #################################################################
 
 # 비동기로 서버에 접속한다.
-asyncio.get_event_loop().run_until_complete(asyncio.gather(
-    connect(),
-    senMicrophone(),
-))
+threading.Thread(target = senMicrophone).start()
+asyncio.get_event_loop().run_until_complete(connect())
+
 
 

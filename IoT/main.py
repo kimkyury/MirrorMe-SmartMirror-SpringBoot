@@ -7,6 +7,9 @@ import uuid
 # 웹 소켓 모듈을 선언한다.
 import websockets
 
+# from main/py/AISpeaker_Client import tts
+import random
+
 ###############################################################################################
 ###############################################################################################
 # 접속된 클라이언트를 저장하는 딕셔너리
@@ -56,6 +59,8 @@ YOUTUBE = 101
 MESSAGE_CAP = 102
 MESSAGE_SHOW = 103
 
+STATUS = 0
+
 
 # 명령이 쌓이게 되는 큐
 order = asyncio.Queue()
@@ -78,9 +83,17 @@ async def hearOrder(audio_or_video):
     
         # 연결이 끊겼을 때 새로 연결되어 호출 될때까지 대기
         except websockets.exceptions.ConnectionClosedOK:
-            print(f"{audio_or_video} 연결 끊김")
+            print(f"{audio_or_video}요청으로 연결 끊김")
             await connect_check[audio_or_video].wait()
+            print(f"{audio_or_video} 연결 성공")
             connect_check[audio_or_video].clear()
+
+        except websockets.exceptions.ConnectionClosedError:
+            print(f"{audio_or_video}가 예상치 못하게 연결 끊김")
+            await connect_check[audio_or_video].wait()
+            print(f"{audio_or_video} 연결 성공")
+            connect_check[audio_or_video].clear()
+
 
 # 큐에 쌓인 명령을 가져와 하나씩 수행
 async def doOrder():
@@ -88,6 +101,20 @@ async def doOrder():
         # 명령을 받아 옴
         received_event = await order.get()
         print(received_event)
+
+# 거울을 호출 했을때 실행되는 코루틴
+# async def call():
+#     if STATUS != WAITTING:
+#         return
+
+#     answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
+#     # 대답 후 상태 변경
+#     tts.text_to_speech(random.choice(answer))
+
+    
+
+
+
 
 async def main():
     await asyncio.gather(
