@@ -6,6 +6,7 @@ import './App.css';
 
 import Snackbars from './components/SnackBars'
 import Modals from './components/Modals'
+import SocketTest from './components/SocketTest';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -46,6 +47,9 @@ function App() {
     <div>
       <script src="your-react-app.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.0/dist/umd/mui.min.js" integrity="sha384-8LrLtBm6EuPDcO0B8kxyb3C35R4fOugpzzB9TQo49x/UTgBzw8j08LfkrDiOHl5" crossorigin="anonymous"></script>
+      <div>
+        {/* <SocketTest/> */}
+      </div>
       <div className="time">{formattedTimeWithAmPm}</div>
       {/* <div className="btn-container">
         <button className="btn" onClick={toggleVisibility}>뉴스</button> 
