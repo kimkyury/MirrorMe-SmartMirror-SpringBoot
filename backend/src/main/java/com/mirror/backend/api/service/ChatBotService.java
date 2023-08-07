@@ -1,7 +1,7 @@
 package com.mirror.backend.api.service;
 
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestQuestionDto;
+import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
 import com.mirror.backend.api.info.ChatGPT;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -26,7 +26,7 @@ public class ChatBotService {
         this.openAiService = chatGPT.openAiService();
     }
 
-    public ResponseChatBotDto askQuestion(RequestQuestionDto requestDto) {
+    public ResponseChatBotDto askQuestion(RequestChatBotDto requestDto) {
 
         List<ChatMessage> messages = new ArrayList<>();
         ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(),
@@ -44,7 +44,6 @@ public class ChatBotService {
         ChatMessage responseMessage = openAiService.createChatCompletion(
                 chatCompletionRequest).getChoices().get(0).getMessage();
         messages.add(responseMessage);
-
 
         ResponseChatBotDto response = ResponseChatBotDto.builder()
                 .result(responseMessage.getContent())
