@@ -35,4 +35,4 @@ data:
   service-key: ${SERVICE_KEY}
 
 chatgpt:
-  api-key: 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
+  api-key: ${CHATGPT_API_KEY}
