@@ -44,8 +44,6 @@ public class IotController {
             return ApiResponse.notFountMirror();
 
         List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
-
         return success("usersInSameHousehold", users);
-
     }
 }

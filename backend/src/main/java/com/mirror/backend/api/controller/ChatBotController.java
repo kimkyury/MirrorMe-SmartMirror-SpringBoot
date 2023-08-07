@@ -1,7 +1,7 @@
 package com.mirror.backend.api.controller;
 
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestQuestionDto;
+import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
 import com.mirror.backend.api.service.ChatBotService;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -25,7 +25,7 @@ public class ChatBotController {
     }
 
     @PostMapping("/question")
-    public ApiUtils.ApiResult<ResponseChatBotDto> sendQuestion(@RequestBody RequestQuestionDto requestDto) {
+    public ApiUtils.ApiResult<ResponseChatBotDto> sendQuestion(@RequestBody RequestChatBotDto requestDto) {
         ResponseChatBotDto responseChatBotDto = chatBotService.askQuestion(requestDto);
 
         return success(responseChatBotDto);
