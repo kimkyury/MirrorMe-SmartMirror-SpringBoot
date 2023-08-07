@@ -9,14 +9,11 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 public class ResponseSummaryScheduleDto implements Serializable {
-    private String startText;
     private String summeryCalendarText;
-    private String endText;
+
 
     @Builder
-    public ResponseSummaryScheduleDto(String startText, String summeryCalendarText, String endText) {
-        this.startText = startText;
+    public ResponseSummaryScheduleDto(String summeryCalendarText) {
         this.summeryCalendarText = summeryCalendarText;
-        this.endText = endText;
     }
 }

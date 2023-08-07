@@ -50,31 +50,28 @@ public class OAuthController {
     @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
             "이후 로그인을 진행합니다. \n ")
-    public String  callback(
+    public ApiUtils.ApiResult<ResponseLoginDto>  callback(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error) {
 
         System.out.println("authCode: " + authCode);
         ResponseLoginDto response = oAuthService.login(authCode);
 
-
         Map<String, String> data = new HashMap<>();
         data.put("accessToken", response.getAccessToken());
         data.put("refreshToken", response.getAccessToken());
 
-
         String json = null;
-            try {
-                json = new ObjectMapper().writeValueAsString(data);
-            }catch( JsonProcessingException e){
-                e.printStackTrace();
-            }
-            String base64EncodedJson = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
-            return "redirect:1ot://callback?token="  + base64EncodedJson;
+        try {
+            json = new ObjectMapper().writeValueAsString(data);
+        }catch( JsonProcessingException e){
+            e.printStackTrace();
+        }
+        String base64EncodedJson = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+        System.out.println(base64EncodedJson);
+//        return "redirect:1ot://callback?token="  + base64EncodedJson;
 
-
-
-//        return success(response);
+        return success(response);
     }
 
     // 아래 메소드는 oauth/token으로 옮겨질 내용임 (Front연결이후)
