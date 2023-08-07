@@ -25,9 +25,12 @@ import java.util.Optional;
 @Service
 public class OAuthService {
 
-    private GoogleOAuth googleOAuth;
-    private RedisUserTokenRepository redisUserTokenRepository;
-    private UserService userService;
+    private final GoogleOAuth googleOAuth;
+    private final RedisUserTokenRepository redisUserTokenRepository;
+    private final UserService userService;
+
+    private ResponseLoginDto responseLogin;
+    private ResponseGoogleOAuthDto googleOAuthResponseDto;
 
     @Autowired
     public OAuthService(GoogleOAuth googleOAuth, RedisUserTokenRepository redisUserTokenRepository, UserService userService) {
@@ -36,13 +39,8 @@ public class OAuthService {
         this.userService = userService;
     }
 
-
-    private ResponseLoginDto responseLogin;
-    private ResponseGoogleOAuthDto googleOAuthResponseDto ;
-
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
         String endPoint = GoogleOAuth.REQUEST_AUTH_CODE_URL;
-
         String redirectUri = googleOAuth.getRedirectUri();
         String clientId = googleOAuth.getClientId();
         String responseType = "code";
@@ -102,7 +100,7 @@ public class OAuthService {
     }
 
     public void saveUserTokenToRedis(String userEmail){
-        String key = "token_" + userEmail;
+        String key = userEmail;
 
         RedisUserToken send = new RedisUserToken(key,
                 googleOAuthResponseDto.getAccessToken(),
