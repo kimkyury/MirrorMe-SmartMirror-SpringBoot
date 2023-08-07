@@ -46,7 +46,7 @@ def getgesture():
                 distance.popleft()
                 last_x = handLms.landmark[12].x
             
-            print(last_x)
+            # print(last_x)
 
             for i in range(0,4):
                 open[i] = (dist(handLms.landmark[0].x,handLms.landmark[0].y,
