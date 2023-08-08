@@ -8,19 +8,13 @@ spring:
     host: i9e101.p.ssafy.io
     port: 6379
     password: ${REDIS_PASSWORD}
-  servlet:
-    multipart:
-      location: c:\\upload
-      maxFileSize: 200MB
-      maxRequestSize: 100MB
-
-jpa:
-  generate-ddl: true
-  show-sql: true
+  jpa:
+    generate-ddl: true
+    show-sql: true
 
 google:
-  client-id: ${CLINETID}
-  client-secret: ${CLIENTSECRET}
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
   redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/google/callback
 
 iot:
@@ -36,4 +30,4 @@ data:
   service-key: ${SERVICE_KEY}
 
 chatgpt:
-  api-key: ${CHATGPT_API_KEY}
+  api-key: ${CHAT}

@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -48,29 +49,25 @@ public class VideoServiceImpl implements VideoService {
 
     // 영상 메시지 한 개 조회
     @Override
-    public Message.ResponseMessageDetail getVideoDetail(Long videoId) {
+    public StreamingResponseBody getVideoDetail(Long videoId) {
         VideoMessage videoMessage = videoRepository.findByVideoId(videoId);
         String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
 
         try {
             InputStream inputStream = new FileInputStream(videoUrl);
-            byte[] images = IOUtils.toByteArray(inputStream);
-            byte[] byteEnc64 = Base64.encodeBase64(images);
-            String imgStr = new String(byteEnc64, "UTF-8");
+
+            StreamingResponseBody responseBody = outputStream -> {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                inputStream.close();
+            };
 
             videoMessage.update('Y');
             videoRepository.save(videoMessage);
-
-            Message.ResponseMessageDetail responseMessage = Message.ResponseMessageDetail.builder()
-                    .userEmail(videoMessage.getUserEmail())
-                    .sendUserEmail(videoMessage.getSendUserEmail())
-                    .date(videoMessage.getDate())
-                    .type(videoMessage.getType())
-                    .imgStr(imgStr)
-                    .build();
-
-            inputStream.close();
-            return responseMessage;
+            return responseBody;
         } catch (IOException e) {
             e.printStackTrace();
         }
