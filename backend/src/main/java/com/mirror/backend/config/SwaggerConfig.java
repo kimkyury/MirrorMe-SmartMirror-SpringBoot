@@ -14,7 +14,7 @@ import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-
+import org.springdoc.core.GroupedOpenApi;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -37,10 +37,18 @@ public class SwaggerConfig {
                 .securitySchemes(Arrays.asList(apiKey())) // User Header Info지정하였음 ( Access_Code 삽입 테스트를 위하여)
                 .securityContexts(Arrays.asList(securityContext())) // TODO: 확인해볼 것
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.mirror.backend.api.controller"))
+                .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("1oT")
+                .pathsToMatch("/**")
+                .build();
     }
 
     private ApiKey apiKey() {
