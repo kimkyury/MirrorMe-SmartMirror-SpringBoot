@@ -8,10 +8,10 @@ import uuid
 import websockets
 # 파일 경로 설정용 sys
 import sys
-sys.path.append("./main/py/AISpeaker_Client/")
+sys.path.append("./AISpeaker_Client/")
 from tts import text_to_speech as tts
 
-import serial
+# import serial
 import os
 # from main/py/AISpeaker_Client import tts
 import random
@@ -233,6 +233,8 @@ order_fun = {"CALL" : call,
             "NEWS" : news,
             "YOUTUBE" : youtube,
             "CANTUNDERSTAND" : chatgpt}
+            # "LEFT": left,
+            # "RIGHT": right}
 
 
 # async def serialArduino():

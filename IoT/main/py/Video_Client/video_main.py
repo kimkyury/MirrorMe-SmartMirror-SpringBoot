@@ -63,7 +63,7 @@ def getgesture():
             [False, False, False, False, (0,0), "EXIT"]]
     
     result = deque([None for _ in range(26)])
-    distance = deque(['remain' for _ in range(8)])
+    distance = deque(['remain' for _ in range(3)])
 
     last_x = 0.5
 
@@ -76,11 +76,11 @@ def getgesture():
         if results.multi_hand_landmarks:
             handLms = results.multi_hand_landmarks[0]
             
-            if last_x - handLms.landmark[12].x > 0.03:
+            if last_x - handLms.landmark[12].x > 0.02:
                 distance.append("right")
                 distance.popleft()
                 last_x = handLms.landmark[12].x
-            elif last_x - handLms.landmark[12].x < -0.03:
+            elif last_x - handLms.landmark[12].x < -0.02:
                 distance.append("left")
                 distance.popleft()
                 last_x = handLms.landmark[12].x
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     print("find user")
     my_name = find_user.getUserName()
     print("user :", my_name)
-
+    my_name = '1'
     do = ''
     recv = ''
     websocket = None
