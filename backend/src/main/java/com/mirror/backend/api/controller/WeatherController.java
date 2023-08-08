@@ -7,6 +7,7 @@ import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.api.service.WeatherService;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
 @RequestMapping("/weather")
+@Tag(name = "weather", description = "날씨 API")
 public class WeatherController {
 
     private String weatherUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0";
