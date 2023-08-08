@@ -5,7 +5,6 @@ function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
-
   useEffect(() => {
     let numOfRows = 500;
     let pageNo = 1;
@@ -24,6 +23,7 @@ function TodayWeather(props) {
       console.log(baseTime)
       console.log(numOfRows)
       console.log(pageNo)
+      console.log(res.data)
       console.log(res.data.response)
       const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
 
@@ -48,10 +48,10 @@ function TodayWeather(props) {
     const currentHour = currentTime.getHours();
     let ultrabasetime;
 
-    if (currentTime.getMinutes() >= 45) {
+    if (currentTime.getMinutes() > 45 ) {
       ultrabasetime = `${('0' + currentHour).slice(-2)}30`;
     } else {
-      ultrabasetime = `${('0' + (currentHour - 1)).slice(-2)}00`;
+      ultrabasetime = `${('0' + (currentHour - 1)).slice(-2)}30`;
     }
 
     axios.get("weather/ultra", {
@@ -95,13 +95,10 @@ function TodayWeather(props) {
     <>
       <div className="weather-container">
         <div className="weather-left">
-          <div className="weather-icon">
-            <img src={todaySky} alt="weather icon" />
-          </div>
+          <img src={todaySky} alt="weather icon" />
         </div>
         <div>
           <div className="weather-right">
-            
             {/* 실시간 기온 */}
             <h3>{ultraInfo.t1H}℃</h3>
 

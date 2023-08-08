@@ -8,13 +8,12 @@
 //   const userEmail = 'test2@google.com'; // 사용자 이메일
 
 //   useEffect(() => {
-//     // 전체 메세지 리스트 받아오는 함수
 //     const fetchMessageList = async () => {
 //       try {
 //         const res = await axios.get('video', {
 //           params: { userEmail: userEmail },
 //         });
-//         setMessageList(res.data.response); // 전체 메세지 리스트 업데이트
+//         setMessageList(res.data.response);
 //       } catch (error) {
 //         console.error(error);
 //       }
@@ -23,40 +22,34 @@
 //     fetchMessageList();
 //   }, []);
 
-//   useEffect(() => {
-//     // 개별 메세지 받아오는 함수
-//     const fetchIndividualMessage = async (videoId) => {
-//       try {
-//         const res = await axios.get('video/message', {
-//           params: { videoId: videoId }
-//         });
-//         setCurrentMessage(res.data);
-//       } catch (error) {
-//         console.error(error);
-//       }
-//     };
-    
-//     if (messageList.length > 0) {
-//       const firstVideoId = messageList[0].videoId; // 첫 번째 비디오의 videoId 가져오기
-//       fetchIndividualMessage(firstVideoId);
-//     }
-//   }, [messageList]);
-
-//   const handlePrevMessage = () => {
-//     if (currentMessageIndex > 0) {
-//       setCurrentMessageIndex(currentMessageIndex - 1);
-//     }
-//   };
-
-//   const handleNextMessage = () => {
-//     if (currentMessageIndex < messageList.length - 1) {
-//       setCurrentMessageIndex(currentMessageIndex + 1);
-//     }
-//   };
-
-//   const fetchStreamingData = async (videoId) => {
+//   const fetchIndividualMessage = async (index) => {
 //     try {
-//       const response = await fetch(`video/message?videoId=${videoId}`);
+//       const res = await axios.get('video/message', {
+//         params: { videoId: messageList[index].videoId }
+//       });
+//       console.log(res.data)
+//       setCurrentMessage(res.data);
+
+//       // 메시지 타입에 따라 재생
+//       if (res.data.type === 'v') {
+//         playVideoMessage(res.data.url);
+//       } else if (res.data.type === 'a') {
+//         playAudioMessage(res.data.url);
+//       }
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (messageList.length > 0) {
+//       fetchIndividualMessage(currentMessageIndex);
+//     }
+//   }, [messageList, currentMessageIndex]);
+
+//   const fetchStreamingData = async (url) => {
+//     try {
+//       const response = await fetch(url);
 //       const arrayBuffer = await response.arrayBuffer();
 //       return arrayBuffer;
 //     } catch (error) {
@@ -65,9 +58,9 @@
 //     }
 //   };
 
-//   const playAudioMessage = async (videoId) => {
+//   const playAudioMessage = async (audioUrl) => {
 //     try {
-//       const arrayBuffer = await fetchStreamingData(videoId);
+//       const arrayBuffer = await fetchStreamingData(audioUrl);
 //       if (!arrayBuffer) return;
 
 //       const audioContext = new AudioContext();
@@ -81,37 +74,32 @@
 //     }
 //   };
 
-//   const playVideoMessage = async () => {
+//   const playVideoMessage = async (videoUrl) => {
 //     try {
-//       const response = await fetch(`/video/message?videoId=${messageList[currentMessageIndex].videoId}`);
-//       const reader = response.body.getReader();
-
-//       const readableStream = new ReadableStream({
-//         start(controller) {
-//           function push() {
-//             reader.read().then(({ done, value }) => {
-//               if (done) {
-//                 controller.close();
-//                 return;
-//               }
-//               controller.enqueue(value);
-//               push();
-//             });
-//           }
-
-//           push();
-//         }
-//       });
+//       const arrayBuffer = await fetchStreamingData(videoUrl);
+//       if (!arrayBuffer) return;
 
 //       const video = document.getElementById('video-player');
-//       const mediaSource = new MediaSource();
-//       video.src = URL.createObjectURL(mediaSource);
+//       const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
+//       const videoObjectUrl = URL.createObjectURL(blob);
 
-//       const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
-
-//       readableStream.pipeTo(sourceBuffer.writable, { preventClose: true });
+//       video.src = videoObjectUrl;
+//       video.controls = true;
+//       video.autoplay = true;
 //     } catch (error) {
-//       console.error('Error fetching or playing video:', error);
+//       console.error('Error playing video message:', error);
+//     }
+//   };
+
+//   const handlePrevMessage = () => {
+//     if (currentMessageIndex > 0) {
+//       setCurrentMessageIndex(currentMessageIndex - 1);
+//     }
+//   };
+
+//   const handleNextMessage = () => {
+//     if (currentMessageIndex < messageList.length - 1) {
+//       setCurrentMessageIndex(currentMessageIndex + 1);
 //     }
 //   };
 
@@ -131,8 +119,7 @@
 //           <div className="message">
 //             <p>{messageList[currentMessageIndex].sendUserEmail}님의 {messageType}메세지</p>
 //             {currentMessage.type === 'v' ? (
-//               <video id="video-player" controls autoPlay>
-//               </video>
+//               <video id="video-player" controls autoPlay></video>
 //             ) : (
 //               <p>{currentMessage.content}</p>
 //             )}
@@ -146,10 +133,10 @@
 //         <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>이전 메세지</button>
 //         <button onClick={handleNextMessage} disabled={currentMessageIndex === messageList.length - 1}>다음 메세지</button>
 //         {currentMessage && currentMessage.type === 'v' && (
-//           <button onClick={playVideoMessage}>영상 재생</button>
+//           <button onClick={() => playVideoMessage(messageList[currentMessageIndex].url)}>영상 재생</button>
 //         )}
 //         {currentMessage && currentMessage.type === 'a' && (
-//           <button onClick={() => playAudioMessage(messageList[currentMessageIndex].videoId)}>음성 재생</button>
+//           <button onClick={() => playAudioMessage(messageList[currentMessageIndex].url)}>음성 재생</button>
 //         )}
 //       </div>
 //     </div>
@@ -158,128 +145,156 @@
 
 // export default VideoMessage;
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
-function VideoMessage() {
-  const [messageList, setMessageList] = useState([]);
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [currentMessage, setCurrentMessage] = useState(null);
-  const [mediaSource, setMediaSource] = useState(null);
-  const userEmail = 'test2@google.com'; // 사용자 이메일
+///////////////////////////////////
 
-  useEffect(() => {
-    // 전체 메세지 리스트 받아오는 함수
-    const fetchMessageList = async () => {
-      try {
-        const res = await axios.get('video', {
-          params: { userEmail: userEmail },
-        });
-        setMessageList(res.data.response); // 전체 메세지 리스트 업데이트
-      } catch (error) {
-        console.error(error);
-      }
-    };
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
 
-    fetchMessageList();
-  }, []);
+// function VideoMessage() {
+//   const [messageList, setMessageList] = useState([]);
+//   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+//   const [currentMessage, setCurrentMessage] = useState(null);
+//   const [currentUrl, setCurrentUrl] = useState([]);
+//   const userEmail = 'test2@google.com'; // 사용자 이메일
 
-  useEffect(() => {
-    // 개별 메세지 받아오는 함수
-    const fetchIndividualMessage = async (videoId) => {
-      try {
-        const res = await axios.get('video/message', {
-          params: { videoId: videoId },
-        });
-        setCurrentMessage(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+//   useEffect(() => { // 전체 메세지 리스트
+//     const fetchMessageList = async () => {
+//       try {
+//         const res = await axios.get('video', {
+//           params: { userEmail: userEmail },
+//         });
+//         setMessageList(res.data.response);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
 
-    if (messageList.length > 0) {
-      const firstVideoId = messageList[0].videoId; // 첫 번째 비디오의 videoId 가져오기
-      fetchIndividualMessage(firstVideoId);
-    }
-  }, [messageList]);
+//     fetchMessageList();
+//   }, []);
 
-  const handlePrevMessage = () => {
-    if (currentMessageIndex > 0) {
-      setCurrentMessageIndex(currentMessageIndex - 1);
-      setMediaSource(null); // 이전 메세지로 이동할 때 미디어 리소스 초기화
-    }
-  };
+//   useEffect(() => { // 개별 메세지
+//     const fetchIndividualMessage = async (videoId) => {
+//       try {
+//         const res = await axios.get('video/message', {
+//         params: { videoId: videoId },
+//         responseType: 'blob',
+//         });
+//         // console.log(res.data)
+//         setCurrentMessage(res.data);
+    
+//         if (res.data.type === 'v') {
+//           playVideoMessage(res.data);
+//         } else if (res.data.type === 'a') {
+//           playAudioMessage(res.data);
+//         }
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
 
-  const handleNextMessage = () => {
-    if (currentMessageIndex < messageList.length - 1) {
-      setCurrentMessageIndex(currentMessageIndex + 1);
-      setMediaSource(null); // 다음 메세지로 이동할 때 미디어 리소스 초기화
-    }
-  };
+//     if (messageList.length > 0) {
+//       const firstVideoId = messageList[0].videoId;
+//       fetchIndividualMessage(firstVideoId);
+//     }
+//   }, [messageList]);
 
-  const playVideoMessage = async () => {
-    try {
-      const res = await fetch('video/message', {
-      params: { videoId: messageList[currentMessage].videoId }
-    });
-      const reader = res.body.getReader();
+//   const fetchStreamingData = async (url) => {
+//     try {
+//       const res = await fetch(url);
+//       const arrayBuffer = await res.arrayBuffer();
+//       return arrayBuffer;
+//     } catch (error) {
+//       console.error(error);
+//       return null;
+//     }
+//   };
 
-      const video = document.getElementById('video-player');
-      const newMediaSource = new MediaSource();
-      video.src = URL.createObjectURL(newMediaSource);
+//   const playAudioMessage = async (audioUrl) => {
+//     try {
+//       const arrayBuffer = await fetchStreamingData(audioUrl);
+//       if (!arrayBuffer) return;
 
-      const sourceBuffer = newMediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+//       const audioContext = new AudioContext();
+//       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+//       const source = audioContext.createBufferSource();
+//       source.buffer = audioBuffer;
+//       source.connect(audioContext.destination);
+//       source.start();
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
 
-      reader.read().then(({ done, value }) => {
-        if (done) {
-          console.log('됐다')
-          newMediaSource.endOfStream();
-          return;
-        }
-        sourceBuffer.appendBuffer(value);
-        setMediaSource(newMediaSource); // 미디어 리소스 저장
-      });
-    } catch (error) {
-      console.error('Error fetching or playing video:', error);
-    }
-  };
+//   const playVideoMessage = async (videoUrl) => {
+//     try {
+//       const arrayBuffer = await fetchStreamingData(videoUrl);
+//       if (!arrayBuffer) return;
+  
+//       const video = document.getElementById('video-player');
+//       video.src = videoUrl;
+//       video.controls = true;
+//       video.autoplay = false;
+//       // console.log()
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
 
-  let messageType = '';
-  if (messageList[currentMessageIndex]) {
-    if (messageList[currentMessageIndex].type === 'v') {
-      messageType = '영상';
-    } else if (messageList[currentMessageIndex].type === 'a') {
-      messageType = '음성';
-    }
-  }
+//   const handlePrevMessage = () => {
+//     if (currentMessageIndex > 0) {
+//       setCurrentMessageIndex(currentMessageIndex - 1);
+//     }
+//   };
 
-  return (
-    <div className="video-message-container">
-      <div className="message-content">
-        {currentMessage ? (
-          <div className="message">
-            <p>{messageList[currentMessageIndex].sendUserEmail}님의 {messageType}메세지</p>
-            {currentMessage.type === 'v' ? (
-              <video id="video-player" width="800" height="400" controls autoPlay>
-              </video>
-            ) : (
-              <p>{currentMessage.content}</p>
-            )}
-            <p>보낸 날짜 : {messageList[currentMessageIndex].date}</p>
-          </div>
-        ) : (
-          <p>메세지가 없습니다.</p>
-        )}
-      </div>
-      <div className="message-navigation">
-        <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>이전 메세지</button>
-        <button onClick={handleNextMessage} disabled={currentMessageIndex === messageList.length - 1}>다음 메세지</button>
-        {currentMessage && currentMessage.type === 'v' && (
-          <button onClick={playVideoMessage}>영상 재생</button>
-        )}
-      </div>
-    </div>
-  );
-}
+//   const handleNextMessage = () => {
+//     if (currentMessageIndex < messageList.length - 1) {
+//       setCurrentMessageIndex(currentMessageIndex + 1);
+//     }
+//   };
 
-export default VideoMessage;
+//   let messageType = '';
+//   if (messageList[currentMessageIndex]) {
+//     if (messageList[currentMessageIndex].type === 'v') {
+//       messageType = '영상';
+//     } else if (messageList[currentMessageIndex].type === 'a') {
+//       messageType = '음성';
+//     }
+//   }
+
+//   return (
+//     <div className="video-message-container">
+//       <div className="message-content">
+//         {currentMessage ? (
+//           <div className="message">
+//             <p>{messageList[currentMessageIndex].sendUserEmail}님의 {messageType}메세지</p>
+//             {messageList[currentMessageIndex].type === 'v' ? (
+//               <video id="video-player" width="800" height="400" controls autoPlay></video>
+//             ) : (
+//               <p>{currentMessage.content}</p>
+//             )}
+//             <p>보낸 날짜 : {messageList[currentMessageIndex].date}</p>
+//           </div>
+//         ) : (
+//           <p>메세지가 없습니다.</p>
+//         )}
+//       </div>
+//       <div className="message-navigation">
+//         {/* 이전 메세지 버튼 */}
+//         <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>이전 메세지</button>
+//         {/* 다음 메세지 버튼 */}
+//         <button onClick={handleNextMessage} disabled={currentMessageIndex === messageList.length - 1}>다음 메세지</button>
+//         {currentMessage && messageList[currentMessageIndex].type === 'v' && (
+//         <button onClick={() => playVideoMessage(currentUrl)}>영상 재생</button>
+//         )}
+//         {/* 음성 재생 버튼 */}
+//         {currentMessage && messageList[currentMessageIndex].type === 'a' && (
+//           <button onClick={() => playAudioMessage(currentUrl)}>음성 재생</button>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default VideoMessage;
+
