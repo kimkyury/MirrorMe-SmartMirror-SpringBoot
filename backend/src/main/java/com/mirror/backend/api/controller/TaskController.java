@@ -16,7 +16,7 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
 @RequestMapping("/tasks")
-@Tag(name = "task", description = "사용자 todoList 관련 API")
+@Tag(name = "tag", description = "사용자 todoList API")
 public class TaskController {
 
     @Autowired
