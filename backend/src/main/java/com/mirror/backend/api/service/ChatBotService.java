@@ -3,7 +3,10 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
+import com.mirror.backend.api.entity.RedisSummeryCalendar;
 import com.mirror.backend.api.info.ChatGPT;
+import com.mirror.backend.api.repository.RedisSummeryCalendarRepository;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -14,16 +17,19 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ChatBotService {
-    private static ChatGPT chatGPT;
+    private final ChatGPT chatGPT;
+    private final RedisSummeryCalendarRepository redisSummeryCalendarrepository;
     private OpenAiService openAiService;
 
     @Autowired
-    public ChatBotService(ChatGPT chatGPT) {
+    public ChatBotService(ChatGPT chatGPT, RedisSummeryCalendarRepository redisSummeryCalendarrepository) {
         this.chatGPT = chatGPT;
         this.openAiService = chatGPT.openAiService();
+        this.redisSummeryCalendarrepository = redisSummeryCalendarrepository;
     }
 
     public ResponseChatBotDto askQuestion(RequestChatBotDto requestDto) {
@@ -52,4 +58,18 @@ public class ChatBotService {
         return response;
     }
 
+    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
+        Optional<RedisSummeryCalendar> redisSummeryCalendar = redisSummeryCalendarrepository.findById(userEmail);
+
+        if (redisSummeryCalendar.isEmpty()){
+            return null;
+        }
+
+        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
+                .summeryCalendarText(redisSummeryCalendar.get().getSummeryCalendar())
+                .build();
+
+        return dto;
+
+    }
 }
