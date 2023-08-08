@@ -1,28 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class Home extends StatelessWidget {
-  Future<void> fetchData() async {
-    final url = Uri.parse('http://i9e101.p.ssafy.io:8080/weather/mid');
-
-    final Map<String, int> queryParams = {
-      'numOfRows': 100,
-      'pageNo': 1,
-    };
-    final uri = Uri.https(url.authority, url.path, queryParams);
-
-    final response = await http.get(uri, headers: {
-      'Content-Type': 'application/json', // 필요한 경우 헤더를 추가
-    });
-
-    if (response.statusCode == 200) {
-      // 데이터를 성공적으로 받았을 때의 처리
-      print('Response data: ${response.body}');
-    } else {
-      // 요청이 실패했을 때의 처리
-      print('Request failed with status: ${response.statusCode}');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
