@@ -33,31 +33,31 @@ class _SigninState extends State<Signin> {
     });
   }
 
-  Future<void> sendPostRequest() async {
-    final Uri url = Uri.parse('http://192.168.30.142:8080/oauth/login/tokens');
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json; charset=UTF-8',
-    };
+  // Future<void> sendPostRequest() async {
+  //   final Uri url = Uri.parse('http://192.168.30.142:8080/oauth/login/tokens');
+  //   final Map<String, String> headers = {
+  //     'Content-Type': 'application/json; charset=UTF-8',
+  //   };
 
-    final Map<String, String> body = {
-      'userEmail': 'mandarining0918@gmail.com',
-      'password': '123456789',
-    };
-    
-    try {
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body), // Map을 JSON 문자열로 인코딩
-      );
+  //   final Map<String, String> body = {
+  //     'userEmail': 'mandarining0918@gmail.com',
+  //     'password': '123456789',
+  //   };
 
-      if (response.statusCode == 200) {
-        print('Request was successful');
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: headers,
+  //       body: jsonEncode(body), // Map을 JSON 문자열로 인코딩
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       print('Request was successful');
+  //     }
+  //   } catch (e) {
+  //     print("Error: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,8 @@ class _SigninState extends State<Signin> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
-                controller: TextEditingController(text: widget.email), // 구글 계정의 이메일을 회원가입 이메일로 자동 반영
+                controller: TextEditingController(
+                    text: widget.email), // 구글 계정의 이메일을 회원가입 이메일로 자동 반영
                 enabled: false, // 입력 비활성화 설정
                 decoration: InputDecoration(
                   labelText: '이메일',
@@ -87,8 +88,10 @@ class _SigninState extends State<Signin> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: '비밀번호',
-                  errorText: _passwordController.text.length < 7 && _passwordController.text.length > 0 ?
-                  '비밀번호는 영어와 숫자를 합쳐 7자 이상이어야 합니다.' : null,
+                  errorText: _passwordController.text.length < 7 &&
+                          _passwordController.text.length > 0
+                      ? '비밀번호는 영어와 숫자를 합쳐 7자 이상이어야 합니다.'
+                      : null,
                 ),
               ),
               TextField(
@@ -103,8 +106,9 @@ class _SigninState extends State<Signin> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isPasswordValid
-                  ? sendPostRequest
-                  : null,
+                    ? null
+                    // sendPostRequest
+                    : null,
                 child: Text('로그인'),
               ),
             ],
