@@ -1,7 +1,9 @@
 package com.mirror.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mirror.backend.api.dto.Message;
 import com.mirror.backend.api.entity.VideoMessage;
+import com.mirror.backend.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +24,9 @@ public class BackendApplication {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    @Autowired
+    private VideoRepository videoRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
     }
@@ -41,28 +46,28 @@ public class BackendApplication {
         File[] files = fileDirectory.listFiles((dir, name) -> name.endsWith(".json"));
         if (files != null) {
             for (File file : files) {
-                // redis 에 저장하는 로직
+                // redis 에 저장하는 로직 -> redis + mariaDB로 변경
                 System.out.println("file = " + file);
-                VideoMessage videoMessage = objectMapper.readValue(file, VideoMessage.class);
+                Message.RequestMessage videoMessage = objectMapper.readValue(file, Message.RequestMessage.class);
 
                 String videoPath = folderPath + "/" + videoMessage.getFileName();
-                saveVideo(videoPath, videoMessage, dateMinusNow);
+                VideoMessage vm = VideoMessage.builder()
+                        .requestMessage(videoMessage)
+                        .date(minusMinuteDate.toString())
+                        .build();
+
+                Long videoId = videoRepository.save(vm).getVideoId();
+                saveVideo(videoPath, videoId, vm);
             }
         }
     }
-
-    public void saveVideo(String videoPath, VideoMessage videoMessage, String date) {
-        System.out.println("videoMessage = " + videoMessage.getUserEmail());
-        saveListToHash(videoMessage.getSendUserEmail(), "sendUserEmail", videoMessage.getUserEmail());
-        saveListToHash(videoMessage.getSendUserEmail(), "videoPath", videoPath);
-        saveListToHash(videoMessage.getSendUserEmail(), "type", videoMessage.getType());
-        saveListToHash(videoMessage.getSendUserEmail(), "date", date);
+    public void saveVideo(String videoPath, Long videoId, VideoMessage videoMessage) {
+        saveListToHash(videoMessage.getSendUserEmail(), videoId + "", videoPath);
     }
 
     public void saveListToHash(String hashKey, String innerKey, String innerValue) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String innerValuesStr = hashOperations.get(hashKey, innerKey);
-        if(innerValuesStr == null) hashOperations.put(hashKey, innerKey, innerValue);
-        else hashOperations.put(hashKey, innerKey, innerValuesStr + "," + innerValue);
+        hashOperations.put(hashKey, innerKey, innerValue);
     }
+
 }
