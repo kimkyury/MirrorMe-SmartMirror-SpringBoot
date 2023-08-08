@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,15 +30,15 @@ public class Message {
         private String sendUserEmail;
         private String date;
         private String type;
-        private String imgStr;
+        private StreamingResponseBody videoFile;
 
         @Builder
-        public ResponseMessageDetail(String userEmail, String sendUserEmail, String date, String type, String imgStr) {
+        public ResponseMessageDetail(String userEmail, String sendUserEmail, String date, String type, StreamingResponseBody videoFile) {
             this.userEmail = userEmail;
             this.sendUserEmail = sendUserEmail;
             this.date = date;
             this.type = type;
-            this.imgStr = imgStr;
+            this.videoFile = videoFile;
         }
     }
 }
