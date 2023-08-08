@@ -58,9 +58,9 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-            [True, True, False, False, (0,0), "V"],
-            [True, False, False, True, (0,0), "A"],
-            [False, False, False, False, (0,0), "EXIT"]]
+            [True, True, False, False, (0,0), "V"]]
+            # [True, False, False, True, (0,0), "A"],
+            # [False, False, False, False, (0,0), "EXIT"]]
     
     result = deque([None for _ in range(26)])
     distance = deque(['remain' for _ in range(3)])
@@ -112,8 +112,8 @@ def getgesture():
         if len(result) < 10:
             result.append(None)
 
-        cv2.imshow("hand",img)
-        cv2.waitKey(1)
+        # cv2.imshow("hand",img)
+        # cv2.waitKey(1)
 
         ret = max(set(result), key=result.count)
 
@@ -144,11 +144,16 @@ def get_gesture():
 
 if __name__ == "__main__":
     print("start...")
-    get_user_face.getUserFaceImage()
-
+    try:
+        get_user_face.getUserFaceImage()
+        print("make face image finished")
+    except:
+        pass
+    
     print("find user")
     my_name = find_user.getUserName()
     print("user :", my_name)
+
     my_name = '1'
     do = ''
     recv = ''
