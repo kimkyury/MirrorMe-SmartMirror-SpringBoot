@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function Weather(props) {
+function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
@@ -58,21 +58,21 @@ function Weather(props) {
   // 비, 눈 등이 오지 않을 때 하늘 정보 활용
   if (weatherInfo.pty === 0) {
     if (weatherInfo.sky === 1) {
-      todaySky = '맑음';
+      todaySky = '/weather/001.png';
     } else if (weatherInfo.sky === 3) {
-      todaySky = '구름많음';
+      todaySky = '/weather/002.png';
     } else if (weatherInfo.sky === 4) {
-      todaySky = '흐림';
+      todaySky = '/weather/003.png';
     }
   } else { // 아니면 비, 눈 정보 활용
     if (weatherInfo.pty === 1) {
-      todaySky = '비';
+      todaySky = '/weather/004.png';
     } else if (weatherInfo.pty === 2) {
-      todaySky = '비와 눈';
+      todaySky = '/weather/005.png';
     } else if (weatherInfo.pty === 3) {
-      todaySky = '눈';
+      todaySky = '/weather/006.png';
     } else if (weatherInfo.pty === 4) {
-      todaySky = '소나기';
+      todaySky = '/weather/007.png';
     }
   }
 
@@ -86,11 +86,7 @@ function Weather(props) {
       <div className="weather-container">
         <div className="weather-left">
           <div className="weather-icon">
-            {/* 추후 수정 */}
-            <p>날씨 아이콘</p>
-          </div>
-          <div className="weather-condition">
-            <p>{todaySky}</p>
+            <img src={todaySky} alt="weather icon" />
           </div>
         </div>
         <div>
@@ -112,4 +108,4 @@ function Weather(props) {
   );
 }
 
-export default Weather;
+export default TodayWeather;

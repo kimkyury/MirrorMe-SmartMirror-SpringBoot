@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
+import './household.dart';
 
 
 class Profile extends StatefulWidget {
@@ -89,8 +91,34 @@ class _ProfileState extends State<Profile> {
   }
 }
 
-class ProfilePicture extends StatelessWidget {
-  const ProfilePicture({super.key});
+class ProfilePicture extends StatefulWidget {
+  const ProfilePicture({Key? key}) : super(key: key);
+
+  @override
+  _ProfilePictureState createState() => _ProfilePictureState();
+}
+
+class _ProfilePictureState extends State<ProfilePicture> {
+  late ImagePicker _imagePicker;
+  XFile? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePicker = ImagePicker();
+  }
+
+  void _pickImageFromCamera() async {
+    XFile? pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.camera,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +130,28 @@ class ProfilePicture extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              '프로필 사진 선택 또는 표시', // 여기에 프로필 사진 관련 위젯을 추가하면 됩니다.
-              style: TextStyle(fontSize: 20),
+            _imageFile != null
+                ? Image.file(
+                    File(_imageFile!.path),
+                    height: 200,
+                    width: 200,
+                  )
+                : Text(
+                    '프로필 사진을 촬영해주세요!',
+                    style: TextStyle(fontSize: 20),
+                  ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickImageFromCamera,
+              child: Text('촬영하기'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // 이 버튼을 누를 때 다음 단계로 넘어갈 동작을 추가하면 됩니다.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HouseHold()),
+                );
               },
               child: Text('다음 단계'),
             ),

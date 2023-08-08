@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
 
-// import './main_page.dart';
+import './main_page.dart';
 import './profile.dart';
 
 class Login extends StatelessWidget {
@@ -21,7 +23,9 @@ class Login extends StatelessWidget {
                 child: Text('로고'),
               ),
             ),
-            SizedBox(height: 20), // Adding some space between the logo and the login button
+            SizedBox(
+                height:
+                    20), // Adding some space between the logo and the login button
             Container(
               height: 50,
               width: 200,
@@ -32,7 +36,7 @@ class Login extends StatelessWidget {
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push( // 구글 로그인 버튼이 눌렸을 때 Profile 페이지로 이동합니다.
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Profile()),
                     );
@@ -40,6 +44,18 @@ class Login extends StatelessWidget {
                   child: Text('구글 계정으로 로그인'),
                 ),
               ),
+            ),
+            SizedBox(height: 20), // Adding space between the two buttons
+            ElevatedButton(
+              // "다른 페이지로 이동" 버튼 추가
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MyHomePage()), // 새로운 페이지로 이동
+                );
+              },
+              child: Text('다른 페이지로 이동'),
             ),
           ],
         ),
