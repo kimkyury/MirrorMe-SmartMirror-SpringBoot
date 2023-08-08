@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.mlm">
     <application
         android:label="flutter_application_1"
         android:name="${applicationName}"
@@ -27,7 +28,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="1ot" android:host="callback" />
+                <!-- Use a custom URI scheme -->
+                <data android:scheme="https" android:host="myapp.com" android:path="/oauth/token" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
