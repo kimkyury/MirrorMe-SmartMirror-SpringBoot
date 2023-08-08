@@ -30,8 +30,4 @@ public class ChatGPT {
         return new OpenAiService(API_KEY, Duration.ofSeconds(60));
     }
 
-
-
-
-
 }
