@@ -207,7 +207,7 @@ public class TokenAuthenticationFilter implements Filter {
     }
 
     private void saveAccessTokenToRedis( String userEmail, String accessToken ,String refreshToken){
-        String key = "token_" + userEmail;
+        String key =  userEmail;
 
         RedisUserToken send = new RedisUserToken(key,
                 accessToken,

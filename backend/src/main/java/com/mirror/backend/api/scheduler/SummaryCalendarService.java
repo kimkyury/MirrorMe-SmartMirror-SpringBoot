@@ -9,6 +9,7 @@ import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
+import com.mirror.backend.common.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,21 +26,23 @@ public class SummaryCalendarService {
     public final CalendarService calendarService;
     public final ChatGptUtil chatGptUtil;
     public final OAuthService oAuthService;
+    public final TokenUtil tokenUtil;
 
     @Autowired
     public SummaryCalendarService(RedisUserTokenRepository redisUserTokenRepository,
                                   RedisSummeryCalendarRepository redisSummeryCalendarRepository,
-                                  CalendarService calendarService, ChatGptUtil chatGptUtil, OAuthService oAuthService) {
+                                  CalendarService calendarService, ChatGptUtil chatGptUtil, OAuthService oAuthService, TokenUtil tokenUtil) {
         this.redisUserTokenRepository = redisUserTokenRepository;
         this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
         this.calendarService = calendarService;
         this.chatGptUtil = chatGptUtil;
         this.oAuthService = oAuthService;
+        this.tokenUtil = tokenUtil;
     }
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
-//    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
+//    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
         System.out.println("------------실행중----------");
         // redis내의 유저 Token을 가져온다
@@ -50,9 +53,9 @@ public class SummaryCalendarService {
         while (iterator.hasNext()) {
             RedisUserToken userTokenInfo = iterator.next();
             String accessToken = userTokenInfo.getAccessToken();
+            String refreshToken = userTokenInfo.getRefreshToken();
 
-            // 만료될시 재발급하는 로직 추가해야함포
-            System.out.println(accessToken);
+           accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
 
             // 해당 유저의 Email을 조회
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
