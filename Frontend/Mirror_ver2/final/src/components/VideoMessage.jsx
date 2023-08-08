@@ -25,22 +25,22 @@ function VideoMessage() {
 
   useEffect(() => {
     // 개별 메세지 받아오는 함수
-    const fetchIndividualMessage = async (videoId, userEmail) => {
+    const fetchIndividualMessage = async (videoId) => {
       try {
         const res = await axios.get('video/message', {
-          params: { videoId: videoId, userEmail: userEmail },
+          params: { videoId: videoId }
         });
-        setCurrentMessage(res.data.content); // 개별 메세지 컨텐츠 업데이트
+        console.log(res.data.response)
+        setCurrentMessage(res.data.response);
       } catch (error) {
         console.error(error);
       }
     };
   
     if (messageList.length > 0) {
-      const filteredMessage = messageList.find(message => message.videoId === currentMessageIndex);
+      const filteredMessage = messageList.find(message => message.videoId === currentMessageIndex + 4); // videoId는 4부터 시작
       if (filteredMessage) {
-        const { videoId, userEmail } = filteredMessage;
-        fetchIndividualMessage(videoId, userEmail);
+        fetchIndividualMessage(filteredMessage.videoId);
       }
     }
   }, [currentMessageIndex, messageList]);
@@ -57,12 +57,30 @@ function VideoMessage() {
     }
   };
 
+  let messageType = '';
+  if (currentMessage) {
+    if (currentMessage.type === 'v') {
+      messageType = '영상';
+    } else if (currentMessage.type === 'a') {
+      messageType = '음성';
+    }
+  }
+
   return (
     <div className="video-message-container">
       <div className="message-content">
         {currentMessage ? (
           <div className="message">
-            <p>{currentMessage}</p>
+            <p>{currentMessage.sendUserEmail}님의 {messageType}메세지</p>
+            {currentMessage.type === 'v' ? (
+              <video controls>
+                {/* 주소 줄여서 수정 필요 */}
+                <source src={currentMessage.imgStr} type="video/mp4" />
+              </video>
+            ) : (
+              <p>{currentMessage.content}</p>
+            )}
+            <p>보낸 날짜 : {currentMessage.date}</p>
           </div>
         ) : (
           <p>메세지가 없습니다.</p>

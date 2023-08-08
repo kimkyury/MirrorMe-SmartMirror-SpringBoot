@@ -17,7 +17,7 @@ import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
 @RequestMapping("/schedule")
-@Tag(name="schedule", description = "사용자 캘린더 관련 API")
+@Tag(name="calendar", description = "사용자 캘린더 관련 API")
 public class CalendarController {
 
     @Autowired
