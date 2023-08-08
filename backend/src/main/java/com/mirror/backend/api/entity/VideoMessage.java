@@ -1,27 +1,43 @@
 package com.mirror.backend.api.entity;
 
+import com.mirror.backend.api.dto.Message;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
+import javax.persistence.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import java.time.LocalDateTime;
+
+
+@Entity
 @Getter
+@ToString
 @NoArgsConstructor
-@RedisHash(value = "video", timeToLive = 30)
+@AllArgsConstructor
 public class VideoMessage {
 
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long videoId;
+
     private String userEmail;
     private String sendUserEmail;
-    private String fileName;
     private String type;
     private String date;
+    private Character isRead;
 
     @Builder
-    public VideoMessage(String userEmail, String sendUserEmail, String fileName, String type, String date) {
-        this.userEmail = userEmail;
-        this.sendUserEmail = sendUserEmail;
-        this.fileName = fileName;
-        this.type = type;
+    public VideoMessage(Message.RequestMessage requestMessage, String date) {
+        this.userEmail = requestMessage.getSendUserEmail();
+        this.sendUserEmail = requestMessage.getUserEmail();
+        this.type = requestMessage.getType();
         this.date = date;
+        this.isRead = 'N';
+    }
+
+    public void update(Character isRead) {
+        this.isRead = isRead;
     }
 }

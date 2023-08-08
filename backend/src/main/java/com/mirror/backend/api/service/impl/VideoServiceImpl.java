@@ -1,5 +1,7 @@
 package com.mirror.backend.api.service.impl;
 
+import com.mirror.backend.api.entity.VideoMessage;
+import com.mirror.backend.api.repository.VideoRepository;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import com.mirror.backend.api.dto.Message;
@@ -21,6 +23,9 @@ public class VideoServiceImpl implements VideoService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    @Autowired
+    private VideoRepository videoRepository;
+
     @Override
     public int matchVideo(String text) {
         System.out.println("text = " + text);
@@ -29,49 +34,47 @@ public class VideoServiceImpl implements VideoService {
         }
         return 0;
     }
-    public List<String> getListFromHash(String hashKey, String innerKey) {
+    public String getStringFromHash(String hashKey, String innerKey) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String innerValuesStr = hashOperations.get(hashKey, innerKey);
-        return List.of(innerValuesStr.split(","));
+        return hashOperations.get(hashKey, innerKey);
     }
+
+    // 영상 메시지 전체 조회
     @Override
-    public List<Message.ResponseMessage> getVideo(String userEmail) {
-        List<String> sendIdList = getListFromHash(userEmail, "sendUserEmail");
-        List<String> videoPathList = getListFromHash(userEmail, "videoPath");
-        List<String> dateList = getListFromHash(userEmail, "date");
+    public List<VideoMessage> getVideo(String userEmail) {
+        List<VideoMessage> videoMessageList = videoRepository.findAllByUserEmail(userEmail);
+        return videoMessageList;
+    }
 
-        if(sendIdList == null) {
-            return null;
+    // 영상 메시지 한 개 조회
+    @Override
+    public Message.ResponseMessageDetail getVideoDetail(Long videoId) {
+        VideoMessage videoMessage = videoRepository.findByVideoId(videoId);
+        String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
+
+        try {
+            InputStream inputStream = new FileInputStream(videoUrl);
+            byte[] images = IOUtils.toByteArray(inputStream);
+            byte[] byteEnc64 = Base64.encodeBase64(images);
+            String imgStr = new String(byteEnc64, "UTF-8");
+
+            videoMessage.update('Y');
+            videoRepository.save(videoMessage);
+
+            Message.ResponseMessageDetail responseMessage = Message.ResponseMessageDetail.builder()
+                    .userEmail(videoMessage.getUserEmail())
+                    .sendUserEmail(videoMessage.getSendUserEmail())
+                    .date(videoMessage.getDate())
+                    .type(videoMessage.getType())
+                    .imgStr(imgStr)
+                    .build();
+
+            inputStream.close();
+            return responseMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        List<Message.ResponseMessage> responseMessages = new ArrayList<>();
-        int size = sendIdList.size();
-        System.out.println("size = " + size);
-        for(int i = 0; i < size; i++) {
-            String sendUserEmail = sendIdList.get(i);
-            String videoPath = videoPathList.get(i);
-            String date = dateList.get(i);
-
-            try {
-                InputStream inputStream = new FileInputStream(videoPath);
-                byte[] images = IOUtils.toByteArray(inputStream);
-                byte[] byteEnc64 = Base64.encodeBase64(images);
-                String imgStr = new String(byteEnc64, "UTF-8");
-
-                Message.ResponseMessage responseMessage = Message.ResponseMessage.builder()
-                        .videoFile(imgStr)
-                        .userEmail(userEmail)
-                        .sendUserEmail(sendUserEmail)
-                        .date(date).build();
-
-                responseMessages.add(responseMessage);
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return responseMessages;
+        return null;
     }
 
     @Override
