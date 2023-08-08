@@ -1,5 +1,7 @@
 package com.mirror.backend.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.dto.ResponseLoginDto;
 import com.mirror.backend.api.dto.ResponseTokensDto;
 import com.mirror.backend.api.service.OAuthService;
@@ -13,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -30,7 +36,7 @@ public class OAuthController {
         this.oAuthService = oAuthService;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/oauth/login")
     @Operation(summary = "Google AuthorizationCode 발급 요청", description = "Google Login을 통해, Event와 Task의 접근권한이 부여된 Code를 요청합니다.")
     public void registerGoogleAccount(HttpServletResponse response) throws Exception {
 
@@ -40,19 +46,35 @@ public class OAuthController {
     }
 
     // 아래 메소드는 Front한테 위임되면서 삭제될 예정
-    @GetMapping("/oauth/google/callback")
+    @GetMapping("/oauth/token")
     @Operation(summary = "(in Backend)Callback Token을 통한 로그인 진행", description = "" +
             "Google에서 받은 Authorization Code를 Access/Refresh토큰으로 교환, " +
             "이후 로그인을 진행합니다. \n ")
-    public ApiUtils.ApiResult<ResponseLoginDto> callback(
+    public ApiUtils.ApiResult<ResponseLoginDto>  callback(
             @RequestParam(name = "code", required = false) String authCode,
             @RequestParam(name = "error", required = false) String error) {
 
         System.out.println("authCode: " + authCode);
         ResponseLoginDto response = oAuthService.login(authCode);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("accessToken", response.getAccessToken());
+        data.put("refreshToken", response.getAccessToken());
+
+        String json = null;
+        try {
+            json = new ObjectMapper().writeValueAsString(data);
+        }catch( JsonProcessingException e){
+            e.printStackTrace();
+        }
+        String base64EncodedJson = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+        System.out.println(base64EncodedJson);
+//        return "redirect:1ot://callback?token="  + base64EncodedJson;
+
         return success(response);
     }
 
+    // 아래 메소드는 oauth/token으로 옮겨질 내용임 (Front연결이후)
     @GetMapping("/login/auth")
     @Operation(summary = "승인코드를 통한 유저 존재 확인 ",
             description = "Authorization Code를 Access/Refresh토큰으로 교환합니다." +

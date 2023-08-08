@@ -61,9 +61,10 @@ public class TokenAuthenticationFilter implements Filter {
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
             .append("?access_token=").append(accessToken);
 
+        ObjectMapper mapper = new ObjectMapper();
+
         ResponseEntity<String> responseEntity = null;
         JsonNode returnNode = null;
-        ObjectMapper mapper = new ObjectMapper();
 
         String userEmail = "";
         Long userId;
@@ -73,7 +74,9 @@ public class TokenAuthenticationFilter implements Filter {
             returnNode = mapper.readTree(responseEntity.getBody());
 
             userEmail = returnNode.get("email").asText();
+//            System.out.println("in Filter, userEmail: " + userEmail);
             userId = getUserIdFromUserEmail(userEmail);
+//            System.out.println("in Filter, userId: " + userId);
 
             servletRequest.setAttribute("user_email", userEmail);
             servletRequest.setAttribute("user_id", userId);

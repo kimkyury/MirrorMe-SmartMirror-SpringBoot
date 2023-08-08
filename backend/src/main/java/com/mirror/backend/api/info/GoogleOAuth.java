@@ -19,9 +19,9 @@ public class GoogleOAuth {
 
     @Value("${google.client-id}")
     private String clientId;
+
     @Value("${google.client-secret}")
     private String clientSecret;
-
 
     // receive AuthorizationCode
     @Value("${google.redirect-uri}")

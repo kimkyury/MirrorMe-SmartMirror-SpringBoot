@@ -40,6 +40,8 @@ public class UserController {
     public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("user_id");
+        System.out.println("userId: " + userId);
+
         ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
 
         return success(userInfo);

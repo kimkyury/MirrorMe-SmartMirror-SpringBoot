@@ -101,6 +101,8 @@ public class Event {
         @JsonProperty("eventType")
         private String eventType;
 
+        public String getSummary() { return summary;}
+
         public StartEndDateTime getStart() {
             return start;
         }
