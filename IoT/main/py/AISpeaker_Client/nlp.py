@@ -137,15 +137,15 @@ def expect_message_cap(response):
 
 def expect_weather(response):
     # print("날씨 관련 요청")
-    return "WEATHER"
+    return "WEATHER\n\r"
 
 def expect_news(response):
     # print("뉴스 관련 요청")
-    return "NEWS"
+    return "NEWS\n\r"
 
 def cant_understand(response):
     # print("이해하지 못 했어요")
-    return "CANTUNDERSTAND"
+    return "CANTUNDERSTAND\n\r"
 
 
 
