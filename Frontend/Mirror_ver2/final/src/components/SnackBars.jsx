@@ -65,7 +65,7 @@ function Snackbars(props) {
               )}
             </div>
           }
-          style={{ marginTop: '80px' }}
+          style={{ marginTop: '200px' }}
         />
       </CSSTransition>
 
@@ -82,7 +82,7 @@ function Snackbars(props) {
           autoHideDuration={10000}
           onClose={handleTasksButtonClick}
           message={<Tasks />}
-          style={{ marginTop: '80px' }}
+          style={{ marginTop: '200px' }}
         />
       </CSSTransition>
 
@@ -99,7 +99,7 @@ function Snackbars(props) {
           autoHideDuration={10000}
           onClose={handleSchedulesButtonClick}
           message={<Schedules />}
-          style={{ marginTop: '80px' }}
+          style={{ marginTop: '200px' }}
         />
       </CSSTransition>
     </div>
