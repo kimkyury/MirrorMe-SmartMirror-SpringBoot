@@ -2,28 +2,32 @@ spring:
   datasource:
     url: jdbc:mariadb://i9e101.p.ssafy.io:3306/mlm
     driver-class-name: org.mariadb.jdbc.Driver
-    username: root
-    password: mlmMDB6
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
   redis:
     host: i9e101.p.ssafy.io
     port: 6379
-    password: woneee99
+    password: ${REDIS_PASSWORD}
   jpa:
     generate-ddl: true
     show-sql: true
 
-
 google:
-  client-id: "627028807402-fobgohrdmv1ov823iiij7omtp89p2onb.apps.googleusercontent.com"
-  client-secret: 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
-  redirect-uri: http://i9e101.p.ssafy.io/oauth/google/callback
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
+  redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/google/callback
+
+iot:
+  N: ${N}
+  RSA: ${RSA}
+  RSB: ${RSB}
 
 server:
   address: 0.0.0.0
   port: 8090
 
 data:
-  service-key: "%2FoTPUAndmigHQ%2BpPwXOuYoVbqfXclp89LQ0mnAeXcFidTxdpxB9h9c2qIbJGNqkIFfkQgFeWqU4cLC3%2FHu%2BkMQ%3D%3D"
+  service-key: ${SERVICE_KEY}
 
 chatgpt:
-  api-key: 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
+  api-key: ${CHAT}
