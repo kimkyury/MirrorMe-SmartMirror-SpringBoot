@@ -7,9 +7,16 @@ spring:
   redis:
     host: i9e101.p.ssafy.io
     port: 6379
-  jpa:
-    generate-ddl: true
-    show-sql: true
+    password: ${REDIS_PASSWORD}
+  servlet:
+    multipart:
+      location: c:\\upload
+      maxFileSize: 200MB
+      maxRequestSize: 100MB
+
+jpa:
+  generate-ddl: true
+  show-sql: true
 
 google:
   client-id: ${CLIENT_ID}
