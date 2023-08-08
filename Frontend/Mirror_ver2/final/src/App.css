@@ -37,6 +37,10 @@ body {
   box-shadow: none;
 }
 
+.socket {
+  margin-top: 600px;
+}
+
 .CurrentDate {
   width: 33%;
   padding: 10px;
