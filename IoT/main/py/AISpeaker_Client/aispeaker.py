@@ -32,7 +32,6 @@ async def connect():
 #################################################################
 # 마이크를 통해 오디오를 인식하는 코루틴
 def senMicrophone():
-    print("?")
     # STT를 위한 세팅
     RATE = 16000
     CHUNK = int(RATE / 10) 

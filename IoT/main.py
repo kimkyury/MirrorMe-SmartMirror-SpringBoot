@@ -6,9 +6,16 @@ import asyncio
 import uuid
 # 웹 소켓 모듈을 선언한다.
 import websockets
+# 파일 경로 설정용 sys
+import sys
+sys.path.append("./main/py/AISpeaker_Client/")
+from tts import text_to_speech as tts
 
+import serial
+import os
 # from main/py/AISpeaker_Client import tts
 import random
+
 
 ###############################################################################################
 ###############################################################################################
@@ -36,6 +43,12 @@ async def accept(websocket, path):
         await websocket.close()
         return
 
+    # 이미 연결된 장치면 리턴
+    if client.get(role):
+        await websocket.close()
+        return
+
+
     # 조건 충족시 세션코드 발급 후 소켓 저장
     session_id = str(uuid.uuid4())
     client[session_id] = websocket
@@ -53,24 +66,24 @@ async def accept(websocket, path):
 ###############################################################################################
 ###############################################################################################
 
-WAITTING = 0
+SCREEN_OFF = 0
+WAITTING = 1
 CALL_MIRROR = 100
 YOUTUBE = 101
 MESSAGE_CAP = 102
 MESSAGE_SHOW = 103
 
-STATUS = 0
+STATUS = WAITTING
 
 
 # 명령이 쌓이게 되는 큐
 order = asyncio.Queue()
-connect_check = {"audio" : asyncio.Event(), "video" : asyncio.Event()}
+connect_check = {"audio" : asyncio.Event(), "video" : asyncio.Event(), "react" : asyncio.Event()}
 
 # 음성인식 혹은 제스쳐 명령을 받아와서 큐에 저장
 async def hearOrder(audio_or_video):
     print(f"{audio_or_video} 연결 대기")
-    # 클라이언트가 접속할때까지 대기 후
-    # 이벤트 꺼줌
+    # 클라이언트가 접속할때까지 대기 후 이벤트 꺼줌
     await connect_check[audio_or_video].wait()
     print(f"{audio_or_video} 연결 성공")
     connect_check[audio_or_video].clear()
@@ -95,24 +108,140 @@ async def hearOrder(audio_or_video):
             connect_check[audio_or_video].clear()
 
 
-# 큐에 쌓인 명령을 가져와 하나씩 수행
+# 큐에 쌓인 명령을 가져와 하나씩 비동기로 수행
 async def doOrder():
     while True:
         # 명령을 받아 옴
         received_event = await order.get()
-        print(received_event)
+        commend, *arg = received_event.split("\n\r")
+        print(commend)
 
-# 거울을 호출 했을때 실행되는 코루틴
-# async def call():
-#     if STATUS != WAITTING:
-#         return
+        if order_fun.get(commend, False):
+            asyncio.create_task(order_fun[commend](*arg))
 
-#     answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
-#     # 대답 후 상태 변경
-#     tts.text_to_speech(random.choice(answer))
+        
+# 음성 처리 결과를 처리하는 코루틴 함수들
+# 거울을 호출 했을때 실행
+async def call(*arg):
+    global STATUS
+    if STATUS != WAITTING:
+        print(f"현재 상태 : {STATUS}")
+        return
 
-    
+    answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
+    # 대답 후 상태 변경
+    tts(random.choice(answer))
+    STATUS = CALL_MIRROR
+# arg로 메세지 보내기
+async def messageSend(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
 
+    tts(f"{arg[0]}님께 보낼 영상메세지 촬영을 시작합니다.")
+
+    # 메세지 녹화 동기로 실행
+    STATUS = WAITTING
+# 메세지 확인하기
+async def messageShow(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
+
+    tts("메세지를 보여드릴게요")
+
+    # 메세지 보기 처리
+    # react로 보내기
+
+    STATUS = WAITTING
+# arg로 유튜브 검색하기
+async def youtube(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
+    tts(f"{arg[0]}를 유튜브에 검색해 볼게요")
+
+    STATUS = WAITTING
+    return 
+# 날씨 확인하기
+async def weather(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
+
+    tts("오늘의 날씨 입니다.")
+    # react로 데이터 보내고,
+    # 날씨관련 받아서
+    # 음성으로 출력하기
+
+    STATUS = WAITTING
+# 뉴스 확인하기
+async def news(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
+
+    tts("뉴스를 확인합니다.")
+
+    STATUS = WAITTING
+
+    # react로 보냄
+# 모르겠는건 chatgpt보내기
+async def chatgpt(*arg):
+    global STATUS
+    if STATUS != CALL_MIRROR:
+        print(f"현재 상태 : {STATUS}")
+        return
+
+    tts("뭐래는거야 챗지피티 도와줘")
+
+    STATUS = WAITTING
+
+###############################################################################################
+###############################################################################################
+# 아두이노 연결 처리 함수들
+async def appear(*arg):
+    # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
+    # os.system("xset dpms force standby")
+    # os.system("xset dpms force suspend")
+    global STATUS
+    STATUS = WAITTING
+
+    # 얼굴 인식 처리
+    # 처리 후 정보를 react로 보내야 됨
+
+    pass
+# 없어지면 
+async def disappear(*arg):
+    global STATUS
+    if STATUS == WAITTING:
+        # 이건 리눅스에서만 기능한다.
+        # os.system("xset dpms force off")
+        # 스피커와 카메라로 사용 종료 보내기
+
+        STATUS = SCREEN_OFF
+
+order_fun = {"CALL" : call,
+            "MESSAGESEND" : messageSend,
+            "MESSAGESHOW" : messageShow,
+            "WEATHER" : weather,
+            "NEWS" : news,
+            "YOUTUBE" : youtube,
+            "CANTUNDERSTAND" : chatgpt}
+
+
+# async def serialArduino():
+#     py_serial = serial.Serial(port="COM4", baudrate=9600,)
+
+#     while True:
+#         if py_serial.readable():
+#             response = py_serial.readline()
+#             order.put(response.decode())
 
 
 
@@ -120,11 +249,16 @@ async def main():
     await asyncio.gather(
         hearOrder("audio"),
         hearOrder("video"),
-        doOrder()
+        doOrder(),
+        # serialArduino(),
     )
 
 ###############################################################################################
 ###############################################################################################
+
+
+
+
 
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 
 start_server = websockets.serve(accept, "localhost", 9998);
