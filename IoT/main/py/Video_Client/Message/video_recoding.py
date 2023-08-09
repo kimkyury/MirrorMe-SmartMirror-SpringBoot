@@ -18,8 +18,8 @@ def recording(duration, output_path_video, output_path_audio):
     frames = []
 
     # Video recording settings
-    cap = cv2.VideoCapture(0)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    cap = cv2.VideoCapture(1)
+    fourcc = cv2.VideoWriter_fourcc(*'H264')  # Change the codec to H.264
     fps = 22.0
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
@@ -64,8 +64,8 @@ def recording(duration, output_path_video, output_path_audio):
 
 
 def recordingVideo(sender_email, recipient_email):
-    RECORDINGDURATION= 5  # Recording duration in seconds
-    OUTPUTVIDEOFILE = "./Message/recorded_video.avi"  # File name to save the recorded video
+    RECORDINGDURATION = 5  # Recording duration in seconds
+    OUTPUTVIDEOFILE = "./Message/recorded_video.mp4"  # File name to save the recorded video
     OUTPUTAUDIOFILE = "./Message/recorded_audio.wav"  # File name to save the recorded audio
 
     recording(RECORDINGDURATION, OUTPUTVIDEOFILE, OUTPUTAUDIOFILE)
