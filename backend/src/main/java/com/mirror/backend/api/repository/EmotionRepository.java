@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface EmotionRepository extends JpaRepository<Emotion, Long> {
-    List<Emotion> findAllByEmotionDateBetween(LocalDate start, LocalDate end);
+    List<Emotion> findAllByEmotionDateBetweenAndUserId(LocalDate start, LocalDate end, Long userId);
 }

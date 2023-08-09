@@ -8,5 +8,6 @@ import java.util.List;
 public interface EmotionService {
     Long saveEmotion(EmotionDto.EmotionReq emotionReq);
     List<EmotionDto.EmotionRes> getMyEmotion(Long userId);
+    List<EmotionDto.EmotionFamilyResList> getFamilyEmotion(Long userId);
 
 }
