@@ -54,7 +54,8 @@ public class WeatherController {
         urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf(ny), "UTF-8")); /*예보지점의 Y 좌표값*/
 
         JSONArray weatherInfo = weatherService.getWeatherInfo(urlBuilder);
-        return success(weatherService.getShortTermForecast(weatherInfo, baseDate));
+        List<ShortTermForecast> shortTermForecast = weatherService.getShortTermForecast(weatherInfo, baseDate);
+        return success(shortTermForecast);
     }
 
     @GetMapping("/ultra")
