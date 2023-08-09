@@ -33,31 +33,41 @@ class _SigninState extends State<Signin> {
     });
   }
 
-  // Future<void> sendPostRequest() async {
-  //   final Uri url = Uri.parse('http://192.168.30.142:8080/oauth/login/tokens');
-  //   final Map<String, String> headers = {
-  //     'Content-Type': 'application/json; charset=UTF-8',
-  //   };
+  Future<void> sendPostRequest() async {
+    final Uri url = Uri.parse('http://i9e101.p.ssafy.io:8080/oauth/login/tokens');
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
 
-  //   final Map<String, String> body = {
-  //     'userEmail': 'mandarining0918@gmail.com',
-  //     'password': '123456789',
-  //   };
+    final Map<String, String> body = {
+      'userEmail': 'mandarining0918@gmail.com',
+      'password': '123456789',
+    };
 
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: headers,
-  //       body: jsonEncode(body), // Map을 JSON 문자열로 인코딩
-  //     );
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body), // Map을 JSON 문자열로 인코딩
+      );
 
-  //     if (response.statusCode == 200) {
-  //       print('Request was successful');
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        print('Request was successful');
+        print('body: ${response.body}');
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Profile()), // 새로운 페이지로 이동
+        );
+      }
+      else {
+        print('error Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +116,8 @@ class _SigninState extends State<Signin> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isPasswordValid
-                    ? null
-                    // sendPostRequest
+                    ? 
+                    sendPostRequest
                     : null,
                 child: Text('로그인'),
               ),
