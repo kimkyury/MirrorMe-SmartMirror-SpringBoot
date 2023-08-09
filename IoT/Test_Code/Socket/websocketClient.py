@@ -2,12 +2,22 @@ import asyncio
 # 웹 소켓 모듈을 선언한다.
 import websockets
  
+import json
+
+data = {
+  "a" : "asdf",
+  "b" : "sdf",
+}
+
+send_data = json.dumps(data)
+print(type(send_data))
+
 async def connect():
     # 웹 소켓에 접속을 합니다.
 
   try:
     async with websockets.connect("ws://localhost:9998") as websocket:
-      await websocket.send("audio")
+      await websocket.send(send_data)
       session_id = await websocket.recv()
       print("============================================")
       print(session_id)
