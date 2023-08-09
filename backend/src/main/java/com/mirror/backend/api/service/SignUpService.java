@@ -32,12 +32,12 @@ public class SignUpService {
     private final HouseholdRepository householdRepository;
     private final MirrorRepository mirrorRepository;
     private final ConnectUserRepository connectUserRepository;
-
+    private final IotEncryption iotEncryption;
 
     @Autowired
     public SignUpService(UserRepository userRepository,
                          InterestRepository interestRepository,
-                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository) {
+                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository, IotEncryption iotEncryption) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
@@ -45,6 +45,7 @@ public class SignUpService {
         this.householdRepository = householdRepository;
         this.mirrorRepository = mirrorRepository;
         this.connectUserRepository = connectUserRepository;
+        this.iotEncryption = iotEncryption;
     }
 
     public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
@@ -191,7 +192,7 @@ public class SignUpService {
     public int registerMirror(Long userId, RequestMirrorDto requestMirrorDto) {
 
         String mirrorId = requestMirrorDto.getMirrorId();
-        String mirrorIdDecryption = IotEncryption.decryptionText(mirrorId);
+        String mirrorIdDecryption = iotEncryption.decryptionText(mirrorId);
 
         Long mirrorPlaceCode = requestMirrorDto.getMirrorPlaceCode();
 
