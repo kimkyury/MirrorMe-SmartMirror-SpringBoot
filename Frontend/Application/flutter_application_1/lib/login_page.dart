@@ -19,6 +19,7 @@ class LoginPage extends StatelessWidget {
           'profile',
           'email',
         ],
+        
         );
       final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
       

@@ -12,16 +12,10 @@ class Message extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          SizedBox(height: 20),
           Text(
             'This is the Message Page',
             style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              // 메시지 보내기 버튼을 눌렀을 때의 동작을 추가하려면 여기에 코드를 작성하세요.
-            },
-            child: Text('메시지 보내기'),
           ),
           SizedBox(height: 20),
           Expanded(
@@ -37,6 +31,12 @@ class Message extends StatelessWidget {
                 );
               },
             ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // 메시지 보내기 버튼을 눌렀을 때의 동작을 추가하려면 여기에 코드를 작성하세요.
+            },
+            child: Text('메시지 보내기'),
           ),
         ],
       ),
