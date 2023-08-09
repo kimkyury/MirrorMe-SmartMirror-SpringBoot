@@ -52,9 +52,9 @@ public class UserService {
 
     public ResponseUserInfoDto getUserInfo(Long userId) {
 
-        Optional<User> userOptional = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow( () -> new NoSuchElementException());
 
-        User user = userOptional.get();
         ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
                 .userEmail(user.getUserEmail())
                 .userName(user.getUserName())
@@ -64,7 +64,6 @@ public class UserService {
                 .build();
 
         return userInfo;
-
     }
 
     public User createUser(String userEmail){
@@ -83,8 +82,8 @@ public class UserService {
 
     public boolean isExistUser(String email){
 
-        Optional<User> user = userRepository.findByUserEmail(email);
-        if(user.isEmpty()) return false;
+        userRepository.findByUserEmail(email)
+                .orElseThrow( () -> new NoSuchElementException());
 
         return true;
     }
