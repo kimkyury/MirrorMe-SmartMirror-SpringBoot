@@ -15,11 +15,14 @@ public class ResponseTokensDto {
     private String accessToken;
     @JsonProperty("refreshToken")
     private String refreshToken;
+    @JsonProperty("isInitUser")
+    private int isInitUser;
 
     @Builder
-    public ResponseTokensDto(String accessToken, String refreshToken) {
+    public ResponseTokensDto(String accessToken, String refreshToken, int isInitUser) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.isInitUser = isInitUser;
     }
 
     @Override
@@ -27,6 +30,7 @@ public class ResponseTokensDto {
         return "ResponseTokensDto{" +
                 "accessToken='" + accessToken + '\'' +
                 ", refreshToken='" + refreshToken + '\'' +
+                ", isInitUser='" + isInitUser + '\'' +
                 '}';
     }
 }
