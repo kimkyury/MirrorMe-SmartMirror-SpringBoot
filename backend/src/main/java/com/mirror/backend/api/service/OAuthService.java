@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.ResponseGoogleOAuthDto;
-import com.mirror.backend.api.dto.ResponseLoginDto;
-import com.mirror.backend.api.dto.ResponseTokensDto;
+import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.repository.UserRepository;
+import com.mirror.backend.common.utils.Constants.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,15 +32,17 @@ public class OAuthService {
     private final GoogleOAuth googleOAuth;
     private final RedisUserTokenRepository redisUserTokenRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     private ResponseLoginDto responseLogin;
     private ResponseGoogleOAuthDto googleOAuthResponseDto;
 
     @Autowired
-    public OAuthService(GoogleOAuth googleOAuth, RedisUserTokenRepository redisUserTokenRepository, UserService userService) {
+    public OAuthService(GoogleOAuth googleOAuth, RedisUserTokenRepository redisUserTokenRepository, UserService userService, UserRepository userRepository) {
         this.googleOAuth = googleOAuth;
         this.redisUserTokenRepository = redisUserTokenRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
@@ -67,7 +70,7 @@ public class OAuthService {
         return requestUrl.toString();
     }
 
-    public ResponseLoginDto login(String authCode){
+    public void login(String authCode){
 
         googleOAuthResponseDto = new ResponseGoogleOAuthDto();
 
@@ -83,23 +86,15 @@ public class OAuthService {
         // 3. 해당 Email이 MariaDB에 존재하는 값인지 확인
         boolean isExistUser = userService.isExistUser(userEmail);
 
-        responseLogin = new ResponseLoginDto();
+
         // 존재유무에따라, Front에게 추가기입 창을 안내하라는 Signal(0, 1) 설정
         if (!isExistUser){
             // 최초의 유저 정보 생성
             userService.createUser(userEmail);
-            responseLogin.setIsInitLoginUser(INIT_LOGIN_USER);
-        }else{
-            responseLogin.setIsInitLoginUser(RE_LOGIN_USER);
         }
-
          // 4. userEmail을 Key으로 하여 Access/Refresh Token을 Redis에 저장
         saveUserTokenToRedis(userEmail);
 
-        responseLogin.setAccessToken(googleOAuthResponseDto.getAccessToken());
-        responseLogin.setRefreshToken(googleOAuthResponseDto.getRefreshToken());
-
-        return responseLogin;
     }
 
     public void saveUserTokenToRedis(String userEmail){
@@ -182,7 +177,7 @@ public class OAuthService {
 
     public ResponseTokensDto getTokensFromUserEmail(String userEmail) {
         // :TODO 등록되지 않은 유저의 Email로 요청시 예외처리
-        String key = "token_" + userEmail;
+        String key = userEmail;
         Optional<RedisUserToken> redisUserTokenOptional = redisUserTokenRepository.findById(key);
 
         if ( redisUserTokenOptional.isEmpty()){
@@ -224,9 +219,41 @@ public class OAuthService {
             e.printStackTrace();
         }
 
-
         return userEmail;
     }
 
+    public int saveUserPassword(RequestPasswordDto requestPasswordDto) {
+
+        String userEmail = requestPasswordDto.getUserEmail();
+        String password = requestPasswordDto.getPassword();
+        //TODO: password 암호화
+
+        Optional<User> user = userRepository.findByUserEmail(userEmail);
+
+        user.ifPresent( selectUser -> {
+            selectUser.setPassword(password);
+            userRepository.save(selectUser);
+        });
+
+        return Result.SUCCESS;
+    }
+
+    public ResponseTokensDto confirmLogin(RequestLoginDto requestLoginDto) {
+
+        String userEmail = requestLoginDto.getUserEmail();
+        String password = requestLoginDto.getPassword();
+        Optional<User> dbUser = userRepository.findByUserEmail(userEmail);
+
+        String dbUserPassword = dbUser.get().getPassword();
+
+        ResponseTokensDto dto = null;
+        if ( password.equals(dbUserPassword)){
+
+            dto = getTokensFromUserEmail(userEmail);
+            return dto;
+        }
+
+        return null;
+    }
 }
 
