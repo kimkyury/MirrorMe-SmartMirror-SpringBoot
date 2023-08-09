@@ -7,15 +7,13 @@ import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.core.io.Resource;
 
-
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
@@ -40,11 +38,9 @@ public class VideoController {
         return success(video);
     }
 
-    @GetMapping(value = "/message", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<StreamingResponseBody> getOneMessage(@RequestParam Long videoId) {
-        StreamingResponseBody video = videoService.getVideoDetail(videoId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(video);
+    @GetMapping(value = "/message")
+    public Resource getOneMessage(@RequestParam Long videoId) throws IOException {
+        FileInputStream videoDetail = videoService.getVideoDetail(videoId);
+        return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
     }
 }
