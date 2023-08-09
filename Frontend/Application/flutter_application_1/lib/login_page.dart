@@ -4,9 +4,41 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import './main_page.dart';
 import './profile.dart';
+import './signin_page.dart';
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    try {
+      final GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: [
+          'https://www.googleapis.com/auth/calendar.readonly',
+          'https://www.googleapis.com/auth/tasks.readonly',
+          'openid',
+          'profile',
+          'email',
+        ],
+        
+        );
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+      
+      if (googleSignInAccount != null) {
+        final authCode = await googleSignInAccount.serverAuthCode;
+        print('googleSignInAccount : $googleSignInAccount');
+        print('authCode : $authCode');
+
+        final email = await googleSignInAccount.email;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Signin(email: email)), // Pass email to Signup page
+        );
+      }
+    } catch (error) {
+      print('Error during Google Sign In: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +68,9 @@ class Login extends StatelessWidget {
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Profile()),
-                    );
+                    _handleGoogleSignIn(context); // Google 로그인 핸들러 호출
                   },
-                  child: Text('구글 계정으로 로그인'),
+                  child: Text('로그인'),
                 ),
               ),
             ),
