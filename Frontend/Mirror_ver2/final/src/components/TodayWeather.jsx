@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CircularProgress, Button } from '@mui/material'; // CircularProgress와 Button 컴포넌트 추가
+import { CircularProgress, Button } from '@mui/material';
 
+import '../css/Weather.css';
 import WeekWeather from './WeekWeather';
 
 function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
-  const [showWeekWeather, setShowWeekWeather] = useState(false); // 주간 날씨 정보 표시 여부 상태 추가
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [showWeekWeather, setShowWeekWeather] = useState(false);
 
   useEffect(() => {
     let numOfRows = 500;
@@ -20,11 +22,10 @@ function TodayWeather(props) {
     const baseDate = `${year}${month}${day}`;
     const baseTime = '0200';
 
-    axios
-      .get('weather/short', {
+    axios.get('weather/short', { // 최고, 최저 기온, 하늘 상태
         params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
       })
-      .then((res) => {
+      .then((res) => { // 오늘 날짜의 필요 정보 저장
         const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
 
         const tempertureMin = todayWeather.find((data) => data.category === 'TMN');
@@ -40,22 +41,40 @@ function TodayWeather(props) {
           pty: ptyInfo.pty,
           sky: skyInfo.sky,
         });
+        const skyImages = ['/weather/001.png', '/weather/002.png', '/weather/003.png', '/weather/004.png', '/weather/005.png', '/weather/006.png', '/weather/007.png'];
+        const imagePromises = skyImages.map((src) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        });
+
+        Promise.all(imagePromises)
+          .then(() => {
+            setImageLoading(false); // 이미지 로딩 완료
+          })
+          .catch((error) => {
+            console.error(error);
+            setIsLoading(false);
+          });
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false);
       });
 
     const currentHour = currentTime.getHours();
     let ultrabasetime;
-
+    // 매 45분마다 정보 업데이트, 베이스 시간은 매 시 30분
     if (currentTime.getMinutes() > 45) {
       ultrabasetime = `${('0' + currentHour).slice(-2)}30`;
     } else {
       ultrabasetime = `${('0' + (currentHour - 1)).slice(-2)}30`;
     }
 
-    axios
-      .get('weather/ultra', {
+    axios.get('weather/ultra', { // 실시간 기온, 습도
         params: { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
       })
       .then((res) => {
@@ -69,9 +88,11 @@ function TodayWeather(props) {
 
   }, []);
 
+
+  // 아이콘 출력을 위한 화면 상태
   let todaySky = '';
 
-  if (weatherInfo.pty === 0) {
+  if (weatherInfo.pty === 0) { // 비, 눈 비해당
     if (weatherInfo.sky === 1) {
       todaySky = '/weather/001.png';
     } else if (weatherInfo.sky === 3) {
@@ -79,7 +100,7 @@ function TodayWeather(props) {
     } else if (weatherInfo.sky === 4) {
       todaySky = '/weather/003.png';
     }
-  } else {
+  } else { // 비, 눈 해당
     if (weatherInfo.pty === 1) {
       todaySky = '/weather/004.png';
     } else if (weatherInfo.pty === 2) {
@@ -91,6 +112,7 @@ function TodayWeather(props) {
     }
   }
 
+  // 주간 날씨 정보 펼치기 ///////////////////////////////// 모션 or 음성 연결 필요
   const handleWeekWeatherClick = () => {
     setShowWeekWeather(true);
   };
@@ -98,17 +120,17 @@ function TodayWeather(props) {
   return (
     <div>
       <div className="weather-container">
-        {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '118px' }}>
+        {isLoading || imageLoading ? (
+          <div style={{ minHeight: '118px' }}>
             <CircularProgress />
           </div>
         ) : (
           <div>
-            <div className="weather-left">
-              <img src={todaySky} alt="weather icon" />
-            </div>
-            <div>
-              <div className="weather-right">
+            <div className="weather-content">
+              <div className="weather-icon">
+                <img src={todaySky} alt="weather icon" width="100%"/>
+              </div>
+              <div className="weather-info">
                 <h3>{ultraInfo.t1H}℃</h3>
                 <h3 className="temperture">
                   {weatherInfo.tmx}℃ / {weatherInfo.tmn}℃
@@ -117,12 +139,15 @@ function TodayWeather(props) {
                 <h5 className="chance-of-rain">강수 확률 : {weatherInfo.pop}%</h5>
               </div>
             </div>
-            {showWeekWeather && <WeekWeather />}
-            {!showWeekWeather && (
-              <Button onClick={handleWeekWeatherClick} variant="contained" color="primary">
-                더 보기
-              </Button>
-            )}
+            <div className="weather-button">
+              {showWeekWeather ? (
+                <WeekWeather />
+              ) : (
+                <Button onClick={handleWeekWeatherClick} variant="contained" color="primary">
+                  더 보기
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </div>

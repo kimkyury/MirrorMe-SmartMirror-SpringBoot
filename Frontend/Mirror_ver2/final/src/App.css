@@ -57,31 +57,6 @@ body {
   padding: 30%;
 }
 
-/* Weather */
-
-.weather {
-  width: 33%;
-  padding: 10px;
-}
-
-.weather-container {
-  display: flex;
-  justify-content: space-around;
-}
-
-.weather-left {
-  padding: 10px;
-}
-
-.weather-right {
-  padding: 10px;
-}
-
-.weather-icon {
-  height: 70%;
-  background-color: lightblue;
-}
-
 h1 {
   font-size: 4rem;
   color: #ffffff;
