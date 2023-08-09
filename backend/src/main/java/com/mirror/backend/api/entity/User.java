@@ -26,6 +26,7 @@ public class User {
     @JsonProperty("userName")
     private String userName;
 
+    @JsonProperty("userName")
     private String password;
 
     @JsonProperty("createAt")
