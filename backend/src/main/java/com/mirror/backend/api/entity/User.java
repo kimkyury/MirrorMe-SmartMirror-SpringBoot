@@ -26,6 +26,8 @@ public class User {
     @JsonProperty("userName")
     private String userName;
 
+    private String password;
+
     @JsonProperty("createAt")
     private LocalDateTime createAt;
 
@@ -36,10 +38,11 @@ public class User {
     private Long householdId;
 
     @Builder
-    public User(Long userId, String userEmail, String userName, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
+    public User(Long userId, String userEmail, String userName, String password, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
         this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;
+        this.password = password;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
         this.householdId = householdId;

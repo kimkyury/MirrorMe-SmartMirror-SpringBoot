@@ -5,7 +5,6 @@ function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
   const [ultraInfo, setUltraInfo] = useState([]);
 
-
   useEffect(() => {
     let numOfRows = 500;
     let pageNo = 1;
@@ -20,6 +19,12 @@ function TodayWeather(props) {
     axios.get("weather/short", {
       params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res) => {
+      console.log(baseDate)
+      console.log(baseTime)
+      console.log(numOfRows)
+      console.log(pageNo)
+      console.log(res.data)
+      console.log(res.data.response)
       const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
 
       const tempertureMin = todayWeather.find((data) => data.category === 'TMN');
@@ -39,11 +44,16 @@ function TodayWeather(props) {
       console.log(error);
     });
 
+    // 매 시 45분 이후 정보 제공, 베이스타임은 매 시 30분
     const currentHour = currentTime.getHours();
-    const ultrabasetime = `${('0' + currentHour).slice(-2)}00`;
+    let ultrabasetime;
 
+    if (currentTime.getMinutes() > 45 ) {
+      ultrabasetime = `${('0' + currentHour).slice(-2)}30`;
+    } else {
+      ultrabasetime = `${('0' + (currentHour - 1)).slice(-2)}30`;
+    }
 
-    // 초단기 예보 업데이트 시간 고려해서 수정 필요
     axios.get("weather/ultra", {
       params : { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res => {
@@ -85,13 +95,10 @@ function TodayWeather(props) {
     <>
       <div className="weather-container">
         <div className="weather-left">
-          <div className="weather-icon">
-            <img src={todaySky} alt="weather icon" />
-          </div>
+          <img src={todaySky} alt="weather icon" />
         </div>
         <div>
           <div className="weather-right">
-            
             {/* 실시간 기온 */}
             <h3>{ultraInfo.t1H}℃</h3>
 
