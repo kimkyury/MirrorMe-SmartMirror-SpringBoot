@@ -2,16 +2,12 @@ package com.mirror.backend.api.service.impl;
 
 import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.repository.VideoRepository;
-import org.apache.commons.io.IOUtils;
-import org.apache.tomcat.util.codec.binary.Base64;
-import com.mirror.backend.api.dto.Message;
 import com.mirror.backend.api.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -49,29 +45,29 @@ public class VideoServiceImpl implements VideoService {
 
     // 영상 메시지 한 개 조회
     @Override
-    public StreamingResponseBody getVideoDetail(Long videoId) {
+    public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
         VideoMessage videoMessage = videoRepository.findByVideoId(videoId);
         String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
 
-        try {
-            InputStream inputStream = new FileInputStream(videoUrl);
-
-            StreamingResponseBody responseBody = outputStream -> {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-                inputStream.close();
-            };
-
-            videoMessage.update('Y');
-            videoRepository.save(videoMessage);
-            return responseBody;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+//        try {
+//            InputStream inputStream =
+//
+//            StreamingResponseBody responseBody = outputStream -> {
+//                byte[] buffer = new byte[1024];
+//                int bytesRead;
+//                while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                    outputStream.write(buffer, 0, bytesRead);
+//                }
+//                inputStream.close();
+//            };
+//
+//            videoMessage.update('Y');
+//            videoRepository.save(videoMessage);
+//            return responseBody;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return new FileInputStream(videoUrl);
     }
 
     @Override
