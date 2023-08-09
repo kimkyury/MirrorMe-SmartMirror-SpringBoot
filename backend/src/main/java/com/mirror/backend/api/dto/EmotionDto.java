@@ -29,5 +29,15 @@ public class EmotionDto {
         }
     }
 
+    @Getter
+    public static class EmotionFamilyResList {
+        private String connectUserAlias;
+        private List<EmotionRes> emotionList;
 
+        @Builder
+        public EmotionFamilyResList(String connectUserAlias, List<EmotionRes> emotionList) {
+            this.connectUserAlias = connectUserAlias;
+            this.emotionList = emotionList;
+        }
+    }
 }

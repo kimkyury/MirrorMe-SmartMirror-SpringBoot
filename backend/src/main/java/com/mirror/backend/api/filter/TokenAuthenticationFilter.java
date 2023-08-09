@@ -59,7 +59,7 @@ public class TokenAuthenticationFilter implements Filter {
         RestTemplate restTemplate = new RestTemplate();
         StringBuilder googleRequestURL = new StringBuilder();
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
-            .append("?access_token=").append(accessToken);
+                .append("?access_token=").append(accessToken);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -164,12 +164,12 @@ public class TokenAuthenticationFilter implements Filter {
             e.printStackTrace();
         }
 
-         accessToken = returnNode.get("access_token").asText();
-         id_token = returnNode.get("id_token").asText();
+        accessToken = returnNode.get("access_token").asText();
+        id_token = returnNode.get("id_token").asText();
 
-         String [] tokens = new String[2];
-         tokens[0] = accessToken;
-         tokens[1] = id_token;
+        String [] tokens = new String[2];
+        tokens[0] = accessToken;
+        tokens[1] = id_token;
 
         return tokens;
     }

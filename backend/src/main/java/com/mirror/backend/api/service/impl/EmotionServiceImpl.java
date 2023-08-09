@@ -2,9 +2,11 @@ package com.mirror.backend.api.service.impl;
 
 import com.mirror.backend.api.dto.EmotionCountDto;
 import com.mirror.backend.api.dto.EmotionDto;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Emotion;
 import com.mirror.backend.api.entity.EmotionCount;
 import com.mirror.backend.api.entity.keys.EmotionKey;
+import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.EmotionCountRepository;
 import com.mirror.backend.api.repository.EmotionRepository;
 import com.mirror.backend.api.service.EmotionService;
@@ -27,6 +29,9 @@ public class EmotionServiceImpl implements EmotionService {
 
     @Autowired
     private EmotionCountRepository emotionCountRepository;
+
+    @Autowired
+    private ConnectUserRepository connectUserRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -68,7 +73,7 @@ public class EmotionServiceImpl implements EmotionService {
         LocalDate now = LocalDate.now();
         LocalDate sevenDayAgo = now.minusDays(7);
 
-        List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetween(sevenDayAgo, now);
+        List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(sevenDayAgo, now, userId);
 
         // emotion 1개당 emotion count 조회
         List<EmotionDto.EmotionRes> emotionResList = new ArrayList<>();
@@ -85,5 +90,41 @@ public class EmotionServiceImpl implements EmotionService {
             emotionResList.add(emotionOneDay);
         }
         return emotionResList;
+    }
+
+    @Override
+    public List<EmotionDto.EmotionFamilyResList> getFamilyEmotion(Long userId) {
+        LocalDate now = LocalDate.now();
+        LocalDate sevenDayAgo = now.minusDays(7);
+
+        List<ConnectUser> familyId = connectUserRepository.findByIdUserId(userId);
+        System.out.println("familyId.size() = " + familyId.size());
+
+        List<EmotionDto.EmotionFamilyResList> emotionFamilyResLists = new ArrayList<>();
+        for(ConnectUser user: familyId) {
+            Long connectUserId = user.getId().getConnectUserId();
+            String connectUserAlias = user.getConnectUserAlias();
+
+            List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(sevenDayAgo, now, connectUserId);
+
+            List<EmotionDto.EmotionRes> emotionResList = new ArrayList<>();
+            for(Emotion emotion: myEmotionList) {
+                Long emotionId = emotion.getEmotionId();
+                List<EmotionCount> emotionCountList = emotionCountRepository.findAllByEmotionKeyEmotionId(emotionId);
+                List<EmotionCountDto.EmotionCountRes> transformCountList = emotionCountList.stream().map(EmotionCountDto.EmotionCountRes::new)
+                        .collect(Collectors.toList());
+
+                EmotionDto.EmotionRes emotionOneDay = EmotionDto.EmotionRes.builder()
+                        .emotionDate(emotion.getEmotionDate().toString())
+                        .emotionList(transformCountList)
+                        .build();
+                emotionResList.add(emotionOneDay);
+            }
+            emotionFamilyResLists.add(EmotionDto.EmotionFamilyResList.builder()
+                    .connectUserAlias(connectUserAlias)
+                    .emotionList(emotionResList)
+                    .build());
+        }
+        return emotionFamilyResLists;
     }
 }

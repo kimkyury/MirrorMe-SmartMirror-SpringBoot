@@ -1,9 +1,11 @@
 package com.mirror.backend.api.controller;
 
 
+import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
+import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
 import com.mirror.backend.common.utils.ApiResponse;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -23,6 +25,9 @@ import static com.mirror.backend.common.utils.ApiResponse.success;
 public class IotController {
 
     private IotService iotService;
+
+    @Autowired
+    private EmotionService emotionService;
 
     @Autowired
     IotController(IotService iotService){
@@ -56,4 +61,9 @@ public class IotController {
         return ApiUtils.success(summaryScheduleTextDto);
     }
 
+    @PostMapping
+    @Operation(summary = "오늘 감정 저장", description = "iot와 통신하여 오늘의 감정을 저장합니다.")
+    public ApiUtils.ApiResult<Long> postEmotion(@RequestBody EmotionDto.EmotionReq emotionReq) {
+        return ApiUtils.success(emotionService.saveEmotion(emotionReq));
+    }
 }

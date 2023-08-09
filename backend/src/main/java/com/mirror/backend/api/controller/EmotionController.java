@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -21,16 +22,20 @@ public class EmotionController {
     @Autowired
     private EmotionService emotionService;
 
-    @PostMapping
-    @Operation(summary = "오늘 감정 저장", description = "iot와 통신하여 오늘의 감정을 저장합니다.")
-    public ApiUtils.ApiResult<Long> postEmotion(@RequestBody EmotionDto.EmotionReq emotionReq) {
-        return success(emotionService.saveEmotion(emotionReq));
-    }
-
     @GetMapping
     @Operation(summary = "나의 감정 조회", description = "나의 일주일간의 감정을 조회합니다.")
-    public ApiUtils.ApiResult<List<EmotionDto.EmotionRes>> getMyEmotion() {
-        // 유저 가져오기
-        return success(emotionService.getMyEmotion(1L));
+    public ApiUtils.ApiResult<List<EmotionDto.EmotionRes>> getMyEmotion(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("user_id");
+        userId = 2L;
+        return success(emotionService.getMyEmotion(userId));
+    }
+
+    // 가족 감정 조회
+    @GetMapping("/family")
+    @Operation(summary = "가족 감정 조회", description = "가족의 일주일간의 감정을 조회합니다.")
+    public ApiUtils.ApiResult<List<EmotionDto.EmotionFamilyResList>> getMyFamilyEmotion(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("user_id");
+        userId = 2L;
+        return success(emotionService.getFamilyEmotion(userId));
     }
 }
