@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@mui/material';
+import { Button, LinearProgress } from '@mui/material';
 
 import '../css/Modals.css';
 import VideoMessage from './VideoMessage';
@@ -11,6 +11,48 @@ function ModalBottons(props) {
   const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
   const [readyTime, setReadyTime] = useState(3);
   const [recordingTime, setRecordingTime] = useState(15);
+  const [recordingVisible, setRecordingVisible] = useState(true);
+
+  useEffect(() => {
+    const blinkTimer = setInterval(() => {
+      const recCircle = document.querySelector('.rec-circle');
+      if (recCircle) {
+        recCircle.style.transition = 'opacity 0.3s ease-in-out';
+        recCircle.style.opacity = recCircle.style.opacity === '0' ? '1' : '0';
+      }
+    }, 1000);
+
+    return () => clearInterval(blinkTimer);
+  }, []);
+
+  useEffect(() => {
+    let readyTimer;
+    if (isSendMessageModalOpen && readyTime > 0) {
+      readyTimer = setInterval(() => {
+        setReadyTime(prevTime => prevTime - 1);
+      }, 1000);
+    } else if (readyTime === 0) {
+      clearInterval(readyTimer);
+    }
+    return () => clearInterval(readyTimer);
+  }, [isSendMessageModalOpen, readyTime]);
+
+  useEffect(() => {
+    let recordingTimer;
+    if (isSendMessageModalOpen && readyTime === 0 && recordingTime > 0) {
+      recordingTimer = setInterval(() => {
+        setRecordingTime(prevTime => {
+          if (prevTime <= 0.1) {
+            setRecordingVisible(false);
+          }
+          return prevTime - 0.1;
+        });
+      }, 100);
+    } else if (recordingTime === 0) {
+      clearInterval(recordingTimer);
+    }
+    return () => clearInterval(recordingTimer);
+  }, [isSendMessageModalOpen, readyTime, recordingTime]);
 
   const toggleQRModal = () => {
     if (!isSendMessageModalOpen) {
@@ -41,33 +83,10 @@ function ModalBottons(props) {
     setIsMessageModalOpen(false);
     setIsYoutubeModalOpen(false);
     setIsSendMessageModalOpen(prevState => !prevState);
-    setRecordingTime(15); // 녹화 시작 시간 초기화
-    setReadyTime(3); // 레디 타임 초기화
+    setRecordingTime(15);
+    setReadyTime(3);
+    setRecordingVisible(true);
   };
-
-  useEffect(() => {
-    let readyTimer;
-    if (isSendMessageModalOpen && readyTime > 0) {
-      readyTimer = setInterval(() => {
-        setReadyTime(prevTime => prevTime - 1);
-      }, 1000);
-    } else if (readyTime === 0) {
-      clearInterval(readyTimer);
-    }
-    return () => clearInterval(readyTimer);
-  }, [isSendMessageModalOpen, readyTime]);
-
-  useEffect(() => {
-    let recordingTimer;
-    if (isSendMessageModalOpen && readyTime === 0 && recordingTime > 0) {
-      recordingTimer = setInterval(() => {
-        setRecordingTime(prevTime => prevTime - 1);
-      }, 1000);
-    } else if (recordingTime === 0) {
-      clearInterval(recordingTimer);
-    }
-    return () => clearInterval(recordingTimer);
-  }, [isSendMessageModalOpen, readyTime, recordingTime]);
 
   return (
     <div>
@@ -114,19 +133,33 @@ function ModalBottons(props) {
       {/* Message Modal */}
       {isSendMessageModalOpen && (
         <div className="send">
-          <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
-          <div className="circle-container">
+          <div className="send-header">
+            <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
+            {readyTime === 0 && (
+            <div className='rec-icon'>
+                <div className="rec-circle"></div>
+              <p className="rec-text">REC</p>
+            </div>
+            )}
+          </div>
+          <div className="send-body">
             {readyTime > 0 ? (
-              <div className="rec">
+              <div>
                 <div className="loader"></div>
                 <h2 className="ready">{readyTime}</h2>
               </div>
             ) : (
-              <div className="rec">
-                <h2>남은 녹화시간</h2>
+              <div>
+                {/* <h2>남은 녹화시간</h2> */}
                 <div className="h1-container">
-                  <h1>{recordingTime}</h1>
+                  {/* <h1>{recordingTime}</h1> */}
                 </div>
+                <LinearProgress // Progress bar
+                  variant="determinate"
+                  value={((15 - recordingTime) / 15) * 100}
+                  style={{ backgroundColor: 'grey', borderRadius: '4px' }}
+                  color="warning" // 색상 수정 예정
+                />
               </div>
             )}
           </div>
