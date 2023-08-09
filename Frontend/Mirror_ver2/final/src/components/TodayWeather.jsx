@@ -7,26 +7,38 @@ import WeekWeather from './WeekWeather';
 
 function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
-  const [ultraInfo, setUltraInfo] = useState([]);
+  const [ultraInfo, setUltraInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
   const [showWeekWeather, setShowWeekWeather] = useState(false);
 
   useEffect(() => {
-    let numOfRows = 500;
-    let pageNo = 1;
+    const numOfRows = 500;
+    const pageNo = 1;
     const currentTime = new Date();
     const year = currentTime.getFullYear();
     const month = String(currentTime.getMonth() + 1).padStart(2, '0');
-    const day = String(currentTime.getDate()).padStart(2, '0');
+    const currentHour = currentTime.getHours();
+    let day = '';
+    
+    // 02:45 이전 날짜 처리
+    if (currentHour > 3) {
+      day = String(currentTime.getDate()).padStart(2, '0');
+    } else if (currentHour === 2 && currentTime.getMinutes() > 45) {
+      day = String(currentTime.getDate()).padStart(2, '0');
+    } else {
+      day = String(currentTime.getDate()-1).padStart(2, '0');
+    }
+    
     const baseDate = `${year}${month}${day}`;
-    const baseTime = '0200';
+    const baseTime = '0200'; // 최저 기온 수신 가능 시간
+    let today = `${year}${month}${currentTime.getDate()}`;
 
     axios.get('weather/short', { // 최고, 최저 기온, 하늘 상태
         params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
       })
       .then((res) => { // 오늘 날짜의 필요 정보 저장
-        const todayWeather = res.data.response.filter((data) => data.fcstDate === baseDate);
+        const todayWeather = res.data.response.filter((data) => data.fcstDate === today);
 
         const tempertureMin = todayWeather.find((data) => data.category === 'TMN');
         const tempertureMax = todayWeather.find((data) => data.category === 'TMX');
@@ -41,6 +53,7 @@ function TodayWeather(props) {
           pty: ptyInfo.pty,
           sky: skyInfo.sky,
         });
+
         const skyImages = ['/weather/001.png', '/weather/002.png', '/weather/003.png', '/weather/004.png', '/weather/005.png', '/weather/006.png', '/weather/007.png'];
         const imagePromises = skyImages.map((src) => {
           return new Promise((resolve, reject) => {
@@ -65,7 +78,7 @@ function TodayWeather(props) {
         setIsLoading(false);
       });
 
-    const currentHour = currentTime.getHours();
+    // 실시간 기온, 습도 정보 요청
     let ultrabasetime;
     // 매 45분마다 정보 업데이트, 베이스 시간은 매 시 30분
     if (currentTime.getMinutes() > 45) {
@@ -87,7 +100,6 @@ function TodayWeather(props) {
       });
 
   }, []);
-
 
   // 아이콘 출력을 위한 화면 상태
   let todaySky = '';
