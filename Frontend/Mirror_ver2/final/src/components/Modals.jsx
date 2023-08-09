@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 
 import '../css/Modals.css';
@@ -8,30 +8,73 @@ function ModalBottons(props) {
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [isYoutubeModalOpen, setIsYoutubeModalOpen] = useState(false);
+  const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
+  const [readyTime, setReadyTime] = useState(3);
+  const [recordingTime, setRecordingTime] = useState(15);
 
   const toggleQRModal = () => {
-    setIsQRModalOpen(prevState => !prevState);
-    setIsMessageModalOpen(false);
-    setIsYoutubeModalOpen(false);
+    if (!isSendMessageModalOpen) {
+      setIsQRModalOpen(prevState => !prevState);
+      setIsMessageModalOpen(false);
+      setIsYoutubeModalOpen(false);
+    }
   };
 
   const toggleMessageModal = () => {
-    setIsQRModalOpen(false);
-    setIsMessageModalOpen(prevState => !prevState);
-    setIsYoutubeModalOpen(false);
+    if (!isSendMessageModalOpen) {
+      setIsQRModalOpen(false);
+      setIsMessageModalOpen(prevState => !prevState);
+      setIsYoutubeModalOpen(false);
+    }
   };
 
   const toggleYoutubeModal = () => {
+    if (!isSendMessageModalOpen) {
+      setIsQRModalOpen(false);
+      setIsMessageModalOpen(false);
+      setIsYoutubeModalOpen(prevState => !prevState);
+    }
+  };
+
+  const toggleSendMessageModal = () => {
     setIsQRModalOpen(false);
     setIsMessageModalOpen(false);
-    setIsYoutubeModalOpen(prevState => !prevState);
+    setIsYoutubeModalOpen(false);
+    setIsSendMessageModalOpen(prevState => !prevState);
+    setRecordingTime(15); // 녹화 시작 시간 초기화
+    setReadyTime(3); // 레디 타임 초기화
   };
+
+  useEffect(() => {
+    let readyTimer;
+    if (isSendMessageModalOpen && readyTime > 0) {
+      readyTimer = setInterval(() => {
+        setReadyTime(prevTime => prevTime - 1);
+      }, 1000);
+    } else if (readyTime === 0) {
+      clearInterval(readyTimer);
+    }
+    return () => clearInterval(readyTimer);
+  }, [isSendMessageModalOpen, readyTime]);
+
+  useEffect(() => {
+    let recordingTimer;
+    if (isSendMessageModalOpen && readyTime === 0 && recordingTime > 0) {
+      recordingTimer = setInterval(() => {
+        setRecordingTime(prevTime => prevTime - 1);
+      }, 1000);
+    } else if (recordingTime === 0) {
+      clearInterval(recordingTimer);
+    }
+    return () => clearInterval(recordingTimer);
+  }, [isSendMessageModalOpen, readyTime, recordingTime]);
 
   return (
     <div>
       <Button className="btn" onClick={toggleQRModal}>QR</Button>
       <Button className="btn" onClick={toggleMessageModal}>메세지</Button>
       <Button className="btn" onClick={toggleYoutubeModal}>유튜브</Button>
+      <Button className="btn" onClick={toggleSendMessageModal}>영상보내기</Button>
 
       {/* QR Modal */}
       {isQRModalOpen && (
@@ -65,6 +108,28 @@ function ModalBottons(props) {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe><br />
+        </div>
+      )}
+
+      {/* Message Modal */}
+      {isSendMessageModalOpen && (
+        <div className="send">
+          <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
+          <div className="circle-container">
+            {readyTime > 0 ? (
+              <div className="rec">
+                <div className="loader"></div>
+                <h2 className="ready">{readyTime}</h2>
+              </div>
+            ) : (
+              <div className="rec">
+                <h2>남은 녹화시간</h2>
+                <div className="h1-container">
+                  <h1>{recordingTime}</h1>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

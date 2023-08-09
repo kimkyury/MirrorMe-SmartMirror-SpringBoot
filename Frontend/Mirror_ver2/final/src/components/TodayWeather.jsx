@@ -66,6 +66,7 @@ function TodayWeather(props) {
         console.log(error);
         setIsLoading(false);
       });
+
   }, []);
 
   let todaySky = '';
