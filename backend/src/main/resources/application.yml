@@ -15,12 +15,12 @@ spring:
 google:
   client-id: ${CLIENT_ID}
   client-secret: ${CLIENT_SECRET}
-  redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/google/callback
+  redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/auth
 
 iot:
   N: ${N}
-  RSA: ${RSA}
-  RSB: ${RSB}
+  PNA: ${RSA}
+  PNB: ${RSB}
 
 server:
   address: 0.0.0.0
