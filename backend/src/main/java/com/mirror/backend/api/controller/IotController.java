@@ -4,6 +4,7 @@ package com.mirror.backend.api.controller;
 import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
 import com.mirror.backend.common.utils.ApiResponse;
@@ -11,10 +12,7 @@ import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -51,6 +49,16 @@ public class IotController {
 
         List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
         return success("usersInSameHousehold", users);
+    }
+
+    @GetMapping("/calendar/summary")
+    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(String userEmail){
+
+        ResponseSummaryScheduleDto summaryScheduleTextDto = iotService.getSummerySchedule(userEmail);
+        if ( summaryScheduleTextDto == null){
+            return ApiUtils.success(null);
+        }
+        return ApiUtils.success(summaryScheduleTextDto);
     }
 
     @PostMapping
