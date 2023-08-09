@@ -13,11 +13,11 @@ public class FilterConfig {
         FilterRegistrationBean<TokenAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
 
         registrationBean.setFilter(new TokenAuthenticationFilter());
-        registrationBean.addUrlPatterns("/schedule/*"); // 필터를 적용할 URL 패턴
-        registrationBean.addUrlPatterns("/tasks/*");
-        registrationBean.addUrlPatterns("/user/*");
+        registrationBean.addUrlPatterns("/schedule/**"); // 필터를 적용할 URL 패턴
+        registrationBean.addUrlPatterns("/tasks/**");
+        registrationBean.addUrlPatterns("/user/**");
 //        registrationBean.addUrlPatterns("/search/*");
-        registrationBean.addUrlPatterns("/signup/*");
+        registrationBean.addUrlPatterns("/signup/**");
         return registrationBean;
     }
 }

@@ -9,8 +9,6 @@ import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
@@ -32,14 +30,12 @@ public class ChatBotController {
     }
 
     @GetMapping("/calendar/summary")
-    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(HttpServletRequest request){
-        String userEmail = (String)request.getParameter("user_email");
+    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(String userEmail){
 
         ResponseSummaryScheduleDto summaryScheduleDto = chatBotService.getSummerySchedule(userEmail);
         if ( summaryScheduleDto == null){
             return success(null);
         }
-
         return success(summaryScheduleDto);
     }
 }

@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -210,7 +211,6 @@ public class OAuthService {
             responseEntity = restTemplate.getForEntity(googleRequestURL.toString(), String.class);
             returnNode = mapper.readTree(responseEntity.getBody());
             userEmail = returnNode.get("email").asText();
-
         }catch (HttpClientErrorException e){
             e.getStackTrace();
         } catch (JsonMappingException e) {
@@ -238,22 +238,33 @@ public class OAuthService {
         return Result.SUCCESS;
     }
 
-    public ResponseTokensDto confirmLogin(RequestLoginDto requestLoginDto) {
+    public ResponseLoginDto confirmLogin(RequestLoginDto requestLoginDto) {
 
-        String userEmail = requestLoginDto.getUserEmail();
-        String password = requestLoginDto.getPassword();
-        Optional<User> dbUser = userRepository.findByUserEmail(userEmail);
+        String inputUserEmail = requestLoginDto.getUserEmail();
+        String inputPassword = requestLoginDto.getPassword();
+        User dbUser = userRepository.findByUserEmail(inputUserEmail)
+                .orElseThrow( () -> new NoSuchElementException());
 
-        String dbUserPassword = dbUser.get().getPassword();
+        if ( !inputPassword.equals(dbUser.getPassword()))
+            return null; // 유저는 존재하지만, 패스워드가 일치하지 않음
 
-        ResponseTokensDto dto = null;
-        if ( password.equals(dbUserPassword)){
+        int isInitLoginUser = -1;
+        if (dbUser.getUserName() == null)
+            isInitLoginUser = 1;
+        else
+            isInitLoginUser = 0;
 
-            dto = getTokensFromUserEmail(userEmail);
-            return dto;
-        }
 
-        return null;
+        RedisUserToken redisUserToken = redisUserTokenRepository.findById(inputUserEmail)
+                .orElseThrow( () -> new NoSuchElementException());
+
+       ResponseLoginDto responseLoginDto = ResponseLoginDto.builder()
+                .isInitLoginUser(isInitLoginUser)
+                .accessToken(redisUserToken.getAccessToken())
+                .refreshToken(redisUserToken.getRefreshToken())
+                .build();
+
+        return responseLoginDto;
     }
 }
 
