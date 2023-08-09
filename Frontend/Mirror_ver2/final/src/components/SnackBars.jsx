@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Snackbar, Button } from '@mui/material';
 import { CSSTransition } from 'react-transition-group';
 
@@ -14,6 +14,7 @@ function Snackbars(props) {
   const [showWeekWeather, setShowWeekWeather] = useState(false);
   const [openTasksSnackbar, setOpenTasksSnackbar] = useState(false);
   const [openSchedulesSnackbar, setOpenSchedulesSnackbar] = useState(false);
+  const ref = useRef(null)
 
   const handleVideoMessageButtonClick = () => {
     setOpenVideoMessageSnackbar(!openVideoMessageSnackbar);
@@ -56,6 +57,7 @@ function Snackbars(props) {
         timeout={300}
         classNames="slide"
         unmountOnExit
+        nodeRef={ref}
       >
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
