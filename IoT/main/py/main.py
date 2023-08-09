@@ -16,6 +16,44 @@ import os
 # from main/py/AISpeaker_Client import tts
 import random
 
+######
+from get_user_info import encryption, decryption, decode_base64_image, save_image_as_png
+import json
+import requests
+# 장치 고유 시리얼 넘버
+DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
+URL = "http://192.168.30.142:8080/api/iot/users"
+RSA_N = 1517
+RSA_E = 1421
+
+# 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
+# 모두 소문자로 구성해줄 것
+
+params = {
+    "mirrorId": encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
+}
+
+headers = {"Content-Type": "application/json"}
+
+# 보내고자 하는 Data를 JSON 형식으로 변환 (GET에서는 변환 불 필요)
+data = json.dumps(params)
+
+# JSON 데이터를 포함하여 GET 요청을 보냄
+response = requests.post(URL, headers=headers, data=data)
+
+response_data = response.json()
+info_json = response_data['body']['usersInSameHousehold']
+
+# Create a JSON file
+info_json = json.dumps(info_json)
+with open("./" + "user_data" + ".json", "w") as f:
+    f.write(info_json)
+
+# 이미지 저장
+# for user_data in info_json:
+#     imgdata = user_data['profileImage']
+#     img_out = decode_base64_image(imgdata)
+#     save_image_as_png(img_out,'./face_and_gesture/photo/'+'8.png')
 
 ###############################################################################################
 ###############################################################################################
@@ -226,15 +264,22 @@ async def disappear(*arg):
 
         STATUS = SCREEN_OFF
 
+async def left(*arg):
+    pass
+
+async def right(*arg):
+    pass
+
+
 order_fun = {"CALL" : call,
             "MESSAGESEND" : messageSend,
             "MESSAGESHOW" : messageShow,
             "WEATHER" : weather,
             "NEWS" : news,
             "YOUTUBE" : youtube,
-            "CANTUNDERSTAND" : chatgpt}
-            # "LEFT": left,
-            # "RIGHT": right}
+            "CANTUNDERSTAND" : chatgpt,
+            "LEFT": left,
+            "RIGHT": right}
 
 
 # async def serialArduino():
@@ -261,12 +306,11 @@ async def main():
 
 
 
-
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 
-start_server = websockets.serve(accept, "localhost", 9998);
+start_server = websockets.serve(accept, "localhost", 9998)
 # 비동기로 서버를 대기한다.
-asyncio.get_event_loop().run_until_complete(start_server);
-asyncio.get_event_loop().run_until_complete(main());
-asyncio.get_event_loop().run_forever();
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_until_complete(main())
+asyncio.get_event_loop().run_forever()
 
 
