@@ -48,6 +48,9 @@ function App() {
   const [messageTextArea, setMessageTextArea] = useState('');
   const [webSocket, setWebSocket] = useState(null);
 
+  const [commandMessage, setCommandMessage] = useState('');
+  const [tts, setTts] = useState('');
+
   useEffect(() => {
     // 웹 서버를 접속한다.
     const socket = new WebSocket("ws://localhost:9998");
@@ -68,7 +71,13 @@ function App() {
     // 소켓 서버로부터 메시지가 오면 호출되는 함수.
     socket.onmessage = (event) => {
       console.log(event)
-      setMessageTextArea(prev => prev + "Receive From Server => " + event.data + "\n");
+      const data = JSON.parse(event.data);
+      setCommandMessage(data.order);
+      setMessageTextArea(prev => prev + "Receive From Server => " + commandMessage + "\n");
+      if (data.order == 'TTS') {
+        setTts(data.query.content);
+        setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
+      }
     };
 
     return () => {
