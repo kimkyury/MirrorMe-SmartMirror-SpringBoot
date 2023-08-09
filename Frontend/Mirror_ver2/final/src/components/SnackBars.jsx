@@ -2,16 +2,22 @@ import React, { useState } from 'react';
 import { Snackbar, Button } from '@mui/material';
 import { CSSTransition } from 'react-transition-group';
 
+import VideoMessage from './VideoMessage'
 import TodayWeather from './TodayWeather';
 import WeekWeather from './WeekWeather';
 import Tasks from './Tasks';
 import Schedules from './Schedules';
 
 function Snackbars(props) {
+  const [openVideoMessageSnackbar, setOpenVideoMessageSnackbar] = useState(false)
   const [openWeatherSnackbar, setOpenWeatherSnackbar] = useState(false);
+  const [showWeekWeather, setShowWeekWeather] = useState(false);
   const [openTasksSnackbar, setOpenTasksSnackbar] = useState(false);
   const [openSchedulesSnackbar, setOpenSchedulesSnackbar] = useState(false);
-  const [showWeekWeather, setShowWeekWeather] = useState(false);
+
+  const handleVideoMessageButtonClick = () => {
+    setOpenVideoMessageSnackbar(!openVideoMessageSnackbar);
+  }
 
   const handleWeatherButtonClick = () => {
     setOpenWeatherSnackbar(!openWeatherSnackbar);
@@ -30,6 +36,7 @@ function Snackbars(props) {
   };
 
   const handleSnackbarClose = () => {
+    setOpenVideoMessageSnackbar(false);
     setOpenWeatherSnackbar(false);
     setOpenSchedulesSnackbar(false);
     setOpenTasksSnackbar(false);
@@ -38,9 +45,27 @@ function Snackbars(props) {
 
   return (
     <div>
+      <Button onClick={handleVideoMessageButtonClick} variant="contained" color="inherit">메세지</Button>
       <Button onClick={handleWeatherButtonClick} variant="contained" color="inherit">날씨</Button>
       <Button onClick={handleTasksButtonClick} variant="contained" color="inherit">할일</Button>
       <Button onClick={handleSchedulesButtonClick} variant="contained"  color="inherit">일정</Button>
+
+      {/* VideoMessage Snackbar */}
+      <CSSTransition
+        in={openVideoMessageSnackbar}
+        timeout={300}
+        classNames="slide"
+        unmountOnExit
+      >
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={openVideoMessageSnackbar}
+          autoHideDuration={10000}
+          onClose={handleVideoMessageButtonClick}
+          message={<VideoMessage />}
+          style={{ marginTop: '200px' }}
+        />
+      </CSSTransition>
 
       {/* Weather Snackbar */}
       <CSSTransition
@@ -57,12 +82,6 @@ function Snackbars(props) {
           message={
             <div>
               <TodayWeather />
-              {showWeekWeather && <WeekWeather />}
-              {showWeekWeather ? null : (
-                <Button onClick={handleWeekWeatherClick} variant="contained" color="primary">
-                  더 보기
-                </Button>
-              )}
             </div>
           }
           style={{ marginTop: '200px' }}
