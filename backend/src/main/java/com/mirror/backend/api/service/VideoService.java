@@ -1,9 +1,7 @@
 package com.mirror.backend.api.service;
 
-import com.mirror.backend.api.dto.Message;
 import com.mirror.backend.api.entity.VideoMessage;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
