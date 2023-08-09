@@ -104,12 +104,11 @@ public class WeatherServiceImpl implements WeatherService {
                     break;
                 default:
                     chk = true;
-
-                if(chk) continue;
-                shortTermForecast.setCategory(category);
-                shortTermForecast.setDate(date);
-                list.add(shortTermForecast);
             }
+            if(chk) continue;
+            shortTermForecast.setCategory(category);
+            shortTermForecast.setDate(date);
+            list.add(shortTermForecast);
         }
         return list;
     }
