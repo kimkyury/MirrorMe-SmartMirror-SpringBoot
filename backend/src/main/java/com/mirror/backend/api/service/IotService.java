@@ -3,11 +3,14 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.Alias;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.Mirror;
+import com.mirror.backend.api.entity.RedisSummeryCalendar;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.MirrorRepository;
+import com.mirror.backend.api.repository.RedisSummeryCalendarRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.IotEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,39 +27,45 @@ public class IotService {
     private MirrorRepository mirrorRepository;
     private UserRepository userRepository;
     private ConnectUserRepository connectUserRepository;
-    private RedisTemplate<String, String> redisTemplate;
-
-
-
+    private RedisSummeryCalendarRepository redisSummeryCalendarRepository;
+    private RedisTemplate redisTemplate;
+    private IotEncryption iotEncryption;
     private Long mirror_group_id;
 
     @Autowired
     public IotService(MirrorRepository mirrorRepository,
                       UserRepository userRepository,
                       ConnectUserRepository connectUserRepository,
-                      RedisTemplate<String, String> redisTemplate) {
+                      RedisSummeryCalendarRepository redisSummeryCalendarRepository, RedisTemplate<String, String> redisTemplate, IotEncryption iotEncryption) {
         this.mirrorRepository = mirrorRepository;
         this.userRepository = userRepository;
         this.connectUserRepository = connectUserRepository;
+        this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
         this.redisTemplate = redisTemplate;
+        this.iotEncryption = iotEncryption;
     }
 
 
     public boolean findMirror(String encryptedCode){
 
-        String mirrorId = IotEncryption.decryptionText(encryptedCode);
-        Optional<Mirror> mirror = mirrorRepository.findByMirrorId(mirrorId);
-        mirror_group_id = mirror.get().getMirrorGroupId();
+        System.out.println("원본: " + encryptedCode);
+        String mirrorId = iotEncryption.decryptionText(encryptedCode);
+        System.out.println("디코딩: " + iotEncryption.decryptionText(encryptedCode));
 
-        if(mirror.isEmpty())
-            return false;
+        Mirror mirror = mirrorRepository.findByMirrorId(mirrorId).orElseThrow( () -> new NoSuchFieldError());
+        System.out.println(mirror);
+
+        mirror_group_id = mirror.getMirrorGroupId();
+
         return true;
     }
 
     public List<IotResponseUserDto> fineUsersInfo(String encryptedCode) {
 
         // 1. Mirror 테이블에서 해당 Mirrorid를 찾아온다
-        String mirrorId = IotEncryption.decryptionText(encryptedCode);
+//        String mirrorId = iotEncryption.decryptionText(encryptedCode);
+//        String mirrorId = encryptedCode
+        //TODO:암호화
 
         // 2. {mirrorId}의 {mirror_group_id}를 찾아온다
 
@@ -119,13 +128,24 @@ public class IotService {
     }
 
     private String findUserName(Long userId){
-
         return userRepository.findByUserId(userId).get().getUserEmail();
     }
 
 
+    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
 
 
+        Optional<RedisSummeryCalendar> redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail);
 
+        if (redisSummeryCalendar.isEmpty()){
+            return null;
+        }
 
+        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
+                .summeryCalendarText(redisSummeryCalendar.get().getSummeryCalendar())
+                .build();
+
+        return dto;
+
+    }
 }
