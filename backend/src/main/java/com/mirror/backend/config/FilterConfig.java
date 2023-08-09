@@ -18,6 +18,7 @@ public class FilterConfig {
         registrationBean.addUrlPatterns("/user/**");
 //        registrationBean.addUrlPatterns("/search/*");
         registrationBean.addUrlPatterns("/signup/**");
+        registrationBean.addUrlPatterns("/emotion/**");
         return registrationBean;
     }
 }
