@@ -52,13 +52,13 @@ public class IotService {
 
         System.out.println("원본: " + encryptedCode);
         // TODO: 주석삭제
-        String encode= iotEncryption.encrytionText(encryptedCode);
-        System.out.println("암호화: " + encode);
+//        String encode= iotEncryption.encrytionText(encryptedCode);
+//        System.out.println("암호화: " + encode);
+//
+//        String decode= iotEncryption.decryptionText(encode);
+//        System.out.println("복호화: " + decode);
 
-        String decode= iotEncryption.decryptionText(encode);
-        System.out.println("복호화: " + decode);
-
-        encryptedCode = encode;
+//        encryptedCode = encode;
 
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
         System.out.println("해독된 mirrorID: " + mirrorId);
