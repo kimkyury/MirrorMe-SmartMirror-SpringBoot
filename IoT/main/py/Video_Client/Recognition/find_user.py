@@ -25,7 +25,7 @@ def getUserName():
     mp_face_detection = mp.solutions.face_detection
 
     # Load files from the folder.
-    path_dir = './Recognition/Face_Image/'
+    path_dir = './Video_Client/Recognition/Face_Image/'
     file_list = os.listdir(path_dir)
 
     # Store known face embeddings.
