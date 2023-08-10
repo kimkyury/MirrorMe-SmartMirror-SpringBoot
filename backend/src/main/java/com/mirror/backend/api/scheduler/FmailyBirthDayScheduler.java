@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 @Component
-public class SummaryCalendarService {
+public class FmailyBirthDayScheduler {
 
     public final RedisUserTokenRepository redisUserTokenRepository;
     public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
@@ -30,9 +30,9 @@ public class SummaryCalendarService {
     public final TokenUtil tokenUtil;
 
     @Autowired
-    public SummaryCalendarService(RedisUserTokenRepository redisUserTokenRepository,
-                                  RedisSummeryCalendarRepository redisSummeryCalendarRepository,
-                                  CalendarService calendarService, ChatGptUtil chatGptUtil, OAuthService oAuthService, TokenUtil tokenUtil) {
+    public FmailyBirthDayScheduler(RedisUserTokenRepository redisUserTokenRepository,
+                                   RedisSummeryCalendarRepository redisSummeryCalendarRepository,
+                                   CalendarService calendarService, ChatGptUtil chatGptUtil, OAuthService oAuthService, TokenUtil tokenUtil) {
         this.redisUserTokenRepository = redisUserTokenRepository;
         this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
         this.calendarService = calendarService;
@@ -42,18 +42,19 @@ public class SummaryCalendarService {
     }
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
+//    @Scheduled(cron = "30 * * * * ?")   // 개발용, 매분 30초마다 실행
 //    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
-        System.out.println("------------실행중----------");
+        System.out.println("------------Summery Scheduler----------");
         // redis내의 유저 Token을 가져온다
         Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
         Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
 
 
         while (iterator.hasNext()) {
+
             RedisUserToken userTokenInfo = iterator.next();
-            System.out.println(userTokenInfo);
+
             String accessToken = userTokenInfo.getAccessToken();
             String refreshToken = userTokenInfo.getRefreshToken();
 
@@ -63,6 +64,16 @@ public class SummaryCalendarService {
             // 해당 유저의 Email을 조회
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
 
+
+            // 해당 유저의 친인척 중 생일인 사람이 있는지 조회
+
+
+            // 생일인 유저가 특정한 일이 있는지 GPT에게 정리해달라고 하기
+
+
+
+
+            System.out.println("타겟유저: " + userEmail);
             // 2. 해당 UserToken으로 Calendar내역을 각각 가져온다
             Event event = calendarService.getMyCalendar(accessToken, "primary");
             String eventInTodayList = getUserEventInToday(event);
@@ -119,13 +130,13 @@ public class SummaryCalendarService {
     public void saveRedisSummeryCalendar(String summeryText, String userEmail){
 
         StringBuilder sb = new StringBuilder();
-        sb.append("안녕하세요!, 오늘 일정이 있어요" );
+        sb.append("안녕하세요!, 오늘 일정이 있어요. \n" );
         sb.append(summeryText);
-        sb.append("나머지는 App에서 확인해요!");
+        sb.append("\n나머지는 App에서 확인해요!");
 
         RedisSummeryCalendar summeryCalendar = RedisSummeryCalendar.builder()
                 .userEmail(userEmail)
-                .summeryCalendar(summeryText)
+                .summeryCalendar(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
