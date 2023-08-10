@@ -56,8 +56,8 @@ public class WeatherRainyScheduler {
 
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 30초마다 실행
-//    @Scheduled(cron = "0 0 0 * * ?") // 배포용, 매일 자정마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 30초마다 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 배포용, 매일 자정마다 실행
     public void fetchRedisData() {
         System.out.println("------------Weather Rainny  Scheduler----------");
 
@@ -74,12 +74,9 @@ public class WeatherRainyScheduler {
 
             // 기상API를 통해 날씨가 어떤지 확인하기
             boolean result = isRainyDay(nx, ny, EtcUtil.getTodayYYYYMMDD(), getCurrentTimeRange());
-
             saveRedisIsRainy(result, String.valueOf(householdInfo.getHouseholdId()));
-
         }
     }
-
 
     public String getCurrentTimeRange(){
 
@@ -133,8 +130,6 @@ public class WeatherRainyScheduler {
                 return false;
             }
         }
-
-        System.out.println("----조회한 정보------ \n" + shortTermForecast);
 
 
         return true;
