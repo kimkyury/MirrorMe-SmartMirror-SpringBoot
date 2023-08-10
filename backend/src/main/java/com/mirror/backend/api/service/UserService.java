@@ -82,8 +82,11 @@ public class UserService {
 
     public boolean isExistUser(String email){
 
-        userRepository.findByUserEmail(email)
-                .orElseThrow( () -> new NoSuchElementException());
+        Optional<User> user = userRepository.findByUserEmail(email);
+
+        if ( user.isEmpty()){
+            return false;
+        }
 
         return true;
     }
