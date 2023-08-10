@@ -53,7 +53,7 @@ public class BackendApplication {
                 String videoPath = folderPath + "/" + videoMessage.getFileName();
                 VideoMessage vm = VideoMessage.builder()
                         .requestMessage(videoMessage)
-                        .date(minusMinuteDate.toString())
+                        .date(minusMinuteDate)
                         .build();
 
                 Long videoId = videoRepository.save(vm).getVideoId();

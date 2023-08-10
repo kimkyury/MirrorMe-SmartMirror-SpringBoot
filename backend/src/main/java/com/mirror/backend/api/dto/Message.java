@@ -41,4 +41,17 @@ public class Message {
             this.videoFile = videoFile;
         }
     }
+
+    @Getter
+    public static class ResponseMessageCountFamily {
+        private String connectUserAlias;
+        private int messageCount;
+
+        @Builder
+        public ResponseMessageCountFamily(String connectUserAlias, int messageCount) {
+            this.connectUserAlias = connectUserAlias;
+            this.messageCount = messageCount;
+        }
+    }
+
 }
