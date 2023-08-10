@@ -13,13 +13,15 @@ public class RedisIsRainy {
 
     @Id
     private String householdId;
-    private String isRainy;
+    private String isRainyCode;
+    private String isRainyText;
     private String targetDay;
 
     @Builder
-    public RedisIsRainy(String householdId, String isRainy, String targetDay) {
+    public RedisIsRainy(String householdId, String isRainyCode, String isRainyText, String targetDay) {
         this.householdId = householdId;
-        this.isRainy = isRainy;
+        this.isRainyCode = isRainyCode;
+        this.isRainyText = isRainyText;
         this.targetDay = targetDay;
     }
 }

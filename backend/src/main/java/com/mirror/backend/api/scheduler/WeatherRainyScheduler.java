@@ -56,7 +56,7 @@ public class WeatherRainyScheduler {
 
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 30초마다 실행
+//    @Scheduled(cron = "40 * * * * ?")   // 개발용, 매분 30초마다 실행
     @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
     public void fetchRedisData() {
         System.out.println("------------Weather Rainny  Scheduler----------");
@@ -123,19 +123,12 @@ public class WeatherRainyScheduler {
             e.getStackTrace();
         }
 
-        boolean isRainy = false;
         for(ShortTermForecast shortTermForecast1 : shortTermForecast){
-            if (shortTermForecast1.getPTY() == 1 || shortTermForecast1.getPTY() == 2){
-                isRainy = true;
+            if (shortTermForecast1.getPTY() == 1 || shortTermForecast1.getPTY() == 2)
                 return false;
-            }
         }
-
-
         return true;
     }
-
-
 
     public void saveRedisIsRainy(boolean isRainy, String householdId){
 
@@ -143,12 +136,14 @@ public class WeatherRainyScheduler {
         if (isRainy){
             redisIsRainy = RedisIsRainy.builder()
                     .householdId(householdId)
-                    .isRainy("오늘은 비가 올텐데, 나가신다면 우산 가져가세요!")
+                    .isRainyCode("1")
+                    .isRainyText("오늘은 비가 올텐데, 나가신다면 우산 가져가세요!")
                     .build();
         }else{
             redisIsRainy = RedisIsRainy.builder()
                     .householdId(String.valueOf(householdId))
-                    .isRainy("오늘은 비가 안 와요!")
+                    .isRainyCode("0")
+                    .isRainyText("오늘은 비가 안 와요!")
                     .build();
         }
 
