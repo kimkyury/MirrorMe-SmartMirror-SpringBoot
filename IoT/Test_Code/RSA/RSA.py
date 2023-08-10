@@ -44,8 +44,8 @@ def getPrimeList(num):
 
 # for i, j in combinations(getPrimeList(30),2):
 # 두 소수 A와 B
-PRIME_NUMBER_A = 71
-PRIME_NUMBER_B = 41
+PRIME_NUMBER_A = 17
+PRIME_NUMBER_B = 7
 
 # n = A*B
 n = PRIME_NUMBER_A*PRIME_NUMBER_B
