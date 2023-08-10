@@ -84,11 +84,11 @@ public class WeatherController {
 
     @GetMapping("/mid")
     @Operation(summary = "중기 최저, 최고 기온 조회", description = "매일 오전 6시에 정보 뜬다. 6시에 조회하는 요청 들어가기")
-    public ApiUtils.ApiResult<MidtermForecast> midtermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows) throws Exception{
+    public ApiUtils.ApiResult<MidtermForecast> midtermForecastApi(@RequestParam String pageNo, @RequestParam String numOfRows, @RequestParam String baseDate) throws Exception{
         // user의 예보구역코드 받아오는 로직 추가
         String regId = "11H20201";
 
-        String date = LocalDate.now().toString().replaceAll("-", "") + "0600";
+        String date = baseDate + "0600";
         StringBuilder urlBuilder = new StringBuilder(midWeatherUrl + "/getMidTa"); /*URL*/
         urlBuilder.append("?" +  "serviceKey=" + serviceKey);
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode(pageNo, "UTF-8"));
