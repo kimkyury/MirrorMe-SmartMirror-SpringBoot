@@ -37,7 +37,7 @@ data = {
     "user_info": json.dumps({
         "order": "USERINFO",
         "query": {
-            "email": "sunghyun223@naver.com"
+            "email": "kkrt7777@gmail.com"
         }
     }),
 
