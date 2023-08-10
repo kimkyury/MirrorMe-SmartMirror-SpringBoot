@@ -13,6 +13,10 @@ function ModalBottons(props) {
   const [recordingTime, setRecordingTime] = useState(15);
   const [recordingVisible, setRecordingVisible] = useState(true);
 
+  const commandMessage = props.commandMessage;
+  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT"
+  const youtubeKey = props.youtubeKey;
+
   useEffect(() => {
     const blinkTimer = setInterval(() => {
       const recCircle = document.querySelector('.rec-circle');
@@ -53,6 +57,19 @@ function ModalBottons(props) {
     }
     return () => clearInterval(recordingTimer);
   }, [isSendMessageModalOpen, readyTime, recordingTime]);
+
+  useEffect(() => {
+    if (commandMessage === "YOUTUBE") {
+      setIsYoutubeModalOpen(true);
+    } else if (commandMessage === "MESSAGESENDSTART") {
+      setIsSendMessageModalOpen(true);
+    } else if (commandMessage === "RIGHT") {
+      setIsYoutubeModalOpen(false);
+    }
+    if (isSendMessageModalOpen && commandMessage === "MESSAGESENDEND") {
+      setIsSendMessageModalOpen(false);
+    }
+  }, [commandMessage]);
 
   const toggleQRModal = () => {
     if (!isSendMessageModalOpen) {
@@ -121,7 +138,7 @@ function ModalBottons(props) {
           <iframe
             width="800"
             height="400"
-            src="https://www.youtube.com/embed/LqME1y6Mlyg"
+            src={`https://www.youtube.com/embed/${youtubeKey}`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
