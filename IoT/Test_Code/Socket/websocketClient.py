@@ -7,18 +7,22 @@ async def connect():
 
   try:
     async with websockets.connect("ws://localhost:9998") as websocket:
-      await websocket.send("audio")
+      await websocket.send("react")
       session_id = await websocket.recv()
       print("============================================")
       print(session_id)
       print("============================================")
       
-      for i in range(5):
-        await websocket.send("명령어")
-        print("보냈다")
-        await asyncio.sleep(1)
-        print("에러났냐?")
-      await websocket.close()
+      while True:
+        recv = await websocket.recv()
+        print(recv)
+
+      # for i in range(5):
+      #   await websocket.send("명령어")
+      #   print("보냈다")
+      #   await asyncio.sleep(1)
+      #   print("에러났냐?")
+      # await websocket.close()
 
   except websockets.exceptions.ConnectionClosed:
     print("error")
