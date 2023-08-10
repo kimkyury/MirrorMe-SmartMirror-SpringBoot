@@ -68,6 +68,14 @@ public class IotService {
         return true;
     }
 
+
+    public void UnicodeConversion() {
+        int unicodeCodePoint = 128514; // An emoji's unicode code point
+        String character = new String(Character.toChars(unicodeCodePoint));
+        System.out.println(character); // 출력: 😂
+    }
+
+
     public List<IotResponseUserDto> fineUsersInfo(String encryptedCode) {
 
         List<User> usersInSameHouse = userRepository.findByHouseholdId(mirror_group_id);
