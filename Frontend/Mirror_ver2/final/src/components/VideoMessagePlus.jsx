@@ -119,11 +119,11 @@ function VideoMessage() {
             <p>
               {messageList[currentMessageIndex].sendUserEmail}님의 {messageType}메세지
             </p>
-            <video controls>
+            <video controls style={{ width:"800", height:"400" }}>
               <source
                 src={`video/message?videoId=${messageList[currentMessageIndex].videoId}`}
-                width="800"
-                height="400"
+                // width="800"
+                // height="400"
                 type="video/mp4"
               />
             </video>
