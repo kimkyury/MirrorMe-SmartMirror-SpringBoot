@@ -118,9 +118,9 @@ public class SummaryCalendarScheduler {
     public void saveRedisSummeryCalendar(String summeryText, String userEmail){
 
         StringBuilder sb = new StringBuilder();
-        sb.append("안녕하세요!, 오늘 일정이 있어요. \n" );
+        sb.append("안녕하세요!, 오늘 일정이 있어요. " );
         sb.append(summeryText);
-        sb.append("\n나머지는 App에서 확인해요!");
+        sb.append(", 나머지는 App에서 확인해요!");
 
         RedisSummeryCalendar summeryCalendar = RedisSummeryCalendar.builder()
                 .userEmail(userEmail)

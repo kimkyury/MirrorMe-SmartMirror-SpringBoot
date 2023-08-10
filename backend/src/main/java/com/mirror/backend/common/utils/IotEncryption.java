@@ -19,35 +19,30 @@ public class IotEncryption {
     @Value("${iot.D}")
     public BigInteger D;
 
-    public String encryption(String sentence, BigInteger n, BigInteger e) {
-        byte[] bytes = sentence.getBytes();
-        StringBuilder result = new StringBuilder();
+    public  String encryption(String sentence, BigInteger  n, BigInteger  e) {
 
+        byte[] bytes = Base64.getEncoder().encode(sentence.getBytes());
+        StringBuilder result = new StringBuilder();
         for (byte b : bytes) {
             BigInteger bi = BigInteger.valueOf(b & 0xFF); // Convert byte to positive BigInteger
             BigInteger encrypted = bi.modPow(e, n);
             char c = (char) encrypted.intValue();
             result.append(c);
         }
-
-        // 암호화 된 문자열을 Base64로 인코딩하여 반환
-        return Base64.getEncoder().encodeToString(result.toString().getBytes());
+        return result.toString();
     }
-    public String decryption(String encryptedBase64, BigInteger n, BigInteger d) {
-        // Base64 디코딩 먼저 수행
-        byte[] decodedBase64Bytes = Base64.getDecoder().decode(encryptedBase64);
-        String decodedBase64String = new String(decodedBase64Bytes);
 
-        StringBuilder decryptedResult = new StringBuilder();
-
-        for (char c : decodedBase64String.toCharArray()) {
-            BigInteger bi = BigInteger.valueOf(c & 0xFFFF); // Convert char to positive BigInteger
+    public String decryption(String sentence, BigInteger  n, BigInteger  d) {
+        StringBuilder decodedBytes = new StringBuilder();
+        for (char c : sentence.toCharArray()) {
+            BigInteger bi = BigInteger.valueOf(c);
             BigInteger decrypted = bi.modPow(d, n);
-            decryptedResult.append((char) decrypted.intValue());
+            decodedBytes.append((char) decrypted.intValue());
         }
-
-        return decryptedResult.toString();
+        byte[] bytes = Base64.getDecoder().decode(decodedBytes.toString());
+        return new String(bytes);
     }
+
 
     public String encrytionText(String input){
         String output = encryption(input, N, E);
