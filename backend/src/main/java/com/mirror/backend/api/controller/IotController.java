@@ -4,6 +4,7 @@ package com.mirror.backend.api.controller;
 import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
@@ -59,6 +60,21 @@ public class IotController {
             return ApiUtils.success(null);
         }
         return ApiUtils.success(summaryScheduleTextDto);
+    }
+
+    @GetMapping("/text/first")
+    public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
+
+        // TODO: 테스트용  output 고정 API
+        ResponseFirstMirrorTextDto responseFirstMirrorTextDto =ResponseFirstMirrorTextDto.builder()
+                .textCode("0101")
+                .textContent("안녕하세요!, 오늘은 우산은 챙기시는 게 좋을 것 같아요")
+                .build();
+
+        if ( responseFirstMirrorTextDto == null){
+            return ApiUtils.success(null);
+        }
+        return ApiUtils.success(responseFirstMirrorTextDto);
     }
 
     @PostMapping
