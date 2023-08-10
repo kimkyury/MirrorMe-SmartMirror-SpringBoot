@@ -19,6 +19,20 @@ function ModalBottons(props) {
   const youtubeKey = props.youtubeKey;
 
   useEffect(() => {
+    if (commandMessage === "YOUTUBE") {
+      setIsYoutubeModalOpen(true);
+    } else if (commandMessage === "MESSAGESENDSTART") {
+      setIsSendMessageModalOpen(true);
+    } else if (commandMessage === "RIGHT") {
+      setIsYoutubeModalOpen(false);
+    }
+    if (isSendMessageModalOpen && commandMessage === "MESSAGESENDEND") {
+      setIsSendMessageModalOpen(false);
+    }
+  }, [commandMessage]);
+
+
+  useEffect(() => {
     const blinkTimer = setInterval(() => {
       const recCircle = document.querySelector('.rec-circle');
       if (recCircle) {
