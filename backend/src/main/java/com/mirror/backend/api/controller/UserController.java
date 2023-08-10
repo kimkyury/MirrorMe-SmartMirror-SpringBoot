@@ -145,7 +145,7 @@ public class UserController {
 
     @PutMapping("/friends")
     @Operation(summary = "자신의 친인척 별명을 수정합니다.", description = "수정하기" )
-    public ApiUtils.ApiResult<String> updqteConnectUserAlias(HttpServletRequest request, @RequestBody RequestConnectUserInfoDto dto) {
+    public ApiUtils.ApiResult<String> updateConnectUserAlias(HttpServletRequest request, @RequestBody RequestConnectUserInfoDto dto) {
 
         Long userId = (Long) request.getAttribute("user_id");
         int result = userService.updateConnectUserAlias(userId, dto);

@@ -12,10 +12,12 @@ public class RedisSummeryCalendar {
     @Id
     private String userEmail;
     private String summeryCalendar;
+    private String targetDay;
 
     @Builder
-    public RedisSummeryCalendar(String userEmail, String summeryCalendar) {
+    public RedisSummeryCalendar(String userEmail, String summeryCalendar, String targetDay) {
         this.userEmail = userEmail;
         this.summeryCalendar = summeryCalendar;
+        this.targetDay = targetDay;
     }
 }
