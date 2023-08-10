@@ -152,7 +152,7 @@ function ModalBottons(props) {
           <iframe
             width="800"
             height="400"
-            src={`https://www.youtube.com/embed/${youtubeKey}`}
+            src={`https://www.youtube.com/embed/${youtubeKey}?autoplay=1`}  // 유튜브 자동재생
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
