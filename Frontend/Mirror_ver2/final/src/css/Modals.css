@@ -27,6 +27,14 @@
 }
 
 /* 영상 송신 - ready */
+.ready-times {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* border: 3px solid blue; */
+}
+
 .circle-container {
   display: flex;
   justify-content: center;
@@ -47,7 +55,7 @@
 
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
+  border-top: 16px solid #3498db;
   border-radius: 50%;
   width: 120px;
   height: 120px;
@@ -58,7 +66,8 @@
 .ready {
   display: flex;
   margin-top: -95px;
-  margin-left: 393px;
+  margin-left: 70px;
+  margin-bottom: 100px;
 }
 
 .send-header {
