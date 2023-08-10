@@ -19,8 +19,8 @@ google:
 
 iot:
   N: ${N}
-  PNA: ${RSA}
-  PNB: ${RSB}
+  E: ${E}
+  D: ${D}
 
 server:
   address: 0.0.0.0
