@@ -13,5 +13,6 @@ public interface VideoService {
     int matchVideo(String text);
     List<VideoMessage> getVideo(String userEmail);
     FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException;
+    List<Message.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month);
     String transferFile(MultipartFile videoFile, String filePath);
 }
