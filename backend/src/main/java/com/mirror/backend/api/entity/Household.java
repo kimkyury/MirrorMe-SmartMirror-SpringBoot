@@ -18,26 +18,24 @@ public class Household {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("householdId")
     Long householdId;
-    @JsonProperty("createUserId")
-    Long createUserId;
-    @JsonProperty("householdName")
+
+    @ManyToOne
+    @JoinColumn(name = "createUserId")
+    User createUserId;
+
     String householdName;
-    @JsonProperty("latitude")
-    Double latitude;
-    @JsonProperty("longitude")
-    Double longitude;
-    @JsonProperty("region")
+    int gridNx;
+    int gridNy;
     String region;
 
     @Builder
-    public Household(Long householdId, Long createUserId, String householdName, Double latitude, Double longitude, String region) {
+    public Household(Long householdId, User createUserId, String householdName, int gridNx, int gridNy, String region) {
         this.householdId = householdId;
         this.createUserId = createUserId;
         this.householdName = householdName;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.gridNx = gridNx;
+        this.gridNy = gridNy;
         this.region = region;
     }
 
@@ -47,9 +45,9 @@ public class Household {
                 "householdId=" + householdId +
                 ", createUserId=" + createUserId +
                 ", householdName='" + householdName + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", region=" + region +
+                ", gridNx=" + gridNx +
+                ", gridNy=" + gridNy +
+                ", region='" + region + '\'' +
                 '}';
     }
 }
