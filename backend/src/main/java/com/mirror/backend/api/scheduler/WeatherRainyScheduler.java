@@ -57,7 +57,7 @@ public class WeatherRainyScheduler {
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
 //    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 30초마다 실행
-    @Scheduled(cron = "0 0 0 * * ?") // 배포용, 매일 자정마다 실행
+    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
     public void fetchRedisData() {
         System.out.println("------------Weather Rainny  Scheduler----------");
 
