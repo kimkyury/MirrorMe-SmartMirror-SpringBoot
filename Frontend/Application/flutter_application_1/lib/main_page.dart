@@ -30,18 +30,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'M',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Image.asset('lib/assets/MirrorMe_Main.png'),
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,  // 뒤로가기 화살표 제거
         actions: [
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.message),
+                icon: Image.asset('lib/assets/messageicon.png'),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -60,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),// Add a SizedBox to create spacing between the icons
               IconButton(
-                icon: Icon(Icons.connect_without_contact),
+                icon: Image.asset('lib/assets/connecticon.png'),
                 onPressed: () {
                   Navigator.push(
                     context,
