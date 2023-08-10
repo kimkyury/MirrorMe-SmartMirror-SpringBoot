@@ -9,6 +9,7 @@ import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class FmailyBirthDayScheduler {
 
     public final RedisUserTokenRepository redisUserTokenRepository;
@@ -29,34 +31,14 @@ public class FmailyBirthDayScheduler {
     public final OAuthService oAuthService;
     public final TokenUtil tokenUtil;
     public final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
-
     public final ConnectUserRepository connectUserRepository;
     public final UserRepository userRepository;
 
-    @Autowired
-    public FmailyBirthDayScheduler(RedisUserTokenRepository redisUserTokenRepository,
-                                   RedisSummeryCalendarRepository redisSummeryCalendarRepository,
-                                   CalendarService calendarService,
-                                   ChatGptUtil chatGptUtil,
-                                   OAuthService oAuthService,
-                                   TokenUtil tokenUtil,
-                                   RedisFamilyBirthdayRepository redisFamilyBirthdayRepository,
-                                   ConnectUserRepository connectUserRepository,
-                                   UserRepository userRepository) {
-        this.redisUserTokenRepository = redisUserTokenRepository;
-        this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
-        this.calendarService = calendarService;
-        this.chatGptUtil = chatGptUtil;
-        this.oAuthService = oAuthService;
-        this.tokenUtil = tokenUtil;
-        this.redisFamilyBirthdayRepository = redisFamilyBirthdayRepository;
-        this.connectUserRepository = connectUserRepository;
-        this.userRepository = userRepository;
-    }
+
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 30초마다 실행
-    @Scheduled(cron = "0 0 0 * * ?") // 배포용, 매일 자정마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
+    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정마다 실행
     public void fetchRedisData() {
         System.out.println("------------FamilyBirthDay Recommend Present Scheduler----------");
         // redis내의 유저 Token을 가져온다
