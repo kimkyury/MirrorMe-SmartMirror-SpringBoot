@@ -10,6 +10,7 @@ import Modals from './components/Modals'
 const userEmail = 'test2@google.com'; // 사용자 이메일 추후 수정
 
 function App() {
+  // 현재 시간
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
     setIsVisible(prevState => !prevState);
   };
 
+  // 스낵바
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleButtonClick = () => {
@@ -44,12 +46,14 @@ function App() {
     setOpenSnackbar(false);
   };
 
+  // Socket
   const [message, setMessage] = useState('');
   const [messageTextArea, setMessageTextArea] = useState('');
   const [webSocket, setWebSocket] = useState(null);
 
   const [commandMessage, setCommandMessage] = useState('');
   const [tts, setTts] = useState('');
+  const [ttsType, setTtsType] = useState('');
 
   useEffect(() => {
     // 웹 서버를 접속한다.
@@ -72,11 +76,14 @@ function App() {
     socket.onmessage = (event) => {
       console.log(event)
       const data = JSON.parse(event.data);
+      console.log(data);
       setCommandMessage(data.order);
       setMessageTextArea(prev => prev + "Receive From Server => " + commandMessage + "\n");
       if (data.order == 'TTS') {
         setTts(data.query.content);
+        setTtsType(data.query.type);
         setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
+        console.log(data.query.content);
       }
     };
 
@@ -105,7 +112,11 @@ function App() {
       <div className="btn-container">
         {/* <sendMessage/> */}
         <Modals/>
-        <Snackbars />
+        <Snackbars
+          commandMessage={commandMessage}
+          tts={tts}
+          ttsType={ttsType}
+        />
       </div>
       <form className="socket">
         {/* 서버로 메시지를 보낼 텍스트 박스 */}
