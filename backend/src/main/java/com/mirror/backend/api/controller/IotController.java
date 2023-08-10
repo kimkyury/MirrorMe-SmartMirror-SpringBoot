@@ -66,10 +66,8 @@ public class IotController {
     public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
 
         // TODO: 테스트용  output 고정 API
-        ResponseFirstMirrorTextDto responseFirstMirrorTextDto =ResponseFirstMirrorTextDto.builder()
-                .textCode("0101")
-                .textContent("안녕하세요!, 오늘은 우산은 챙기시는 게 좋을 것 같아요")
-                .build();
+
+        ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
 
         if ( responseFirstMirrorTextDto == null){
             return ApiUtils.success(null);
