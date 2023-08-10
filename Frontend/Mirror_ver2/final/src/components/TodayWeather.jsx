@@ -133,7 +133,8 @@ function TodayWeather(props) {
     <div>
       <div className="weather-container">
         {isLoading || imageLoading ? (
-          <div style={{ minHeight: '118px' }}>
+          // 가운데에 정렬하고 싶다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          <div className="loading-container">
             <CircularProgress />
           </div>
         ) : (

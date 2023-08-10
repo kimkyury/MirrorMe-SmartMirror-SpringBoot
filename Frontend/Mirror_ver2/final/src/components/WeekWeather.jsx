@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { CircularProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 
 import '../css/Weather.css';
 
@@ -9,13 +9,14 @@ function WeekWeather(props) {
   const [firstDayInfo, setFirstDayInfo] = useState([]);
   const [secondDayInfo, setSecondDayInfo] = useState([]);
   const [midtemperInfo, setMidTemperInfo] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [midrainInfo, setMidRainInfo] = useState([]);
 
   useEffect(() => {
     // 다음 일주일 정보 채우기
     const currentTime = new Date();
     const currentHour = currentTime.getHours();
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
     const nowday = currentTime.getDay(); // 06시 이전 : 오늘부터 7개 요일
     const tomorrow = (nowday + 1) % 7; // 06시 이후 : 내일부터 7개 요일
@@ -90,7 +91,7 @@ function WeekWeather(props) {
       const popInfo = todayWeather.find((data) => data.category === 'POP');
       const ptyInfo = todayWeather.find((data) => data.category === 'PTY');
       const skyInfo = todayWeather.find((data) => data.category === 'SKY');
-
+      
       setSecondDayInfo({
         tmn: tempertureMin.tmn,
         tmx: tempertureMax.tmx,
@@ -98,6 +99,7 @@ function WeekWeather(props) {
         pty: ptyInfo.pty,
         sky: skyInfo.sky,
       });
+      setIsLoading(false);
     }).catch((error) => {
       console.log(error);
     });
@@ -128,17 +130,27 @@ function WeekWeather(props) {
           </TableHead> */}
           <TableBody>
             {/* 아이콘 추가를 위한 작업 필요 */}
-            {weekInfo.map((day, index) => (
-              <TableRow key={index}>
-                <TableCell>{day}</TableCell>
-                <TableCell>
-                  {index === 0 ? firstDayInfo.tmx : index === 1 && secondDayInfo.tmx ? secondDayInfo.tmx : midtemperInfo[`taMax${index + 1}`]}℃
-                </TableCell>
-                <TableCell>
-                  {index === 0 ? firstDayInfo.tmn : index === 1 && secondDayInfo.tmn ? secondDayInfo.tmn : midtemperInfo[`taMin${index + 1}`]}℃
+            {isLoading ? (
+              <TableRow>
+                <TableCell align="center">
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              weekInfo.map((day, index) => (
+                <TableRow key={index}>
+                  <TableCell>{day}</TableCell>
+                  <TableCell>
+                      {/* <img src='/weather/temMax.png' alt="temMax" width="10%" /> */}
+                      {index === 0 ? firstDayInfo.tmx : index === 1 && secondDayInfo.tmx ? secondDayInfo.tmx : midtemperInfo[`taMax${index + 1}`]}℃
+                  </TableCell>
+                  <TableCell>
+                      {/* <img src='/weather/temMin.png' alt="temMin" width="10%" /> */}
+                      {index === 0 ? firstDayInfo.tmn : index === 1 && secondDayInfo.tmn ? secondDayInfo.tmn : midtemperInfo[`taMin${index + 1}`]}℃
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
