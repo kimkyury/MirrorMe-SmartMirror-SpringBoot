@@ -60,7 +60,7 @@ public class UserService {
                 .userName(user.getUserName())
                 .createAt(user.getCreateAt())
                 .modifiedAt(user.getModifiedAt())
-                .householdId(user.getHouseholdId())
+                .householdId(user.getHousehold().getHouseholdId())
                 .build();
 
         return userInfo;
@@ -159,7 +159,7 @@ public class UserService {
     public int createConnectUsersFromHouseholdId(Long userId, Long householdId) {
 
         // 1. householdId를 가지는 모든 회원들을 데려온다
-        List<User> userInSameHouseholdList = userRepository.findByHouseholdId(householdId);
+        List<User> userInSameHouseholdList = userRepository.findByHouseholdHouseholdId(householdId);
 
         if ( userInSameHouseholdList.size() == 0){
             return Result.NOT_FOUNT_USER;

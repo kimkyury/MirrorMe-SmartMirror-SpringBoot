@@ -79,7 +79,7 @@ public class IotService {
 
     public List<IotResponseUserDto> fineUsersInfo(String encryptedCode) {
 
-        List<User> usersInSameHouse = userRepository.findByHouseholdId(mirror_group_id);
+        List<User> usersInSameHouse = userRepository.findByHouseholdHouseholdId(mirror_group_id);
         List<IotResponseUserDto> responseUserDtos = new ArrayList<>();
 
         for(User user : usersInSameHouse){

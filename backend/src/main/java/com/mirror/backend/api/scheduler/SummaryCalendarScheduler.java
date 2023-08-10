@@ -42,14 +42,13 @@ public class SummaryCalendarScheduler {
     }
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-//    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
     @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
         System.out.println("------------Summery Scheduler----------");
         // redis내의 유저 Token을 가져온다
         Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
         Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
-
 
         while (iterator.hasNext()) {
             RedisUserToken userTokenInfo = iterator.next();

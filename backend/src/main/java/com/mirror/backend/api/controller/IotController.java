@@ -65,7 +65,6 @@ public class IotController {
     @GetMapping("/text/first")
     public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
 
-        // TODO: 테스트용  output 고정 API
 
         ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
 
