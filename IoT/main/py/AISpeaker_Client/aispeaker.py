@@ -7,6 +7,9 @@ import websockets
 import asyncio
 
 websocket = None
+end_check = False
+lock = threading.Lock()
+event = threading.Event()
 #################################################################
 #################################################################
 # 웹소켓 연결하는 코루틴
@@ -20,8 +23,23 @@ async def connect():
             await ws.send("audio")
             session_id = await ws.recv()
 
+            event.set()
+
             while True:
                 recv = await ws.recv()
+
+                if recv == "audio_end":
+                    event.clear()
+                    print("종료되라 제발")
+                    with lock:
+                        global end_check
+                        end_check = True
+
+                elif recv == "audio_restart":
+                    with lock:
+                        end_check = False
+                    event.set()
+
 
 
     except websockets.exceptions.ConnectionClosed:
@@ -51,17 +69,22 @@ def senMicrophone():
     loop = asyncio.new_event_loop()
 
 
-    with MicrophoneStream(RATE, CHUNK) as stream:
-        # 오디오 생성기
-        audio_generator = stream.generator()
-        # 오디오 입력을 구글 stt api에 맞게 바꿈
-        requests = (speech.StreamingRecognizeRequest(audio_content=content)
-        for content in audio_generator) 
+    while True:
+        event.wait()
+        with MicrophoneStream(RATE, CHUNK) as stream:
+            print("오디오 시작")
+            # 오디오 생성기
+            audio_generator = stream.generator()
+            # 오디오 입력을 구글 stt api에 맞게 바꿈
+            requests = (speech.StreamingRecognizeRequest(audio_content=content)
+            for content in audio_generator) 
+            
+            # api요청
+            responses = client.streaming_recognize(streaming_config, requests)
+            #  결과를 main으로 보냄
+            sendMain(responses, loop)
 
-        # api요청
-        responses = client.streaming_recognize(streaming_config, requests)
-        #  결과를 main으로 보냄
-        sendMain(responses, loop)
+        print("오디오 종료됨")
 
 
 #################################################################
@@ -85,6 +108,11 @@ def sendMain(responses, event_loop):
         # 완성된 문장이 intrim 문장보다 짧다면, 나머지 부분은 ' '으로 overwrite해 가려준다.
         overwrite_chars = ' ' * (num_chars_printed - len(transcript))   
 
+        with lock:
+            global end_check
+            if end_check:
+                print("종료")
+                return
 
         if not result.is_final: # 확정된 transcript가 아니라면,
             sys.stdout.write(transcript + overwrite_chars + '\r')   # '\r'로 줄바꿈은 하지 않고 맨 앞으로 돌아가 이전 문장위에 덧쓰도록 한다.
@@ -111,7 +139,9 @@ def sendMain(responses, event_loop):
 #################################################################
 
 # 비동기로 서버에 접속한다.
-threading.Thread(target = senMicrophone).start()
+audio_thread = threading.Thread(target = senMicrophone)
+audio_thread.start()
+
 asyncio.get_event_loop().run_until_complete(connect())
 
 

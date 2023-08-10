@@ -43,4 +43,11 @@ public class VideoController {
         FileInputStream videoDetail = videoService.getVideoDetail(videoId);
         return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
     }
+
+    @GetMapping(value = "/message/count")
+    public ApiUtils.ApiResult<List<Message.ResponseMessageCountFamily>> getMessageCount(@RequestParam Long userId, @RequestParam int month) throws IOException {
+        List<Message.ResponseMessageCountFamily> messageCountFamily = videoService.getMessageCountFamily(userId, month);
+        return success(messageCountFamily);
+    }
+
 }

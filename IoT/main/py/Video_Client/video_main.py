@@ -214,16 +214,16 @@ def get_gesture():
                 video_recoding.recordingVideo(my_name, "1")
 
 if __name__ == "__main__":
-    print("start...")
-    try:
-        get_user_face.getUserFaceImage()
-        print("make face image finished")
-    except:
-        pass
+    # print("start...")
+    # try:
+    #     get_user_face.getUserFaceImage()
+    #     print("make face image finished")
+    # except:
+    #     pass
     
-    print("find user")
-    my_name = find_user.getUserName()
-    print("user :", my_name)
+    # print("find user")
+    # my_name = find_user.getUserName()
+    # print("user :", my_name)
 
     my_name = '1'
     do = ''

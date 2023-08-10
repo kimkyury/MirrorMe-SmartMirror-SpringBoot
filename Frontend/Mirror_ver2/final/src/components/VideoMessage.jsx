@@ -7,7 +7,7 @@ import VideoMessagePlus from './VideoMessagePlus';
 function VideoMessage() {
   const [messageList, setMessageList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const userEmail = 'test2@google.com';
+  const userEmail = 'test@gmail.com';
 
   useEffect(() => {
     const fetchMessageList = async () => {
@@ -15,6 +15,7 @@ function VideoMessage() {
         const res = await axios.get('video', {
           params: { userEmail: userEmail },
         });
+        console.log(res.data.response)
         setMessageList(res.data.response);
         setIsLoading(false);
       } catch (error) {
