@@ -9,6 +9,7 @@ import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
+import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,21 +42,26 @@ public class SummaryCalendarService {
     }
 
     // 1. Redis내의 유저 Token들을 모두 가져온다
-//    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
-    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
+    @Scheduled(cron = "5 * * * * ?")   // 개발용, 매분 5초마다 실행
+//    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
         System.out.println("------------실행중----------");
         // redis내의 유저 Token을 가져온다
         Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
+        System.out.println(redisUserTokenIterable.toString());
+
         Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
 
 
         while (iterator.hasNext()) {
             RedisUserToken userTokenInfo = iterator.next();
+            System.out.println(userTokenInfo);
             String accessToken = userTokenInfo.getAccessToken();
             String refreshToken = userTokenInfo.getRefreshToken();
 
-           accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+            // AccessToken의 유효성 검사, 만약 불일치시 재발급
+            accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+
 
             // 해당 유저의 Email을 조회
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
@@ -102,25 +108,29 @@ public class SummaryCalendarService {
     public String  getSummeryCalendarFromGPT(String eventInTodayList){
 
         StringBuilder sb = new StringBuilder();
-        sb.append("다음과 같은 일정이 있을 때, 가장 중요한 것 3가지를 뽑아 각 15자 이내로 1. 2. 3. 형식에 맞춰 요약해주세요.  ");
+        sb.append("다음과 같은 일정이 있을 때, 가장 중요한 것 3가지를 뽑아 간단하게 1. 2. 3. 형식에 맞춰 요약해주세요. 각 일정에 대하여 최대 길이는 15자가 넘지않도록 해주세요.  ");
         sb.append(" // " + eventInTodayList + " // ");
 
         String answer = chatGptUtil.createMessage(sb.toString());
-
         return answer;
 
     }
 
     public void saveRedisSummeryCalendar(String summeryText, String userEmail){
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("안녕하세요!, 오늘 일정이 있어요" );
+        sb.append(summeryText);
+        sb.append("나머지는 App에서 확인해요!");
+
         RedisSummeryCalendar summeryCalendar = RedisSummeryCalendar.builder()
                 .userEmail(userEmail)
                 .summeryCalendar(summeryText)
+                .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
         redisSummeryCalendarRepository.save(summeryCalendar);
     }
-
 
 
 }
