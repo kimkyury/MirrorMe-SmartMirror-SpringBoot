@@ -38,8 +38,11 @@ public class User {
     @JsonProperty("householdId")
     private Long householdId;
 
+    @JsonProperty("birthday")
+    private String birthday;
+
     @Builder
-    public User(Long userId, String userEmail, String userName, String password, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
+    public User(Long userId, String userEmail, String userName, String password, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId, String birthday) {
         this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;
@@ -47,7 +50,9 @@ public class User {
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
         this.householdId = householdId;
+        this.birthday = birthday;
     }
+
 
     @Override
     public String toString() {
@@ -55,9 +60,11 @@ public class User {
                 "userId=" + userId +
                 ", userEmail='" + userEmail + '\'' +
                 ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
                 ", createAt=" + createAt +
                 ", modifiedAt=" + modifiedAt +
                 ", householdId=" + householdId +
+                ", birthDay='" + birthday + '\'' +
                 '}';
     }
 }
