@@ -7,7 +7,9 @@ class Connect extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Connect Page'),
+        title: Image.asset('lib/assets/MirrorMe_Main.png'),
+        backgroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Center(
         child: Text('This is the Connect Page'),
