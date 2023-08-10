@@ -20,39 +20,33 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @JsonProperty("userEmail")
     private String userEmail;
 
-    @JsonProperty("userName")
     private String userName;
 
-    @JsonProperty("userName")
     private String password;
 
-    @JsonProperty("createAt")
     private LocalDateTime createAt;
 
-    @JsonProperty("modifiedAt")
     private LocalDateTime modifiedAt;
 
-    @JsonProperty("householdId")
-    private Long householdId;
+    @ManyToOne
+    @JoinColumn(name = "householdId")
+    private Household household;
 
-    @JsonProperty("birthday")
     private String birthday;
 
     @Builder
-    public User(Long userId, String userEmail, String userName, String password, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId, String birthday) {
+    public User(Long userId, String userEmail, String userName, String password, LocalDateTime createAt, LocalDateTime modifiedAt, Household household, String birthday) {
         this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;
         this.password = password;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
-        this.householdId = householdId;
+        this.household = household;
         this.birthday = birthday;
     }
-
 
     @Override
     public String toString() {
@@ -63,7 +57,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", createAt=" + createAt +
                 ", modifiedAt=" + modifiedAt +
-                ", householdId=" + householdId +
+                ", household=" + household +
                 ", birthDay='" + birthday + '\'' +
                 '}';
     }

@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUserId(Long userId);
 
-    List<User> findByHouseholdId(Long householdId);
+    List<User> findByHouseholdHouseholdId(Long householdId);
 
     List<User> findByBirthday(String birthday);
 
