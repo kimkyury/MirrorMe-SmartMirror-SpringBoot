@@ -50,7 +50,18 @@ public class IotService {
 
     public boolean findMirror(String encryptedCode){
 
+        System.out.println("원본: " + encryptedCode);
+        // TODO: 주석삭제
+//        String encode= iotEncryption.encrytionText(encryptedCode);
+//        System.out.println("암호화: " + encode);
+//
+//        String decode= iotEncryption.decryptionText(encode);
+//        System.out.println("복호화: " + decode);
+
+//        encryptedCode = encode;
+
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
+        System.out.println("해독된 mirrorID: " + mirrorId);ㅎ
         Mirror mirror = mirrorRepository.findByMirrorId(mirrorId).orElseThrow( () -> new NoSuchFieldError());
         mirror_group_id = mirror.getMirrorGroupId();
 
