@@ -14,10 +14,7 @@ import com.theokanning.openai.service.OpenAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ChatBotService {
@@ -32,6 +29,7 @@ public class ChatBotService {
         this.redisSummeryCalendarrepository = redisSummeryCalendarrepository;
     }
 
+    // TODO: 없어질 메소드(Test 및 GPT 연결 확인용)
     public ResponseChatBotDto askQuestion(RequestChatBotDto requestDto) {
 
         List<ChatMessage> messages = new ArrayList<>();
@@ -59,17 +57,12 @@ public class ChatBotService {
     }
 
     public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
-        Optional<RedisSummeryCalendar> redisSummeryCalendar = redisSummeryCalendarrepository.findById(userEmail);
-
-        if (redisSummeryCalendar.isEmpty()){
-            return null;
-        }
+        RedisSummeryCalendar redisSummeryCalendar = redisSummeryCalendarrepository.findById(userEmail)
+                .orElseThrow( () -> new NoSuchElementException());
 
         ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(redisSummeryCalendar.get().getSummeryCalendar())
+                .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
                 .build();
-
         return dto;
-
     }
 }

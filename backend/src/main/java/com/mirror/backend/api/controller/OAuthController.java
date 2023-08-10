@@ -70,10 +70,8 @@ public class OAuthController {
         requestLoginDto.setUserEmail(userEmail);
 
         ResponseLoginDto tokenDto = oAuthService.confirmLogin(requestLoginDto);
-        if ( tokenDto == null){
+        if ( tokenDto == null)
             return fail(null);
-        }
-
         return success(tokenDto);
     }
 
@@ -88,12 +86,9 @@ public class OAuthController {
         System.out.println("Email:" +userEmail);
 
         ResponseTokensDto tokenDto = oAuthService.getTokensFromUserEmail(userEmail);
-        if ( tokenDto == null){
-            return fail(null);
-        }
 
+        if ( tokenDto == null)
+            return fail(null);
         return success(tokenDto);
     }
-
-
 }
