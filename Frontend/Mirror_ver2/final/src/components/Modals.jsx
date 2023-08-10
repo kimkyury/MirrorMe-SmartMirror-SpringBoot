@@ -14,6 +14,10 @@ function ModalBottons(props) {
   const [recordingVisible, setRecordingVisible] = useState(true);
   const [isMessageSent, setIsMessageSent] = useState(false);
 
+  const commandMessage = props.commandMessage;
+  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT"
+  const youtubeKey = props.youtubeKey;
+
   useEffect(() => {
     const blinkTimer = setInterval(() => {
       const recCircle = document.querySelector('.rec-circle');
@@ -134,7 +138,7 @@ function ModalBottons(props) {
           <iframe
             width="800"
             height="400"
-            src="https://www.youtube.com/embed/LqME1y6Mlyg"
+            src={`https://www.youtube.com/embed/${youtubeKey}`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

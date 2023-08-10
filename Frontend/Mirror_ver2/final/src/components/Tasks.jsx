@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function Tasks(props) {
-  const [tasks, setTasks] = useState([
-    '할 일이',
-    '너무',
-    '많아요',
-    '살려줘',
-  ]);  // 할 일 목록
+  const [tasks, setTasks] = useState([]);  // 할 일 목록
   const [tasksCount, setTasksCount] = useState(tasks.length)  // 할 일 목록 개수
 
   return (
