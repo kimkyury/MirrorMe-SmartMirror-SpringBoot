@@ -4,6 +4,7 @@ package com.mirror.backend.api.controller;
 import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
@@ -38,6 +39,8 @@ public class IotController {
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
     public ApiResponse<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
 
+        System.out.println(iotRequestUsersDto.getMirrorId());
+
         // Json으로 날라온 mirrorId가 DB에 존재하는지 확인한다
         String mirrorId = iotRequestUsersDto.getMirrorId();
         System.out.println(mirrorId);
@@ -59,6 +62,18 @@ public class IotController {
             return ApiUtils.success(null);
         }
         return ApiUtils.success(summaryScheduleTextDto);
+    }
+
+    @GetMapping("/text/first")
+    public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
+
+        userEmail = userEmail.replace("%40", "@");
+        ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
+
+        if ( responseFirstMirrorTextDto == null){
+            return ApiUtils.success(null);
+        }
+        return ApiUtils.success(responseFirstMirrorTextDto);
     }
 
     @PostMapping

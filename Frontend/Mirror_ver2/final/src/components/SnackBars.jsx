@@ -6,7 +6,6 @@ import axios from 'axios';
 
 import VideoMessage from './VideoMessage'
 import TodayWeather from './TodayWeather';
-import WeekWeather from './WeekWeather';
 import Tasks from './Tasks';
 import Schedules from './Schedules';
 import Notice from './Notice';

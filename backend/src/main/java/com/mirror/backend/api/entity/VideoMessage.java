@@ -25,11 +25,11 @@ public class VideoMessage {
     private String userEmail;
     private String sendUserEmail;
     private String type;
-    private String date;
+    private LocalDateTime date;
     private Character isRead;
 
     @Builder
-    public VideoMessage(Message.RequestMessage requestMessage, String date) {
+    public VideoMessage(Message.RequestMessage requestMessage, LocalDateTime date) {
         this.userEmail = requestMessage.getSendUserEmail();
         this.sendUserEmail = requestMessage.getUserEmail();
         this.type = requestMessage.getType();

@@ -3,15 +3,10 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.Alias;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
-import com.mirror.backend.api.entity.ConnectUser;
-import com.mirror.backend.api.entity.Mirror;
-import com.mirror.backend.api.entity.RedisSummeryCalendar;
-import com.mirror.backend.api.entity.User;
-import com.mirror.backend.api.repository.ConnectUserRepository;
-import com.mirror.backend.api.repository.MirrorRepository;
-import com.mirror.backend.api.repository.RedisSummeryCalendarRepository;
-import com.mirror.backend.api.repository.UserRepository;
+import com.mirror.backend.api.entity.*;
+import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.IotEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +24,8 @@ public class IotService {
     private UserRepository userRepository;
     private ConnectUserRepository connectUserRepository;
     private RedisSummeryCalendarRepository redisSummeryCalendarRepository;
+    private RedisFirstMirrorTextRepository redisFirstMirrorTextRepository;
+
     private RedisTemplate redisTemplate;
     private IotEncryption iotEncryption;
 
@@ -38,11 +35,15 @@ public class IotService {
     public IotService(MirrorRepository mirrorRepository,
                       UserRepository userRepository,
                       ConnectUserRepository connectUserRepository,
-                      RedisSummeryCalendarRepository redisSummeryCalendarRepository, RedisTemplate<String, String> redisTemplate, IotEncryption iotEncryption) {
+                      RedisSummeryCalendarRepository redisSummeryCalendarRepository,
+                      RedisFirstMirrorTextRepository redisFirstMirrorTextRepository,
+                      RedisTemplate<String, String> redisTemplate,
+                      IotEncryption iotEncryption) {
         this.mirrorRepository = mirrorRepository;
         this.userRepository = userRepository;
         this.connectUserRepository = connectUserRepository;
         this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
+        this.redisFirstMirrorTextRepository = redisFirstMirrorTextRepository;
         this.redisTemplate = redisTemplate;
         this.iotEncryption = iotEncryption;
     }
@@ -50,16 +51,34 @@ public class IotService {
 
     public boolean findMirror(String encryptedCode){
 
+//        System.out.println("원본: " + encryptedCode);
+//
+////         TODO: 주석삭제
+//        String encode= iotEncryption.encrytionText(encryptedCode);
+//        System.out.println("암호화: " + encode);
+//        String decode= iotEncryption.decryptionText(encode);
+//        System.out.println("복호화: " + decode);
+//        encryptedCode = encode;
+
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
+        System.out.println("해독된 mirrorID: " + mirrorId);
         Mirror mirror = mirrorRepository.findByMirrorId(mirrorId).orElseThrow( () -> new NoSuchFieldError());
         mirror_group_id = mirror.getMirrorGroupId();
 
         return true;
     }
 
+
+    public void UnicodeConversion() {
+        int unicodeCodePoint = 128514; // An emoji's unicode code point
+        String character = new String(Character.toChars(unicodeCodePoint));
+        System.out.println(character); // 출력: 😂
+    }
+
+
     public List<IotResponseUserDto> fineUsersInfo(String encryptedCode) {
 
-        List<User> usersInSameHouse = userRepository.findByHouseholdId(mirror_group_id);
+        List<User> usersInSameHouse = userRepository.findByHouseholdHouseholdId(mirror_group_id);
         List<IotResponseUserDto> responseUserDtos = new ArrayList<>();
 
         for(User user : usersInSameHouse){
@@ -118,5 +137,35 @@ public class IotService {
                 .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
                 .build();
         return dto;
+    }
+
+    public ResponseFirstMirrorTextDto getFirstMirrorTextDto(String userEmail){
+        // 하루 중, 최초 유저 만남 시 뱉을 Text
+
+        // TODO: 배포환경에서는 해당 값이 그냥 바로 삭제 됨
+        //  3. 해당 유저의 Text가 이미 사용된 값이라면 return null을 한다
+
+        // 3. 해당 유저의 Data의 출력물이 존재한다면 ResponseFirstMirrorTextDto를 만든다
+
+        System.out.println(userEmail);
+        RedisMirrorFirstText redisMirrorFirstText = redisFirstMirrorTextRepository
+                .findById(userEmail).orElseThrow( () -> new NoSuchElementException());
+
+        if ( redisMirrorFirstText.getIsUsed().equals("1") ){
+            // 이미 사용된 Text일 경우
+            return null;
+        }
+
+        // 사용했다고 설정
+        redisMirrorFirstText.setIsUsed("1");
+        redisFirstMirrorTextRepository.save(redisMirrorFirstText);
+
+        ResponseFirstMirrorTextDto firstMirrorTextDto = ResponseFirstMirrorTextDto.builder()
+                .textCode(redisMirrorFirstText.getTextCode())
+                .textContent(redisMirrorFirstText.getTextContent())
+                .build();
+
+        return firstMirrorTextDto;
+
     }
 }
