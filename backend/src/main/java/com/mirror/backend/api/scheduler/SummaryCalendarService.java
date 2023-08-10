@@ -48,8 +48,6 @@ public class SummaryCalendarService {
         System.out.println("------------실행중----------");
         // redis내의 유저 Token을 가져온다
         Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
-        System.out.println(redisUserTokenIterable.toString());
-
         Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
 
 
@@ -61,7 +59,6 @@ public class SummaryCalendarService {
 
             // AccessToken의 유효성 검사, 만약 불일치시 재발급
             accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
-
 
             // 해당 유저의 Email을 조회
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
@@ -108,7 +105,10 @@ public class SummaryCalendarService {
     public String  getSummeryCalendarFromGPT(String eventInTodayList){
 
         StringBuilder sb = new StringBuilder();
-        sb.append("다음과 같은 일정이 있을 때, 가장 중요한 것 3가지를 뽑아 간단하게 1. 2. 3. 형식에 맞춰 요약해주세요. 각 일정에 대하여 최대 길이는 15자가 넘지않도록 해주세요.  ");
+        sb.append("다음과 같은 일정들이 있습니다. 가장 중요한 것 3가지를 뽑아 요약해주세요.");
+        sb.append("만약 3가지보다 적다면, 있는 만큼만 나열해주세요. ");
+        sb.append("각각에 대하여 1. {요약내용}, 2. {요약내용}, 3. {요약내용} 형태로 정리해주세요.");
+        sb.append(" 최대한 간략하게 정리해주세요. (한글 기준 각각 10자가 넘지않도록) ");
         sb.append(" // " + eventInTodayList + " // ");
 
         String answer = chatGptUtil.createMessage(sb.toString());
