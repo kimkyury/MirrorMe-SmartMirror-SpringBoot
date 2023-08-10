@@ -73,7 +73,14 @@ public class WeatherRainyScheduler {
             int nx = householdInfo.getGridNx();
 
             // 기상API를 통해 날씨가 어떤지 확인하기
-            boolean result = isRainyDay(nx, ny, EtcUtil.getTodayYYYYMMDD(), getCurrentTimeRange());
+
+            String HHMM = getCurrentTimeRange();
+            String YYYYMMDD = EtcUtil.getTodayYYYYMMDD();
+            if ( HHMM.equals("2300")){
+                YYYYMMDD = String.valueOf(Integer.parseInt(YYYYMMDD) - 1);
+            }
+
+            boolean result = isRainyDay(nx, ny, YYYYMMDD,HHMM);
             saveRedisIsRainy(result, String.valueOf(householdInfo.getHouseholdId()));
         }
     }
