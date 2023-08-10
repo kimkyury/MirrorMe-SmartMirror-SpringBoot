@@ -37,8 +37,8 @@ public class MirrorFirstTextScheduler {
     public final OAuthService oAuthService;
 
 
-//    @Scheduled(cron = "0 * * * * ?") // 개발용
-    @Scheduled(cron = "5 0 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
+    @Scheduled(cron = "0 * * * * ?") // 개발용
+//    @Scheduled(cron = "5 0 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
     public void fetchRedisData() {
         System.out.println("------------First Text Scheduler----------");
         // redis내의 유저 Token을 가져온다
@@ -55,6 +55,8 @@ public class MirrorFirstTextScheduler {
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
             User user = userRepository.findByUserEmail(userEmail).get();
             Long userHouseholdId = user.getHousehold().getHouseholdId();
+
+            System.out.println(userEmail);
 
             // 오늘 기준의 데이터를 찾는다
             String today = EtcUtil.getTodayYYYYMMDD();
@@ -74,9 +76,9 @@ public class MirrorFirstTextScheduler {
             }
 
             // 해당 유저의 3줄 요약 정보가 있는지 확인한다
-            RedisSummeryCalendar redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail).get();
-            if (redisSummeryCalendar.getTargetDay().equals(today)){
-                saveRedisFirstText("0301", redisSummeryCalendar.getSummeryCalendar(), userEmail);
+            Optional<RedisSummeryCalendar> redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail);
+            if (redisSummeryCalendar.isPresent() && redisSummeryCalendar.get().getTargetDay().equals(today)){
+                saveRedisFirstText("0301", redisSummeryCalendar.get().getSummeryCalendar(), userEmail);
                 continue;
             }
         }

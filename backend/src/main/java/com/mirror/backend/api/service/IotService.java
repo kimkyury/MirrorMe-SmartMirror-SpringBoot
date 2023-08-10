@@ -51,14 +51,13 @@ public class IotService {
 
     public boolean findMirror(String encryptedCode){
 
-        System.out.println("원본: " + encryptedCode);
-        // TODO: 주석삭제
+//        System.out.println("원본: " + encryptedCode);
+//
+////         TODO: 주석삭제
 //        String encode= iotEncryption.encrytionText(encryptedCode);
 //        System.out.println("암호화: " + encode);
-//
 //        String decode= iotEncryption.decryptionText(encode);
 //        System.out.println("복호화: " + decode);
-
 //        encryptedCode = encode;
 
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
@@ -148,6 +147,7 @@ public class IotService {
 
         // 3. 해당 유저의 Data의 출력물이 존재한다면 ResponseFirstMirrorTextDto를 만든다
 
+        System.out.println(userEmail);
         RedisMirrorFirstText redisMirrorFirstText = redisFirstMirrorTextRepository
                 .findById(userEmail).orElseThrow( () -> new NoSuchElementException());
 
