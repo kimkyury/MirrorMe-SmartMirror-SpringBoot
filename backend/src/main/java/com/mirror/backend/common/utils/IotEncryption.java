@@ -13,10 +13,10 @@ public class IotEncryption {
     @Value("${iot.N}")
     public BigInteger N;
 
-    @Value("${iot.PNA}")
+    @Value("${iot.E}")
     public BigInteger E;
 
-    @Value("${iot.PNB}")
+    @Value("${iot.D}")
     public BigInteger D;
 
     public  String encryption(String sentence, BigInteger  n, BigInteger  e) {
