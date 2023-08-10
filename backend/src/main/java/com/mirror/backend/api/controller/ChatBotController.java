@@ -9,6 +9,8 @@ import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @RestController
@@ -22,6 +24,7 @@ public class ChatBotController {
         this.chatBotService = chatBotService;
     }
 
+    // TODO: 없어질 메소드(Test 및 GPT 연결 확인용)
     @PostMapping("/question")
     public ApiUtils.ApiResult<ResponseChatBotDto> sendQuestion(@RequestBody RequestChatBotDto requestDto) {
         ResponseChatBotDto responseChatBotDto = chatBotService.askQuestion(requestDto);
@@ -30,9 +33,10 @@ public class ChatBotController {
     }
 
     @GetMapping("/calendar/summary")
-    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(String userEmail){
-
+    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(HttpServletRequest request){
+        String userEmail = (String)request.getParameter("user_email");
         ResponseSummaryScheduleDto summaryScheduleDto = chatBotService.getSummerySchedule(userEmail);
+
         if ( summaryScheduleDto == null){
             return success(null);
         }

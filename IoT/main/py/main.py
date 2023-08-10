@@ -12,10 +12,48 @@ sys.path.append("./AISpeaker_Client/")
 from tts import text_to_speech as tts
 
 # import serial
-import os
-# from main/py/AISpeaker_Client import tts
 import random
+import json
 
+
+###############################################################################################
+###############################################################################################
+# from get_user_info import encryption, decryption, decode_base64_image, save_image_as_png
+# import requests
+# # 장치 고유 시리얼 넘버
+# DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
+# URL = "http://192.168.30.142:8080/api/iot/users"
+# RSA_N = 1517
+# RSA_E = 1421
+
+# # 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
+# # 모두 소문자로 구성해줄 것
+
+# params = {
+#     "mirrorId": encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
+# }
+
+# headers = {"Content-Type": "application/json"}
+
+# # 보내고자 하는 Data를 JSON 형식으로 변환 (GET에서는 변환 불 필요)
+# data = json.dumps(params)
+
+# # JSON 데이터를 포함하여 GET 요청을 보냄
+# response = requests.post(URL, headers=headers, data=data)
+
+# response_data = response.json()
+# info_json = response_data['body']['usersInSameHousehold']
+
+# # Create a JSON file
+# info_json = json.dumps(info_json)
+# with open("./" + "user_data" + ".json", "w") as f:
+#     f.write(info_json)
+
+# # 이미지 저장
+# # for user_data in info_json:
+# #     imgdata = user_data['profileImage']
+# #     img_out = decode_base64_image(imgdata)
+# #     save_image_as_png(img_out,'./face_and_gesture/photo/'+'8.png')
 
 ###############################################################################################
 ###############################################################################################
@@ -122,6 +160,7 @@ async def doOrder():
         
 # 음성 처리 결과를 처리하는 코루틴 함수들
 # 거울을 호출 했을때 실행
+# 없어질 수도 있음
 async def call(*arg):
     global STATUS
     if STATUS != WAITTING:
@@ -138,10 +177,37 @@ async def messageSend(*arg):
     if STATUS != CALL_MIRROR:
         print(f"현재 상태 : {STATUS}")
         return
+    
+    # 보내는 대상은  target에 저장되어 있음
+    target = arg[0]
 
-    tts(f"{arg[0]}님께 보낼 영상메세지 촬영을 시작합니다.")
+    send_data = {
+        "order" : "MESSAGESENDSTART",
+        "query" : {
+            "target" : target
+        }
+    }
+    # 리엑트가 접속 했을 때만 전송
+    if client_role.get("react", False):
+        await client[client_role["react"]].send(json.dumps(send_data))
 
+    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.")
+    STATUS = MESSAGE_CAP
     # 메세지 녹화 동기로 실행
+    # audio와 video측에 알려서 연결을 끊고 녹화를 시작하도록함
+    # 그 다음 종료시 다시 audio와 video측에서 다시 연결
+
+    # 메세지 녹화 종료를 리엑트로 알림
+    send_data = {
+        "order" : "MESSAGESENDEND",
+        "query" :None
+    }
+
+    if client_role.get("react", False):
+        await client[client_role["react"]].send(json.dumps(send_data))
+
+
+    # 이후 저장된 영상데이터를 백엔드 측으로 보내 줘야 됨
     STATUS = WAITTING
 # 메세지 확인하기
 async def messageShow(*arg):
@@ -149,20 +215,58 @@ async def messageShow(*arg):
     if STATUS != CALL_MIRROR:
         print(f"현재 상태 : {STATUS}")
         return
+    
+    send_data = {
+        "order" : "MESSAGESHOW",
+        "query" : None
+    }
 
+    if client_role.get("react", False):
+        await client[client_role["react"]].send(json.dumps(send_data))
+
+    STATUS = MESSAGE_SHOW
     tts("메세지를 보여드릴게요")
 
     # 메세지 보기 처리
-    # react로 보내기
+
+    # 리엑트 측으로 부터 영상이 종료되었음을 수신
+    if client_role.get("react", False):
+        await client[client_role["react"]].recv()
 
     STATUS = WAITTING
 # arg로 유튜브 검색하기
 async def youtube(*arg):
+    ########################################
+    # 거울의 상태에 따라  전송 여부를 결정
     global STATUS
     if STATUS != CALL_MIRROR:
         print(f"현재 상태 : {STATUS}")
         return
-    tts(f"{arg[0]}를 유튜브에 검색해 볼게요")
+    
+    #########################################
+    # 유튜브 영상 출력 관련 처리
+    # 유튜브 영상 검색 후 최상단 영상의 키
+    youtube_key = arg[0]
+
+    send_data = {
+        "order" : "YOUTUBE",
+        "query" : {
+            "key" : youtube_key
+            }
+    }
+
+    # 리엑트 접속시 링크 보내주기
+    if client_role.get("react", False):
+        await client[client_role["react"]].send(json.dumps(send_data))
+
+
+    STATUS = YOUTUBE
+    tts(f"{youtube_key}관련 유튜브 영상을 재생해 드릴게요")
+    #########################################
+    # 유튜브 종료 대기
+    # 리엑트 측에서 유튜브 영상이 끝났음을 수신
+    if client_role.get("react", False):
+        await client[client_role["react"]].recv()
 
     STATUS = WAITTING
     return 
@@ -173,13 +277,22 @@ async def weather(*arg):
         print(f"현재 상태 : {STATUS}")
         return
 
+    send_data = {
+        "order" : "WEATHER",
+        "query" : None
+    }
+    if client_role.get("react", False):
+        await client[client_role["react"]].send(json.dumps(send_data))
+
     tts("오늘의 날씨 입니다.")
-    # react로 데이터 보내고,
+
     # 날씨관련 받아서
     # 음성으로 출력하기
 
     STATUS = WAITTING
 # 뉴스 확인하기
+# 현재 처리 하지 않음
+# nlp에서 NEWS로 넘어오는 신호가 없어서 실행되지 않음
 async def news(*arg):
     global STATUS
     if STATUS != CALL_MIRROR:
@@ -191,14 +304,14 @@ async def news(*arg):
     STATUS = WAITTING
 
     # react로 보냄
-# 모르겠는건 chatgpt보내기
+# 모르겠는건 모른다고 답하기
 async def chatgpt(*arg):
     global STATUS
     if STATUS != CALL_MIRROR:
         print(f"현재 상태 : {STATUS}")
         return
 
-    tts("뭐래는거야 챗지피티 도와줘")
+    tts("무슨 말씀이신지 이해하지 못했어요")
 
     STATUS = WAITTING
 
@@ -226,15 +339,22 @@ async def disappear(*arg):
 
         STATUS = SCREEN_OFF
 
+async def left(*arg):
+    pass
+
+async def right(*arg):
+    pass
+
+
 order_fun = {"CALL" : call,
             "MESSAGESEND" : messageSend,
             "MESSAGESHOW" : messageShow,
             "WEATHER" : weather,
             "NEWS" : news,
             "YOUTUBE" : youtube,
-            "CANTUNDERSTAND" : chatgpt}
-            # "LEFT": left,
-            # "RIGHT": right}
+            "CANTUNDERSTAND" : chatgpt,
+            "LEFT": left,
+            "RIGHT": right}
 
 
 # async def serialArduino():
@@ -261,12 +381,11 @@ async def main():
 
 
 
-
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 
-start_server = websockets.serve(accept, "localhost", 9998);
+start_server = websockets.serve(accept, "localhost", 9998)
 # 비동기로 서버를 대기한다.
-asyncio.get_event_loop().run_until_complete(start_server);
-asyncio.get_event_loop().run_until_complete(main());
-asyncio.get_event_loop().run_forever();
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_until_complete(main())
+asyncio.get_event_loop().run_forever()
 
 

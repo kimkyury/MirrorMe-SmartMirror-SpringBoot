@@ -6,7 +6,7 @@ from moviepy.editor import VideoFileClip, AudioFileClip
 
 def mergeAudioAndVideo(sender_email, recipient_email):
     # Paths to the video and audio files
-    PATH_VIDEO = "./Message/recorded_video.avi"
+    PATH_VIDEO = "./Message/recorded_video.mp4"
     PATH_AUDIO = "./Message/recorded_audio.wav"
 
     # Load the video and audio clips
@@ -22,7 +22,7 @@ def mergeAudioAndVideo(sender_email, recipient_email):
 
     # Save the merged video
     final_output_path = "./Message/To_Be_Sent/" + file_name + ".mp4"
-    final_clip.write_videofile(final_output_path, codec="mpeg4")
+    final_clip.write_videofile(final_output_path, codec="libx264")  # Changed codec to libx264
 
     # Save information about the video as JSON
     info_dict = dict()

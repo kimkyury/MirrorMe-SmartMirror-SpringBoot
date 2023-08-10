@@ -82,6 +82,7 @@ SHOW_MESSAGE = 1 << 1
 CAP_MESSAGE = 1 << 2
 WEATHER = 1 << 3
 NEWS = 1 << 4
+SCHUDLE = 1 << 5
 UNEXPECT = 0
 
 order = {"유튜브" : YOUTUBE, 
@@ -94,7 +95,7 @@ order = {"유튜브" : YOUTUBE,
 
 order_keyword = { "검색" : YOUTUBE, "찾아" : YOUTUBE, "찾아줘" : YOUTUBE, "찾아봐" : YOUTUBE,
 
-        "보여" : SHOW_MESSAGE | NEWS, "보여줘" : SHOW_MESSAGE | NEWS, 
+        "보여" : SHOW_MESSAGE | YOUTUBE, "보여줘" : SHOW_MESSAGE | YOUTUBE,
         "띄워" : SHOW_MESSAGE, "띄워줘" : SHOW_MESSAGE,
         "보내" : CAP_MESSAGE, "보내줘" : CAP_MESSAGE, 
         "찍어" : CAP_MESSAGE, "찍어줘" : CAP_MESSAGE, 
@@ -111,8 +112,40 @@ family = {"아빠" : 0, "엄마" : 1, "아버지" : 0, "어머니" : 1, "누나"
 """https://www.youtube.com/results?search_query=싸피"""
 
 def expect_youtube(response):
+    search_key = ""
+    check = False
+    check_end = ["검색", "찾아", "보여", "보여줘", "찾아줘", "찾아봐", ]
+    for token in response.tokens:
+        if language_v1.PartOfSpeech.Tag(token.part_of_speech.tag).name == "PRT":
+            check = True
+            continue
+
+        if check and token.text.content in check_end:
+            break
+
+        if check:
+            search_key += token.text.content
+
+
+    import requests
+
+    youtube_url = "https://www.googleapis.com/youtube/v3/search"
+
+    params = {
+            "key": "AIzaSyDTwgayRnYmoB4oqElnAXtl6fsUgOw1c4w",
+            "part": "snippet",
+            "type": "video",
+            "q": search_key,
+            }
+
+    result = requests.get(  youtube_url,
+                            params=params)
+
+
+    video_key = result.json()['items'][0]['id']['videoId']
+
     # print("유튜브 보여주기")
-    return "YOUTUBE\n\r검색어"
+    return f"YOUTUBE\n\r{video_key}"
     # search_keyword = ""
 
 def expect_message_show(response):
@@ -141,7 +174,7 @@ def expect_weather(response):
 
 def expect_news(response):
     # print("뉴스 관련 요청")
-    return "NEWS\n\r"
+    return "CANTUNDERSTAND\n\r"
 
 def cant_understand(response):
     # print("이해하지 못 했어요")
@@ -149,7 +182,12 @@ def cant_understand(response):
 
 
 
-functoins = [expect_youtube, expect_message_show, expect_message_cap, expect_weather, expect_news, cant_understand]
+functoins = [expect_youtube,        #0
+             expect_message_show,   #1
+             expect_message_cap,    #2
+             expect_weather,        #3
+             expect_news,           #4
+             cant_understand]       #-1
 
 #######################################################################################    
 #######################################################################################
@@ -230,6 +268,9 @@ if __name__ == '__main__':
                 "어머니께 메세지 보내줘",
                 "메세지 누나한테 녹화해 줘",
                 "없는사람한테 메세지 보내줘",
+
+                "오늘의 뉴스 보여줘",
+                "오늘 날씨 어때",
                 
                 "문제 언제 풀어와?"]
 
