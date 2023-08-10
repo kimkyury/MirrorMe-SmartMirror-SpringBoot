@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Snackbar, Button } from '@mui/material';
 import { CSSTransition } from 'react-transition-group';
 
+import axios from 'axios';
+
 import VideoMessage from './VideoMessage'
 import TodayWeather from './TodayWeather';
 import WeekWeather from './WeekWeather';
@@ -18,10 +20,27 @@ function Snackbars(props) {
   const [openNoticeSnackbar, setOpenNoticeSnackbar] = useState(false);
   const ref = useRef(null)
 
+  // const [userAccessToken, getUserAccessToken] = useState('');
+  // const [userRefreshToken, getUserRefreshToken] = useState('');
+
   const commandMessage = props.commandMessage;
-  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT", "TTS"
+  // 목록 : "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT", "TTS"
   const tts = props.tts;
   const ttsType = props.ttsType;
+  const userEmail = props.userEmail;
+
+  // axios.get('oauth/tokens', {
+  //   params: { userEmail: userEmail },
+  // })
+  // .then((res) => { // 유저의 accessToken 및 refreshToken 저장
+  //   const response = res.data.response;
+  //   getUserAccessToken(response.accessToken);
+  //   getUserRefreshToken(response.refreshToken);
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // });
+
 
   const handleSnackbarClose = () => {
     setOpenNoticeSnackbar(false);
@@ -59,15 +78,13 @@ function Snackbars(props) {
   //   }
   // };
 
-  // const handleTasks = () => {
-  //   setopenNoticeSnackbar(true);
-  //   setOpenTasksSnackbar(true);
-  // };
+  const handleTasks = () => {
+    setOpenTasksSnackbar(true);
+  };
 
-  // const handleSchedules = () => {
-  //   setopenNoticeSnackbar(true);
-  //   setOpenSchedulesSnackbar(true);
-  // };
+  const handleSchedules = () => {
+    setOpenSchedulesSnackbar(true);
+  };
 
   // const handleWeekWeatherClick = () => {
   //   setopenNoticeSnackbar(true);
@@ -79,8 +96,8 @@ function Snackbars(props) {
     <div>
       {/* <Button onClick={handleVideoMessageButtonClick} variant="contained" color="inherit">메세지</Button> */}
       {/* <Button onClick={handleWeatherButtonClick} variant="contained" color="inherit">날씨</Button> */}
-      {/* <Button onClick={handleTasks} variant="contained" color="inherit">할일</Button> */}
-      {/* <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button> */}
+      <Button onClick={handleTasks} variant="contained" color="inherit">할일</Button>
+      <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button>
       
       {/* Notice Snackbar */}
       <div>
@@ -156,7 +173,11 @@ function Snackbars(props) {
             open={openTasksSnackbar}
             autoHideDuration={10000}
             onClose={handleSnackbarClose}
-            message={<Tasks />}
+            message=
+            {<Tasks 
+              // userAccessToken={userAccessToken}
+              // userRefreshToken={userRefreshToken}
+            />}
             style={{ marginTop: '200px' }}
           />
         </CSSTransition>
@@ -173,7 +194,11 @@ function Snackbars(props) {
             open={openSchedulesSnackbar}
             autoHideDuration={10000}
             onClose={handleSnackbarClose}
-            message={<Schedules />}
+            message=
+              {<Schedules 
+                // userAccessToken={userAccessToken}
+                // userRefreshToken={userRefreshToken}
+              />}
             style={{ marginTop: '200px' }}
           />
         </CSSTransition>
