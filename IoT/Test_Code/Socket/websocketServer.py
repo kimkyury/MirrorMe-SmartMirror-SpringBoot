@@ -87,7 +87,7 @@ async def handle_client_input(session_id):
             print(f"\r{session_id} input:", client_input, end="\nEnter something: ")
 
     except websockets.exceptions.ConnectionClosedOK:
-        print(f"{session_id} 클라이언트의 요청으로 연결 종료")
+        print(f"\r{session_id} 클라이언트의 요청으로 연결 종료", end="\nEnter something: ")
         del client[session_id]
 
 
