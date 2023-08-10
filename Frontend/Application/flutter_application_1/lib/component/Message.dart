@@ -46,7 +46,9 @@ class _MessageState extends State<Message> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Video Player'),
+        title: Image.asset('lib/assets/MirrorMe_Main.png'),
+        backgroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Center(
         child: _controller?.value.isInitialized ?? false

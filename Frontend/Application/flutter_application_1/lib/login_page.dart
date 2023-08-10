@@ -48,32 +48,41 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 200,
-              width: 200,
-              color: Colors.blue,
               child: Center(
-                child: Text('로고'),
+                child: Image.asset('lib/assets/MirrorMe_Main.png'),
               ),
             ),
             SizedBox(
                 height:
-                    20), // Adding some space between the logo and the login button
-            Container(
-              height: 50,
-              width: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    _handleGoogleSignIn(context); // Google 로그인 핸들러 호출
-                  },
-                  child: Text('로그인'),
+                    20),
+            GestureDetector(
+              onTap: () {
+                _handleGoogleSignIn(context); // Google 로그인 핸들러 호출
+              },
+              child: Container(
+                width: 330,
+                height: 50,
+                margin: EdgeInsets.only(
+                  left: 30,
+                  right: 30,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
+
             SizedBox(height: 20), // Adding space between the two buttons
             ElevatedButton(
               // "다른 페이지로 이동" 버튼 추가
@@ -84,6 +93,12 @@ class LoginPage extends StatelessWidget {
                       builder: (context) => MyHomePage()), // 새로운 페이지로 이동
                 );
               },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.black, // 배경색을 Container와 일치시킴
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               child: Text('다른 페이지로 이동'),
             ),
           ],
