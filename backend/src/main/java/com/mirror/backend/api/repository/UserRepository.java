@@ -1,5 +1,6 @@
 package com.mirror.backend.api.repository;
 
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByHouseholdId(Long householdId);
 
     List<User> findByBirthday(String birthday);
+
+    List<User> findByBirthdayAndUserIdIn(String todayBirthday, List<Long> connectUserIds);
 
 }
