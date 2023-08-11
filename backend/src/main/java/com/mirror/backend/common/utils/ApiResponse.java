@@ -25,6 +25,8 @@ public class ApiResponse<T> {
 
     private final static String INVALID_ACCESS_TOKEN = "Invalid access token.";
     private final static String INVALID_REFRESH_TOKEN = "Invalid refresh token.";
+    private final static String INVALID_USER_ID = "Invalid user id.";
+    private final static String INVALID_USER_EMAIL = "Invalid user email.";
     private final static String NOT_EXPIRED_TOKEN_YET = "Not expired token yet.";
 
     //Custom Error Message (KIMKYURI)
