@@ -65,6 +65,10 @@ public class SummaryCalendarScheduler {
             // 2. 해당 UserToken으로 Calendar내역을 각각 가져온다
             Event event = calendarService.getMyCalendar(accessToken, "primary");
             String eventInTodayList = getUserEventInToday(event);
+            if ( eventInTodayList.equals("")){
+                System.out.println("오늘 일정이 없음");
+                continue;
+            }
 
             // 3. Gpt에게 해당 일정을 요약해달라는 요청을 보낸다
             String answer = getSummeryCalendarFromGPT(eventInTodayList);
@@ -103,11 +107,14 @@ public class SummaryCalendarScheduler {
     // 3. 해당 Calendar내역을 3줄 요약하도록 GPT한테 요청한다
     public String  getSummeryCalendarFromGPT(String eventInTodayList){
 
+        System.out.println("가져온 모든 이벤트: " + eventInTodayList);
         StringBuilder sb = new StringBuilder();
         sb.append("다음과 같은 일정들이 있습니다. 가장 중요한 것 3가지를 뽑아 요약해주세요.");
         sb.append("만약 3가지보다 적다면, 있는 만큼만 나열해주세요. ");
         sb.append("각각에 대하여 1. {요약내용}, 2. {요약내용}, 3. {요약내용} 형태로 정리해주세요.");
         sb.append(" 최대한 간략하게 정리해주세요. (한글 기준 각각 10자가 넘지않도록) ");
+
+
         sb.append(" // " + eventInTodayList + " // ");
 
         String answer = chatGptUtil.createMessage(sb.toString());
