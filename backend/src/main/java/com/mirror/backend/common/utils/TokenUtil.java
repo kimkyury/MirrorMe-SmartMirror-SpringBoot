@@ -17,6 +17,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 @Component
@@ -34,10 +36,7 @@ public class TokenUtil {
         this.googleOAuth = googleOAuth;
     }
 
-
-
     public  String confirmAccessToken(String accessToken, String refreshToken)  {
-
 
         // Google Oauth에 AccessToken 유효성 검사 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -53,7 +52,6 @@ public class TokenUtil {
         String userEmail = "";
         Long userId;
 
-
         try{
             responseEntity = restTemplate.getForEntity(googleRequestURL.toString(), String.class);
 
@@ -62,7 +60,8 @@ public class TokenUtil {
             }catch(IOException e){
                 e.fillInStackTrace();
             }
-            userEmail = returnNode.get("email").asText();
+//            userEmail = returnNode.get("email").asText();
+
         }catch(HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 System.out.println("--------Filter-------");
@@ -71,7 +70,9 @@ public class TokenUtil {
                 // refreshToken으로 새 accessToken 재발급
                 String [] tokens = reIssueAccessToken(refreshToken);
                 String reIssueAccessToken = tokens[0];
+                String idToken = tokens[1];
 
+                userEmail = getUserEmailFromIdToken(idToken);
                 saveTokensToRedis(userEmail, reIssueAccessToken, refreshToken);
                 return reIssueAccessToken;
             }
@@ -117,6 +118,37 @@ public class TokenUtil {
 
         return tokens;
 
+    }
+
+
+    public String getUserEmailFromIdToken (String idToken ){
+
+        String userEmail = "";
+        String[] parts = idToken.split("\\."); // '.'을 기준으로 분리
+
+        if (parts.length == 3) {
+
+            // payload영역만 Decode 후, Jackson으로 userEmail부분만 Parsing
+            byte[] payloadBytes = Base64.getUrlDecoder().decode(parts[1]);
+            String payload = new String(payloadBytes, StandardCharsets.UTF_8);
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode payloadNode = objectMapper.readTree(payload);
+                if (payloadNode.has("email")) {
+                    userEmail = payloadNode.get("email").asText();
+
+                } else {
+                    System.out.println("Email not found.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Invalid ID token.");
+        }
+//        System.out.println("User의 Email: " + userEmail);
+        return userEmail;
     }
 
     public  void saveTokensToRedis(String userEmail, String reIssueAccessToken, String refreshToken){

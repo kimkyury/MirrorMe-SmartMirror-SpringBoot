@@ -51,9 +51,15 @@ function App() {
   const [messageTextArea, setMessageTextArea] = useState('');
   const [webSocket, setWebSocket] = useState(null);
 
-  const [commandMessage, setCommandMessage] = useState('');
+  // Snackbars Props
+  const [snackbarsCommandMessage, setSnackbarsCommandMessage] = useState('');
   const [tts, setTts] = useState('');
   const [ttsType, setTtsType] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  // Modals Props
+  const [modalsCommandMessage, setModalsCommandMessage] = useState('');
+  const [youtubeKey, setYoutubeKey] = useState('');
 
   useEffect(() => {
     // 웹 서버를 접속한다.
@@ -74,16 +80,19 @@ function App() {
     };
     // 소켓 서버로부터 메시지가 오면 호출되는 함수.
     socket.onmessage = (event) => {
-      console.log(event)
       const data = JSON.parse(event.data);
-      console.log(data);
-      setCommandMessage(data.order);
-      setMessageTextArea(prev => prev + "Receive From Server => " + commandMessage + "\n");
+      setSnackbarsCommandMessage(data.order);
+      setModalsCommandMessage(data.order);
+      setMessageTextArea(prev => prev + "Receive From Server => " + snackbarsCommandMessage + "\n");
       if (data.order == 'TTS') {
         setTts(data.query.content);
         setTtsType(data.query.type);
         setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
-        console.log(data.query.content);
+      } else if (data.order == 'USERINFO') {
+        console.log(data.query.email);
+        setUserEmail(data.query.email);
+      } else if (data.order == 'YOUTUBE') {
+        setYoutubeKey(data.query.key);
       }
     };
 
@@ -111,11 +120,15 @@ function App() {
       <div className="time">{formattedTimeWithAmPm}</div>
       <div className="btn-container">
         {/* <sendMessage/> */}
-        <Modals/>
+        <Modals
+          commandMessage={modalsCommandMessage}
+          youtubeKey={youtubeKey}
+        />
         <Snackbars
-          commandMessage={commandMessage}
+          commandMessage={snackbarsCommandMessage}
           tts={tts}
           ttsType={ttsType}
+          userEmail={userEmail}
         />
       </div>
       <form className="socket">

@@ -11,6 +11,9 @@ import sys
 sys.path.append("./AISpeaker_Client/")
 from tts import text_to_speech as tts
 
+sys.path.append("./Video_Client/")
+from Recognition import find_user, get_user_face
+
 # import serial
 import random
 import json
@@ -18,42 +21,48 @@ import json
 
 ###############################################################################################
 ###############################################################################################
-# from get_user_info import encryption, decryption, decode_base64_image, save_image_as_png
-# import requests
-# # 장치 고유 시리얼 넘버
-# DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
-# URL = "http://192.168.30.142:8080/api/iot/users"
-# RSA_N = 1517
-# RSA_E = 1421
+# 서버에서 유저 데이터 받아오기
 
-# # 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
-# # 모두 소문자로 구성해줄 것
+from get_user_info import encryption, decryption, decode_base64_image, save_image_as_png
+import requests
+# 장치 고유 시리얼 넘버
+DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
+URL_USER_DATA = "http://i9e101.p.ssafy.io:8080/api/iot/users"
+RSA_N = 119
+RSA_E = 43
 
-# params = {
-#     "mirrorId": encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
-# }
 
-# headers = {"Content-Type": "application/json"}
+# 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
+# 모두 소문자로 구성해줄 것
 
-# # 보내고자 하는 Data를 JSON 형식으로 변환 (GET에서는 변환 불 필요)
-# data = json.dumps(params)
+print("서버에 유저 데이터 요청")
+temp = encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
+params = {
+    "mirrorId": "SxdePkscFV4HJzRLE18eXF5mJ2w=",
+}
+headers = {"Content-Type": "application/json"}
 
-# # JSON 데이터를 포함하여 GET 요청을 보냄
-# response = requests.post(URL, headers=headers, data=data)
+# 보내고자 하는 Data를 JSON 형식으로 변환
+data = json.dumps(params)
 
-# response_data = response.json()
-# info_json = response_data['body']['usersInSameHousehold']
+# JSON 데이터를 포함하여 POST 요청을 보냄
+response = requests.post(URL_USER_DATA, headers=headers, data=data)
 
-# # Create a JSON file
-# info_json = json.dumps(info_json)
-# with open("./" + "user_data" + ".json", "w") as f:
-#     f.write(info_json)
+# 송신 결과 확인
+rdata = response.json()
+user_info_list = rdata['body']['usersInSameHousehold']
 
-# # 이미지 저장
-# # for user_data in info_json:
-# #     imgdata = user_data['profileImage']
-# #     img_out = decode_base64_image(imgdata)
-# #     save_image_as_png(img_out,'./face_and_gesture/photo/'+'8.png')
+for user in user_info_list:
+    if user["profileImage"] != None:
+        img_out = decode_base64_image(user["profileImage"])
+        save_image_as_png(img_out,f'./Video_client/Recognition/Image/{user["userName"]}.png')
+    user.pop("profileImage",None)
+
+# Create a JSON file
+info_json = json.dumps(user_info_list)
+with open("./" + "user_data" + ".json", "w") as f:
+    f.write(info_json)
+print("데이터 수신 완료")
 
 ###############################################################################################
 ###############################################################################################
@@ -378,7 +387,18 @@ async def main():
 ###############################################################################################
 ###############################################################################################
 
+# try:
+#     get_user_face.getUserFaceImage()
+#     print("make face image finished")
+# except:
+#     print("error")
 
+# print("find user")
+# my_name = find_user.getUserName()
+# print("user :", my_name)
+
+###############################################################################################
+###############################################################################################
 
 
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 

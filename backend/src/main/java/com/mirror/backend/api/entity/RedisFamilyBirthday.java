@@ -2,22 +2,24 @@ package com.mirror.backend.api.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash("summeryCalendar")
-public class RedisSummeryCalendar {
+@Setter
+@RedisHash("familyBirth")
+public class RedisFamilyBirthday {
 
     @Id
     private String userEmail;
-    private String summeryCalendar;
+    private String familyBirthday;
     private String targetDay;
 
     @Builder
-    public RedisSummeryCalendar(String userEmail, String summeryCalendar, String targetDay) {
+    public RedisFamilyBirthday(String userEmail, String familyBirthday, String targetDay) {
         this.userEmail = userEmail;
-        this.summeryCalendar = summeryCalendar;
+        this.familyBirthday = familyBirthday;
         this.targetDay = targetDay;
     }
 }

@@ -7,12 +7,29 @@ class Home extends StatelessWidget {
     // 홈 컴포넌트의 내용을 작성
     return ListView(
       children: [
+        SizedBox(height: 20,),
+        // 날씨
         Container(
-          // 날씨
-          height: 150,
-          color: Colors.amber,
-          child: Text('날씨'),
+          width: 350,
+          height: 161,
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x29000000),
+                offset: Offset(0, 1),
+                blurRadius: 6,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
         ),
+        SizedBox(height: 20,),
         Container(
           // 오늘 일정
           padding: EdgeInsets.all(10),
@@ -101,6 +118,7 @@ class Home extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(height: 20,),
         Container(
           // 할 일
           padding: EdgeInsets.all(10),
