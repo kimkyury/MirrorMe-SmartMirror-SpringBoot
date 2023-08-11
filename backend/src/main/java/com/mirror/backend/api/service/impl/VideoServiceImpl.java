@@ -7,6 +7,7 @@ import com.mirror.backend.api.repository.ConnectUserRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.api.repository.VideoRepository;
 import com.mirror.backend.api.service.VideoService;
+import com.mirror.backend.common.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -56,7 +57,8 @@ public class VideoServiceImpl implements VideoService {
     // 영상 메시지 한 개 조회
     @Override
     public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
-        VideoMessage videoMessage = videoRepository.findByVideoId(videoId);
+        VideoMessage videoMessage = videoRepository.findByVideoId(videoId)
+                .orElseThrow(() -> new NotFoundException("Not Found Video"));
         String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
         return new FileInputStream(videoUrl);
     }
