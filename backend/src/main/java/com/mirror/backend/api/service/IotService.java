@@ -51,9 +51,9 @@ public class IotService {
 
     public boolean findMirror(String encryptedCode){
 
-//        System.out.println("원본: " + encryptedCode);
-//
-////         TODO: 주석삭제
+        System.out.println("원본: " + encryptedCode);
+////
+// //       TODO: 주석삭제
 //        String encode= iotEncryption.encrytionText(encryptedCode);
 //        System.out.println("암호화: " + encode);
 //        String decode= iotEncryption.decryptionText(encode);
