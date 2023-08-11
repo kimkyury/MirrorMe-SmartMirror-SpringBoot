@@ -64,8 +64,8 @@ public class OAuthService {
                 .append(URLEncoder.encode(scopeTask + " ", "UTF-8"))
                 .append("email+")
                 .append("profile")
-                .append("&access_type=").append("offline"); //TODO: remove this Line (RefreshToken받으려고 함)
-//                .append("&prompt=").append("consent");
+                .append("&access_type=").append("offline") //TODO: remove this Line (RefreshToken받으려고 함)
+                .append("&prompt=").append("consent");
 
         System.out.println(requestUrl.toString());
         return requestUrl.toString();
