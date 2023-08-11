@@ -40,6 +40,8 @@ public class IotController {
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
     public ApiResponse<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
 
+        System.out.println(iotRequestUsersDto.getMirrorId());
+
         // Json으로 날라온 mirrorId가 DB에 존재하는지 확인한다
         String mirrorId = iotRequestUsersDto.getMirrorId();
         System.out.println(mirrorId);
@@ -66,11 +68,8 @@ public class IotController {
     @GetMapping("/text/first")
     public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
 
-        // TODO: 테스트용  output 고정 API
-        ResponseFirstMirrorTextDto responseFirstMirrorTextDto =ResponseFirstMirrorTextDto.builder()
-                .textCode("0101")
-                .textContent("안녕하세요!, 오늘은 우산은 챙기시는 게 좋을 것 같아요")
-                .build();
+        userEmail = userEmail.replace("%40", "@");
+        ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
 
         if ( responseFirstMirrorTextDto == null){
             return ApiUtils.success(null);
