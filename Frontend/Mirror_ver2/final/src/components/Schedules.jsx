@@ -9,29 +9,29 @@ function Schedules(props) {
   const accessToken = props.userAccessToken;
   const refreshToken = props.userRefreshToken;
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // 스케줄 데이터 가져오기
-  //       const scheduleResponse = await axios.get("/schedule/today", {
-  //         headers: { Authorization: `Bearer ${accessToken}` },
-  //         withCredentials: true,
-  //       });
-  //       setSchedules(scheduleResponse.data.response);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 스케줄 데이터 가져오기
+        const scheduleResponse = await axios.get("/schedule/today", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        });
+        setSchedules(scheduleResponse.data.response);
 
-  //       // 스케줄 카운트 가져오기
-  //       const countResponse = await axios.get("/schedule/today/count", {
-  //         headers: { Authorization: `Bearer ${accessToken}` },
-  //         withCredentials: true,
-  //       });
-  //       setSchedulesCount(countResponse.data.response);
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
+        // 스케줄 카운트 가져오기
+        const countResponse = await axios.get("/schedule/today/count", {
+          headers: { access_token : `${accessToken}` },
+          withCredentials: true,
+        });
+        setSchedulesCount(countResponse.data.response);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-  //   fetchData();
-  // }, [accessToken]);
+    fetchData();
+  }, [accessToken]);
 
   return (
     <>
