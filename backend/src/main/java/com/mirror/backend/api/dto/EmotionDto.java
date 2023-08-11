@@ -4,6 +4,7 @@ import com.mirror.backend.api.entity.EmotionCount;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,9 +12,13 @@ public class EmotionDto {
 
     @Getter
     public static class EmotionReq {
+        @NotNull
         private String emotionDate;
+        @NotNull
         private Long userId;
+        @NotNull
         private List<Integer> emotionList;
+        @NotNull
         private int emotionCode;
     }
 
