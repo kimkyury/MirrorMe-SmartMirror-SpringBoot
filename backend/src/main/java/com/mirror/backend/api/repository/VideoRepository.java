@@ -7,11 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VideoRepository extends JpaRepository<VideoMessage, Long> {
     List<VideoMessage> findAllByUserEmail(String userEmail);
-    VideoMessage findByVideoId(Long videoId);
+    Optional<VideoMessage> findByVideoId(Long videoId);
     @Query("SELECT count(e) from VideoMessage e where MONTH(e.date) = :month and e.userEmail = :userEmail")
     Integer findByMonth(@Param("month") int month, @Param("userEmail") String userEmail);
 }
