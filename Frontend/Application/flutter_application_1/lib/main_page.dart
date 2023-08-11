@@ -95,11 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildNavItem(Icons.newspaper, '뉴스', 0),
-              buildNavItem(Icons.emoji_emotions, '감정', 1),
-              buildNavItem(Icons.home, '홈', 2),
-              buildNavItem(Icons.people, '가족', 3),
-              buildNavItem(Icons.settings, '설정', 4),
+              buildNavItem(Image.asset('lib/assets/newsicon.png'), 0),
+              buildNavItem(Image.asset('lib/assets/emotionicon.png'), 1),
+              buildNavItem(Image.asset('lib/assets/homeicon.png'), 2),
+              buildNavItem(Image.asset('lib/assets/familyicon.png'), 3),
+              buildNavItem(Image.asset('lib/assets/settingicon.png'), 4),          
             ],
           ),
         ),
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget buildNavItem(IconData icon, String label, int index) {
+  Widget buildNavItem(Image image,  int index) {
     return GestureDetector(
       onTap: () {
         _pageController.animateToPage(
@@ -118,17 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: _currentIndex == index ? Colors.blue : Colors.black,
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: _currentIndex == index ? Colors.blue : Colors.black,
-            ),
-          ),
+          image,
         ],
       ),
     );
