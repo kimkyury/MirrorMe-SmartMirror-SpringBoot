@@ -49,17 +49,16 @@ public class WeatherRainyScheduler {
     private String dataServiceKey;
 
     public final RedisUserTokenRepository redisUserTokenRepository;
-    public final TokenUtil tokenUtil;
+    public final RedisIsRainyRepository redisIsRainyRepository;
     public final HouseholdRepository householdRepository;
     public final WeatherServiceImpl weatherService;
-    public final RedisIsRainyRepository redisIsRainyRepository;
+    public final TokenUtil tokenUtil;
 
-
-    // 1. Redis내의 유저 Token들을 모두 가져온다
 //    @Scheduled(cron = "40 * * * * ?")   // 개발용, 매분 30초마다 실행
     @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
     public void fetchRedisData() {
-        System.out.println("------------Weather Rainny  Scheduler----------");
+
+        System.out.println("------------Scheduler: Warning RainyWeather ----------");
 
         // 모든 household 가져오기
         Iterable<Household> householdsIterable = householdRepository.findAll();
@@ -73,7 +72,6 @@ public class WeatherRainyScheduler {
             int nx = householdInfo.getGridNx();
 
             // 기상API를 통해 날씨가 어떤지 확인하기
-
             String HHMM = getCurrentTimeRange();
             String YYYYMMDD = EtcUtil.getTodayYYYYMMDD();
             if ( HHMM.equals("2300")){
@@ -83,6 +81,8 @@ public class WeatherRainyScheduler {
             boolean result = isRainyDay(nx, ny, YYYYMMDD,HHMM);
             saveRedisIsRainy(result, String.valueOf(householdInfo.getHouseholdId()));
         }
+
+        System.out.println("------------ Finish Scheduler ----------");
     }
 
     public String getCurrentTimeRange(){
@@ -140,6 +140,7 @@ public class WeatherRainyScheduler {
     public void saveRedisIsRainy(boolean isRainy, String householdId){
 
         RedisIsRainy redisIsRainy = null;
+
         if (isRainy){
             redisIsRainy = RedisIsRainy.builder()
                     .householdId(householdId)
