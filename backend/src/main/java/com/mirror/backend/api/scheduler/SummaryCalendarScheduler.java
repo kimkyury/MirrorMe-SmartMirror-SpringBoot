@@ -64,12 +64,9 @@ public class SummaryCalendarScheduler {
 
             // 3. Gpt에게 해당 일정을 요약해달라는 요청을 보낸다
             String answer = getSummeryCalendarFromGPT(eventInTodayList);
-
-            System.out.println(answer);
-
             saveRedisSummeryCalendar(answer, userEmail);
-
         }
+        System.out.println("------------ Finish Scheduler ----------");
     }
 
     public String getUserEventInToday(Event event){

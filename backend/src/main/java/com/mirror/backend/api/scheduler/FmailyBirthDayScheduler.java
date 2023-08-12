@@ -42,21 +42,6 @@ public class FmailyBirthDayScheduler {
     public void fetchRedisData() {
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 
-        // Today Birthday
-        List<User> todayBirthUserList = userRepository.findByBirthday(EtcUtil.getTodayMMDD());
-        if (!todayBirthUserList.isEmpty()) {
-            for (User todayBirthUser : todayBirthUserList) {
-
-                String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(todayBirthUser);
-                String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents); // Request PresentRecommend to GPT
-
-                // 해당 유저의 모든 친인척에게 오늘 생일 주인공 알리기
-                List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(todayBirthUser.getUserId());
-                for (ConnectUser connectUser : birthUserConnectUser)
-                    saveRedisFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), todayBirthUser.getUserName());
-            }
-        }
-
         // Today + (1 ~ 7) later Birthday
         List<String> upcomingBirthdayLists = getUpcomingBirthdays();
         List<User> upcomingBirthdayUserAllList = new ArrayList<>();
@@ -73,9 +58,32 @@ public class FmailyBirthDayScheduler {
 
             // 해당 유저의 모든 친인척에게 추우 생일 주인공 알리기
             List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(birthdayUser.getUserId());
-            for (ConnectUser connectUser : birthUserConnectUser)
-                saveRedisUpcomingFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), birthdayUser.getUserName());
+            for (ConnectUser connectUser : birthUserConnectUser) {
+                System.out.println(connectUser.getId().getConnectUserId() + " " + birthdayUser.getUserId());
+                ConnectUser aliasInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(connectUser.getId().getConnectUserId() , birthdayUser.getUserId()).get();
+                saveRedisUpcomingFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), aliasInfo.getConnectUserAlias());
+            }
         }
+
+        // Today Birthday
+        List<User> todayBirthUserList = userRepository.findByBirthday(EtcUtil.getTodayMMDD());
+        System.out.println(todayBirthUserList);
+        if (todayBirthUserList.size() != 0) {
+            for (User todayBirthUser : todayBirthUserList) {
+
+                String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(todayBirthUser);
+                String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents); // Request PresentRecommend to GPT
+
+                // 해당 유저의 모든 친인척에게 오늘 생일 주인공 알리기
+                List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(todayBirthUser.getUserId());
+                for (ConnectUser connectUser : birthUserConnectUser) {
+                    ConnectUser aliasInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(connectUser.getId().getConnectUserId(), todayBirthUser.getUserId()).get();
+                    saveRedisFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), aliasInfo.getConnectUserAlias());
+                }
+            }
+        }
+
+        System.out.println("------------ Finish Scheduler ----------");
     }
 
     private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {

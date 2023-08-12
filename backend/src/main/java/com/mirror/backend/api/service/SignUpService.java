@@ -11,6 +11,7 @@ import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.Constants.Result;
 import com.mirror.backend.common.utils.IotEncryption;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,30 +24,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class SignUpService {
 
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
-    private final InterestCommonCodeRepository interestCommonCodeRepository;
-    private final RedisTemplate<String, String> redisTemplate;
     private final HouseholdRepository householdRepository;
     private final MirrorRepository mirrorRepository;
     private final ConnectUserRepository connectUserRepository;
-    private final IotEncryption iotEncryption;
 
-    @Autowired
-    public SignUpService(UserRepository userRepository,
-                         InterestRepository interestRepository,
-                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository, IotEncryption iotEncryption) {
-        this.userRepository = userRepository;
-        this.interestRepository = interestRepository;
-        this.interestCommonCodeRepository = interestCommonCodeRepository;
-        this.redisTemplate = redisTemplate;
-        this.householdRepository = householdRepository;
-        this.mirrorRepository = mirrorRepository;
-        this.connectUserRepository = connectUserRepository;
-        this.iotEncryption = iotEncryption;
-    }
+    private final RedisTemplate<String, String> redisTemplate;
+    private final IotEncryption iotEncryption;
 
     public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
 
