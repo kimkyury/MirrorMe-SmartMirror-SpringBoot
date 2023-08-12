@@ -1,9 +1,6 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.RequestConnectUserInfoDto;
-import com.mirror.backend.api.dto.RequestInterestDto;
-import com.mirror.backend.api.dto.ResponseInterestDto;
-import com.mirror.backend.api.dto.ResponseUserInfoDto;
+import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.service.UserService;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -37,20 +34,21 @@ public class UserController {
 
     @GetMapping("/profile")
     @Operation(summary = "본인 정보를 조회합니다(id제외).", description = "본인실명, 이메일, 생성/수정 시점, 가정ID를 조회합니다." )
-    public ApiUtils.ApiResult<ResponseUserInfoDto> getUserInfo(HttpServletRequest request) {
+    public ApiUtils.ApiResult<UserDto.UserInfoRes> getUserInfo(HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("user_id");
-        System.out.println("userId: " + userId);
 
-        ResponseUserInfoDto userInfo = userService.getUserInfo(userId);
+        UserDto.UserInfoRes userInfoRes = userService.getUserInfo(userId);
 
-        return success(userInfo);
+        return success(userInfoRes);
     }
 
     @GetMapping("/profile/img")
     @Operation(summary = "Profile Image를 조회합니다", description = "프로필이미지의 encoding값을 조회합니다. ")
     public ResponseEntity<byte[]> getProfileImage(HttpServletRequest request) {
+
         String userEmail = (String)request.getAttribute("user_email");
+
         byte[] result = userService.getUserProfileImage(userEmail);
 
         HttpHeaders headers = new HttpHeaders();
@@ -64,13 +62,13 @@ public class UserController {
 
     @GetMapping("/profile/interests")
     @Operation(summary = "관심사 정보를 조회합니다.", description = "어디에 관심있니" )
-    public ApiUtils.ApiResult<List<ResponseInterestDto>> getMyInterests(HttpServletRequest request){
+    public ApiUtils.ApiResult<List<InterestDto.InterestRes>> getMyInterests(HttpServletRequest request){
 
         // 이메일 찾기
         String userEmail = (String) request.getAttribute("user_email");
         Long userId = (Long) request.getAttribute("user_id");
 
-        List<ResponseInterestDto> interestDtoList = userService.getInterestDtoList(userEmail, userId);
+        List<InterestDto.InterestRes> interestDtoList = userService.getInterestDtoList(userEmail, userId);
 
         if(interestDtoList.size() == 0)
             success("해당 User는 관심사가 없습니다");
@@ -80,7 +78,7 @@ public class UserController {
     @PostMapping("/interests")
     @Operation(summary = "관심사 정보를 생성/수정 합니다. ", description = "관심사 정보를 생성하거나, 기존에 이미 유저가 등록한 관심사라면 ON/OFF 합니다." )
     public ApiUtils.ApiResult<String> postMyInterest(HttpServletRequest request,
-                                                     @RequestBody RequestInterestDto requestInterestDto){
+                                                     @RequestBody InterestDto.InterestReq interestReq){
 
         int INTEREST_OFF = 0;
         int INTEREST_ON = 1;
@@ -89,7 +87,7 @@ public class UserController {
         // 이메일 찾기
         String userEmail = (String) request.getAttribute("user_email");
         Long userId = (Long) request.getAttribute("user_id");
-        int result  = userService.updateInterest(userEmail, userId, requestInterestDto);
+        int result  = userService.updateInterest(userEmail, userId, interestReq);
 
         if (result == INTEREST_CREATED)
             return success("CREATE: Interest의 정보를 생성하였습니다. ");
@@ -145,10 +143,10 @@ public class UserController {
 
     @PutMapping("/friends")
     @Operation(summary = "자신의 친인척 별명을 수정합니다.", description = "수정하기" )
-    public ApiUtils.ApiResult<String> updateConnectUserAlias(HttpServletRequest request, @RequestBody RequestConnectUserInfoDto dto) {
+    public ApiUtils.ApiResult<String> updateConnectUserAlias(HttpServletRequest request, @RequestBody ConnectUserDto.ConnectUserReq connectUserReq) {
 
         Long userId = (Long) request.getAttribute("user_id");
-        int result = userService.updateConnectUserAlias(userId, dto);
+        int result = userService.updateConnectUserAlias(userId, connectUserReq);
 
 
         if ( result == Result.FAIL){

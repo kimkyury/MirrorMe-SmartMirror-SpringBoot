@@ -2,8 +2,7 @@ package com.mirror.backend.api.controller;
 
 
 import com.mirror.backend.api.dto.EmotionDto;
-import com.mirror.backend.api.dto.IotRequestUserDto;
-import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.UserDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
@@ -38,12 +37,12 @@ public class IotController {
 
     @PostMapping("/users")
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
-    public ApiUtils.ApiResult<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
+    public ApiUtils.ApiResult<List<UserDto.IotUsersRes>> getProfileImage(@RequestBody UserDto.IotUsersReq iotUsersReq) {
 
-        String mirrorId = iotRequestUsersDto.getMirrorId();
-        List<IotResponseUserDto> users = iotService.findUsersInfo(mirrorId);
+        String mirrorId = iotUsersReq.getMirrorId();
+        List<UserDto.IotUsersRes> users = iotService.findUsersInfo(mirrorId);
 
-        return success( users);
+        return success(users);
     }
 
     @GetMapping("/text/calendar/summary")
