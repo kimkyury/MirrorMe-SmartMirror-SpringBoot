@@ -44,7 +44,7 @@ public class IotEncryption {
     }
 
 
-    public String encrytionText(String input){
+    public String encryptionText(String input){
         String output = encryption(input, N, E);
         return output;
     }
