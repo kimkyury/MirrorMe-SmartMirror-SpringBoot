@@ -19,22 +19,24 @@ public class Household {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long householdId;
+    private Long householdId;
 
     @ManyToOne
     @JoinColumn(name = "createUserId")
-    @JsonBackReference // 순환참조 방지 - 자식
-    User createUserId;
+    private User createUser;
 
-    String householdName;
-    int gridNx;
-    int gridNy;
-    String region;
+    private String householdName;
+
+    private int gridNx;
+
+    private int gridNy;
+
+    private String region;
 
     @Builder
-    public Household(Long householdId, User createUserId, String householdName, int gridNx, int gridNy, String region) {
+    public Household(Long householdId, User createUser, String householdName, int gridNx, int gridNy, String region) {
         this.householdId = householdId;
-        this.createUserId = createUserId;
+        this.createUser = createUser;
         this.householdName = householdName;
         this.gridNx = gridNx;
         this.gridNy = gridNy;
@@ -45,7 +47,7 @@ public class Household {
     public String toString() {
         return "Household{" +
                 "householdId=" + householdId +
-                ", createUserId=" + createUserId.getHousehold() +
+                ", createUserId=" + createUser.getUserId() +
                 ", householdName='" + householdName + '\'' +
                 ", gridNx=" + gridNx +
                 ", gridNy=" + gridNy +
