@@ -1,6 +1,6 @@
 package com.mirror.backend.api.entity;
 
-import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.dto.MessageDto;
 import lombok.*;
 import javax.persistence.*;
 
@@ -29,7 +29,7 @@ public class VideoMessage {
     private Character isRead;
 
     @Builder
-    public VideoMessage(Message.RequestMessage requestMessage, LocalDateTime date) {
+    public VideoMessage(MessageDto.RequestMessage requestMessage, LocalDateTime date) {
         this.userEmail = requestMessage.getSendUserEmail();
         this.sendUserEmail = requestMessage.getUserEmail();
         this.type = requestMessage.getType();

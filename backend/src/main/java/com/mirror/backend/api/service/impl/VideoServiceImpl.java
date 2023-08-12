@@ -1,6 +1,6 @@
 package com.mirror.backend.api.service.impl;
 
-import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.dto.MessageDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.repository.ConnectUserRepository;
@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -59,13 +56,16 @@ public class VideoServiceImpl implements VideoService {
     public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
         VideoMessage videoMessage = videoRepository.findByVideoId(videoId)
                 .orElseThrow(() -> new NotFoundException("Not Found Video"));
+        videoMessage.update('Y');
+        videoRepository.save(videoMessage);
+
         String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
         return new FileInputStream(videoUrl);
     }
 
     @Override
-    public List<Message.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month) {
-        List<Message.ResponseMessageCountFamily> res = new ArrayList<>();
+    public List<MessageDto.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month) {
+        List<MessageDto.ResponseMessageCountFamily> res = new ArrayList<>();
         List<ConnectUser> familyId = connectUserRepository.findByIdUserId(userId);
         for(ConnectUser connectUser : familyId) {
             Long connectUserId = connectUser.getId().getConnectUserId();
@@ -74,7 +74,7 @@ public class VideoServiceImpl implements VideoService {
             String userEmail = userRepository.findByUserId(connectUserId).get().getUserEmail();
 
             Integer monthCount = videoRepository.findByMonth(month, userEmail);
-            Message.ResponseMessageCountFamily responseMessageCountFamily = Message.ResponseMessageCountFamily.builder()
+            MessageDto.ResponseMessageCountFamily responseMessageCountFamily = MessageDto.ResponseMessageCountFamily.builder()
                     .connectUserAlias(connectUserAlias)
                     .messageCount(monthCount)
                     .build();
@@ -84,21 +84,20 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public String transferFile(MultipartFile videoFile, String filePath) {
-        String originalFilename = videoFile.getOriginalFilename();
-        String fileName = originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
-        String uuid = UUID.randomUUID().toString();
+    public List<MessageDto.ResponseMessageDetail> unReadMessageList(String userEmail) {
+        List<VideoMessage> videoMessageList = videoRepository.findAllByIsReadAndUserEmail('N', userEmail);
 
-        String saveFileName = filePath + File.separator + uuid + "_" + fileName;
-        Path savePath = Paths.get(saveFileName);
-
-        try {
-            videoFile.transferTo(savePath);
-            return saveFileName;
-        }catch (IOException e) {
-            e.printStackTrace();
+        List<MessageDto.ResponseMessageDetail> responseMessageDetailList = new ArrayList<>();
+        for(VideoMessage videoMessage : videoMessageList) {
+            MessageDto.ResponseMessageDetail responseMessageDto = MessageDto.ResponseMessageDetail.builder()
+                    .userEmail(videoMessage.getUserEmail())
+                    .sendUserEmail(videoMessage.getSendUserEmail())
+                    .date(videoMessage.getDate().toString())
+                    .type(videoMessage.getType())
+                    .build();
+            responseMessageDetailList.add(responseMessageDto);
         }
-
-        return null;
+        return responseMessageDetailList;
     }
+
 }
