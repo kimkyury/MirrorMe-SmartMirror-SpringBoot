@@ -38,12 +38,12 @@ public class IotController {
 
     @PostMapping("/users")
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
-    public ApiResponse<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
+    public ApiUtils.ApiResult<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
 
         String mirrorId = iotRequestUsersDto.getMirrorId();
         List<IotResponseUserDto> users = iotService.findUsersInfo(mirrorId);
 
-        return success("usersInSameHousehold", users);
+        return success( users);
     }
 
     @GetMapping("/calendar/summary")
