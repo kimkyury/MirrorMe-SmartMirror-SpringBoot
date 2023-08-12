@@ -40,46 +40,38 @@ public class IotController {
     @Operation(summary = "모든 유저 조회", description = "한 가정 내의 모든 유저 정보를 조회합니다.")
     public ApiResponse<List<IotResponseUserDto>> getProfileImage(@RequestBody IotRequestUserDto iotRequestUsersDto) {
 
-        System.out.println(iotRequestUsersDto.getMirrorId());
-
-        // Json으로 날라온 mirrorId가 DB에 존재하는지 확인한다
         String mirrorId = iotRequestUsersDto.getMirrorId();
-        System.out.println(mirrorId);
+        List<IotResponseUserDto> users = iotService.findUsersInfo(mirrorId);
 
-        // DB에 없다면, 응답코드로 404를 날린다
-        boolean isExistMirror = iotService.findMirror(mirrorId);
-        if (!isExistMirror)
-            return ApiResponse.notFountMirror();
-
-        List<IotResponseUserDto> users = iotService.fineUsersInfo(mirrorId);
         return success("usersInSameHousehold", users);
     }
 
     @GetMapping("/calendar/summary")
+    @Operation(summary = "하루 일정 요약 조회", description = "한 유저의 하루 일정 요약 TEXT를 조회합니다.")
     public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(String userEmail){
 
         ResponseSummaryScheduleDto summaryScheduleTextDto = iotService.getSummerySchedule(userEmail);
-        if ( summaryScheduleTextDto == null){
+        if ( summaryScheduleTextDto == null)
             return ApiUtils.success(null);
-        }
+
         return ApiUtils.success(summaryScheduleTextDto);
     }
 
     @GetMapping("/text/first")
+    @Operation(summary = "유저 만남시 최초 TEXT 조회", description = "한 유저의 하루 중 최초 만남시의 TEXT를 조회합니다. ")
     public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
 
-        userEmail = userEmail.replace("%40", "@");
         ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
-
-        if ( responseFirstMirrorTextDto == null){
+        if ( responseFirstMirrorTextDto == null)
             return ApiUtils.success(null);
-        }
+
         return ApiUtils.success(responseFirstMirrorTextDto);
     }
 
     @PostMapping
     @Operation(summary = "오늘 감정 저장", description = "iot와 통신하여 오늘의 감정을 저장합니다.")
     public ApiUtils.ApiResult<Long> postEmotion(@RequestBody @Valid EmotionDto.EmotionReq emotionReq) {
+
         return ApiUtils.success(emotionService.saveEmotion(emotionReq));
     }
 }
