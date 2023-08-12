@@ -45,14 +45,16 @@ public class FmailyBirthDayScheduler {
         // Today + (1 ~ 7) later Birthday
         List<String> upcomingBirthdayLists = getUpcomingBirthdays();
         List<User> upcomingBirthdayUserAllList = new ArrayList<>();
+
         for (String birthday : upcomingBirthdayLists) {
             List<User> birthdayUserList = userRepository.findByBirthday(birthday);
+
             upcomingBirthdayUserAllList.addAll(birthdayUserList);
         }
+
         System.out.println(upcomingBirthdayUserAllList);
 
         for (User birthdayUser : upcomingBirthdayUserAllList) {
-
             String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(birthdayUser);
             String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents);     // Request PresentRecommend to GPT
 
