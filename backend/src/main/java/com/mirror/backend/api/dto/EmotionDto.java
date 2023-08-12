@@ -1,6 +1,7 @@
 package com.mirror.backend.api.dto;
 
 import com.mirror.backend.api.entity.EmotionCount;
+import com.mirror.backend.api.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -43,6 +44,18 @@ public class EmotionDto {
         public EmotionFamilyResList(String connectUserAlias, List<EmotionRes> emotionList) {
             this.connectUserAlias = connectUserAlias;
             this.emotionList = emotionList;
+        }
+    }
+
+    @Getter
+    public static class EmotionAngryResList {
+        private String connectUserAlias;
+        private User user;
+
+        @Builder
+        public EmotionAngryResList(String connectUserAlias, User user) {
+            this.connectUserAlias = connectUserAlias;
+            this.user = user;
         }
     }
 }
