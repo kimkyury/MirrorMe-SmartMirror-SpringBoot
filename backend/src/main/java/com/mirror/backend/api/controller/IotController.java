@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.mirror.backend.common.utils.ApiResponse.success;
+import static com.mirror.backend.common.utils.ApiUtils.success;
 
 
 @RequestMapping("/api/iot")
