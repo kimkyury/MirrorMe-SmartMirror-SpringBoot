@@ -1,7 +1,7 @@
 package com.mirror.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.dto.MessageDto;
 import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.repository.VideoRepository;
 import com.mirror.backend.common.exception.FailConvertException;
@@ -50,7 +50,7 @@ public class BackendApplication {
             for (File file : files) {
                 // redis 에 저장하는 로직 -> redis + mariaDB로 변경
                 System.out.println("file = " + file);
-                Message.RequestMessage videoMessage = objectMapper.readValue(file, Message.RequestMessage.class);
+                MessageDto.RequestMessage videoMessage = objectMapper.readValue(file, MessageDto.RequestMessage.class);
 
                 String videoPath = folderPath + "/" + videoMessage.getFileName();
                 VideoMessage vm = VideoMessage.builder()
