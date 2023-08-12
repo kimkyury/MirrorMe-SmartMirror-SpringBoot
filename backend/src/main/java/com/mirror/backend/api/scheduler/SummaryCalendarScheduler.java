@@ -11,6 +11,7 @@ import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,33 +21,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 @Component
+@RequiredArgsConstructor
 public class SummaryCalendarScheduler {
 
     public final RedisUserTokenRepository redisUserTokenRepository;
     public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
+
     public final CalendarService calendarService;
-    public final ChatGptUtil chatGptUtil;
     public final OAuthService oAuthService;
+
+    public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-    @Autowired
-    public SummaryCalendarScheduler(RedisUserTokenRepository redisUserTokenRepository,
-                                    RedisSummeryCalendarRepository redisSummeryCalendarRepository,
-                                    CalendarService calendarService, ChatGptUtil chatGptUtil, OAuthService oAuthService, TokenUtil tokenUtil) {
-        this.redisUserTokenRepository = redisUserTokenRepository;
-        this.redisSummeryCalendarRepository = redisSummeryCalendarRepository;
-        this.calendarService = calendarService;
-        this.chatGptUtil = chatGptUtil;
-        this.oAuthService = oAuthService;
-        this.tokenUtil = tokenUtil;
-    }
-
-    // 1. Redis내의 유저 Token들을 모두 가져온다
 //    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
     @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
-        System.out.println("------------Summery Scheduler----------");
-        // redis내의 유저 Token을 가져온다
+
+        System.out.println("------------Scheduler: Summery Calendar----------");
+
         Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
         Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
 

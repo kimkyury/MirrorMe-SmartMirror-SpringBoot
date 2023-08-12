@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,75 +27,91 @@ public class FmailyBirthDayScheduler {
 
     public final RedisUserTokenRepository redisUserTokenRepository;
     public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    public final CalendarService calendarService;
-    public final ChatGptUtil chatGptUtil;
-    public final OAuthService oAuthService;
-    public final TokenUtil tokenUtil;
     public final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
     public final ConnectUserRepository connectUserRepository;
     public final UserRepository userRepository;
 
+    public final CalendarService calendarService;
+    public final OAuthService oAuthService;
 
+    public final ChatGptUtil chatGptUtil;
+    public final TokenUtil tokenUtil;
 
-    // 1. Redis내의 유저 Token들을 모두 가져온다
 //    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
     @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정마다 실행
     public void fetchRedisData() {
-        System.out.println("------------FamilyBirthDay Recommend Present Scheduler----------");
-        // redis내의 유저 Token을 가져온다
-        Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
-        Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
+        System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 
+        // Today Birthday
+        List<User> todayBirthUserList = userRepository.findByBirthday(EtcUtil.getTodayMMDD());
+        if (!todayBirthUserList.isEmpty()) {
+            for (User todayBirthUser : todayBirthUserList) {
 
-        while (iterator.hasNext()) {
+                String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(todayBirthUser);
+                String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents); // Request PresentRecommend to GPT
 
-            RedisUserToken userTokenInfo = iterator.next();
-
-            String accessToken = userTokenInfo.getAccessToken();
-            String refreshToken = userTokenInfo.getRefreshToken();
-
-            // AccessToken의 유효성 검사, 만약 불일치시 재발급
-            accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
-
-            // 해당 유저의 Email을 조회
-            String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
-            Long userId = userRepository.findByUserEmail(userEmail).get().getUserId();
-
-            // 해당 유저의 친인척 중 생일인 사람이 있는지 조회
-            List<ConnectUser> connectUsers = connectUserRepository.findByIdUserId(userId);
-            List<Long> connectUserIds = connectUsers.stream().map(c -> c.getConnectUser().getUserId()).collect(Collectors.toList());
-            List<User> todayBirthUser= userRepository.findByBirthdayAndUserIdIn(EtcUtil.getTodayYYYYMMDD(), connectUserIds);
-            System.out.print(todayBirthUser);
-
-            // 생일인 유저가 특정한 일이 있는지 GPT에게 정리해달라고 하기
-
-            for( User user : todayBirthUser){
-
-                RedisUserToken birthUserToken = redisUserTokenRepository.findById(user.getUserEmail()).get();
-                String birthUserAccessToken = birthUserToken.getAccessToken();
-                String birthUserRefreshToken = birthUserToken.getRefreshToken();
-
-                // AccessToken의 유효성 검사, 만약 불일치시 재발급
-                accessToken = tokenUtil.confirmAccessToken(birthUserAccessToken, birthUserRefreshToken);
-
-                // 오늘 이후로 birthDayUser의 일정들을 다 조회해봄
-                Event event = calendarService.getMyCalendar(accessToken, "primary");
-                String birthUserEventInFuture = getUserAllEventFuture(event);
-
-                // GPT에게 이런 사람에게 어떤 선물이 좋겠는지 이유와 함께 물어봄
-                String answer = getRecommendPresentFromGPT(birthUserEventInFuture);
-                System.out.println(answer);
-                saveRedisFamilyBirthday(answer, userEmail, user.getUserName());
+                // 해당 유저의 모든 친인척에게 오늘 생일 주인공 알리기
+                List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(todayBirthUser.getUserId());
+                for (ConnectUser connectUser : birthUserConnectUser)
+                    saveRedisFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), todayBirthUser.getUserName());
             }
+        }
+
+        // Today + (1 ~ 7) later Birthday
+        List<String> upcomingBirthdayLists = getUpcomingBirthdays();
+        List<User> upcomingBirthdayUserAllList = new ArrayList<>();
+        for (String birthday : upcomingBirthdayLists) {
+            List<User> birthdayUserList = userRepository.findByBirthday(birthday);
+            upcomingBirthdayUserAllList.addAll(birthdayUserList);
+        }
+        System.out.println(upcomingBirthdayUserAllList);
+
+        for (User birthdayUser : upcomingBirthdayUserAllList) {
+
+            String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(birthdayUser);
+            String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents);     // Request PresentRecommend to GPT
+
+            // 해당 유저의 모든 친인척에게 추우 생일 주인공 알리기
+            List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(birthdayUser.getUserId());
+            for (ConnectUser connectUser : birthUserConnectUser)
+                saveRedisUpcomingFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), birthdayUser.getUserName());
         }
     }
 
-    public String getUserAllEventFuture(Event event){
-        String userEventList;
+    private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {
+        // 1. User의 Token 찾아오기
+        RedisUserToken birthUserToken = redisUserTokenRepository.findById(todayBirthUser.getUserEmail()).get();
+        String accessToken = birthUserToken.getAccessToken();
+        String refreshToken = birthUserToken.getRefreshToken();
 
+        // 2. AccessToken 유효한지 확인하여 재발급받기
+        accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+
+        // 3. User의 앞으로의 6개월 이내 이벤트 갖고오기
+        String userAllUpcomingEvents = getUserAllUpcomingEventsWithinSixMonth(accessToken);
+
+        return userAllUpcomingEvents;
+    }
+
+    private List<String> getUpcomingBirthdays(){
+        List<String> birthdays = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
+
+        for (int i = 1; i <= 7; i++) {
+            LocalDate nextDate = today.plusDays(i);
+            birthdays.add(nextDate.format(formatter));
+        }
+        return birthdays;
+    }
+
+    public String getUserAllUpcomingEventsWithinSixMonth(String accessToken){
+
+        Event event = calendarService.getMyCalendar(accessToken, "primary");
+
+        String userEventList;
         StringBuilder sb = new StringBuilder();
         LocalDate now = LocalDate.now();
-
         for( Event.Item item: event.getItems()) {
             String startTime = item.getStart().getDateTime(); // 시작날짜
             String endTime = item.getEnd().getDateTime(); // 종료날짜
@@ -102,18 +119,15 @@ public class FmailyBirthDayScheduler {
             endTime = endTime == null ? item.getEnd().getDate() : endTime.substring(0, 10);
 
             DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
             LocalDate startDate = LocalDate.parse(startTime, parser);
             LocalDate endDate = LocalDate.parse(endTime, parser);
 
-            // 오늘이 시작날짜보다 전이면서, 오늘이 끝나는 날짜를 지난 것도 아닌.
-            boolean chk = now.isBefore(startDate) && !now.isAfter(endDate);
+            boolean chk = now.isBefore(startDate) && !now.isAfter(endDate.plusMonths(6));             // 미래 이벤트임 && 반년 이내의 이벤트임
             if (chk) sb.append(item.getSummary() +", ");
         }
-
         userEventList = sb.toString();
-        return userEventList;
 
+        return userEventList;
     }
 
     // 3. 해당 Calendar내역을 3줄 요약하도록 GPT한테 요청한다
@@ -121,22 +135,21 @@ public class FmailyBirthDayScheduler {
 
         StringBuilder sb = new StringBuilder();
         sb.append("다음과 같은 일정들이 있습니다. 이런 사람은 어떤 선물이 필요할까요?");
-        sb.append("최대한 간략하게 한가지만 추천해주세요. 또한 이유도 설명해주세요. (대답이 한글 기준 20자가 넘지않도록) ");
-        sb.append("대답 형식은 다음과 같이 부탁드립니다. '{선물}을 준비해보시는게 어떠세요? 이런 일정이 있거든요!");
-        sb.append(" // " + birthUserEventInFuture + " // ");
+        sb.append(" { " + birthUserEventInFuture + " } ");
+        sb.append("최대한 간략하게 한 가지 선물만 추천해주세요. 또한 이유도 설명해주세요. (대답이 한글 기준 20자가 넘지않도록) ");
+        sb.append("대답 형식은 다음과 같이 부탁드립니다. '{선물}을 준비해보시는게 어떠세요? {이유가 되는 상대의 일정}이 있거든요!");
         String answer = chatGptUtil.createMessage(sb.toString());
-        return answer;
 
+        return answer;
     }
 
-    public void saveRedisFamilyBirthday(String recommendPresnet, String userEmail, String birthDayUserName){
+    public void saveRedisFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName){
 
         StringBuilder sb = new StringBuilder();
         sb.append("안녕하세요!, 오늘은 " )
                 .append( birthDayUserName)
                 .append("의 생일이네요. ")
-                .append(recommendPresnet);
-
+                .append(recommendPresent);
 
         RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
                 .userEmail(userEmail)
@@ -147,5 +160,20 @@ public class FmailyBirthDayScheduler {
         redisFamilyBirthdayRepository.save(redisFamilyBirthday);
     }
 
+    public void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("안녕하세요!, 곧 " )
+                .append( birthDayUserName)
+                .append("의 생일이네요. ")
+                .append(recommendPresent);
+
+        RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
+                .userEmail(userEmail)
+                .familyBirthday(sb.toString())
+                .targetDay(EtcUtil.getTodayYYYYMMDD())
+                .build();
+
+        redisFamilyBirthdayRepository.save(redisFamilyBirthday);
+    }
 }
