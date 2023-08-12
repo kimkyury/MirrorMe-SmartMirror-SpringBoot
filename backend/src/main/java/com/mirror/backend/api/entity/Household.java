@@ -1,6 +1,7 @@
 package com.mirror.backend.api.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Household {
 
     @ManyToOne
     @JoinColumn(name = "createUserId")
+    @JsonBackReference // 순환참조 방지 - 자식
     User createUserId;
 
     String householdName;
@@ -43,7 +45,7 @@ public class Household {
     public String toString() {
         return "Household{" +
                 "householdId=" + householdId +
-                ", createUserId=" + createUserId +
+                ", createUserId=" + createUserId.getHousehold() +
                 ", householdName='" + householdName + '\'' +
                 ", gridNx=" + gridNx +
                 ", gridNy=" + gridNy +

@@ -4,11 +4,11 @@ package com.mirror.backend.api.controller;
 import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.IotRequestUserDto;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
-import com.mirror.backend.common.utils.ApiResponse;
 import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,15 +46,26 @@ public class IotController {
         return success( users);
     }
 
-    @GetMapping("/calendar/summary")
+    @GetMapping("/text/calendar/summary")
     @Operation(summary = "하루 일정 요약 조회", description = "한 유저의 하루 일정 요약 TEXT를 조회합니다.")
-    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(String userEmail){
+    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummeryScheduleText(String userEmail){
 
         ResponseSummaryScheduleDto summaryScheduleTextDto = iotService.getSummerySchedule(userEmail);
         if ( summaryScheduleTextDto == null)
             return ApiUtils.success(null);
 
         return ApiUtils.success(summaryScheduleTextDto);
+    }
+
+    @GetMapping("/text/birth")
+    @Operation(summary = "가족 생일 알림 TEXT조회", description = "가족중 7일 이내에 생일인 사람과 선물 추천에 대한 TEXT를 조회합니다.")
+    public ApiUtils.ApiResult<ResponseFamilyBirthdayScheduleDto> getBirthdayUserText(String userEmail){
+
+        ResponseFamilyBirthdayScheduleDto responseFamilyBirthdayScheduleDto = iotService.getBirthdayUserText(userEmail);
+        if ( responseFamilyBirthdayScheduleDto == null)
+            return ApiUtils.success(null);
+
+        return ApiUtils.success(responseFamilyBirthdayScheduleDto);
     }
 
     @GetMapping("/text/first")
