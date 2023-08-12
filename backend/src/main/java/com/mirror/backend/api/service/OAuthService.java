@@ -177,15 +177,10 @@ public class OAuthService {
     }
 
     public ResponseTokensDto getTokensFromUserEmail(String userEmail) {
-        // :TODO 등록되지 않은 유저의 Email로 요청시 예외처리
-        String key = userEmail;
-        Optional<RedisUserToken> redisUserTokenOptional = redisUserTokenRepository.findById(key);
 
-        if ( redisUserTokenOptional.isEmpty()){
-            return null;
-        }
-
-        RedisUserToken redisUserToken = redisUserTokenOptional.get();
+        RedisUserToken redisUserToken = redisUserTokenRepository.findById(userEmail).orElseThrow(
+                () -> new NoSuchElementException("해당 Email은 존재하지 않습니다.")
+        );
 
         ResponseTokensDto tokenDto = ResponseTokensDto.builder()
                 .accessToken(redisUserToken.getAccessToken())
