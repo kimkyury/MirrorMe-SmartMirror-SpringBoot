@@ -32,12 +32,12 @@ public class SignUpService {
     private final HouseholdRepository householdRepository;
     private final MirrorRepository mirrorRepository;
     private final ConnectUserRepository connectUserRepository;
-
+    private final IotEncryption iotEncryption;
 
     @Autowired
     public SignUpService(UserRepository userRepository,
                          InterestRepository interestRepository,
-                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository) {
+                         InterestCommonCodeRepository interestCommonCodeRepository, RedisTemplate<String, String> redisTemplate, HouseholdRepository householdRepository, MirrorRepository mirrorRepository, ConnectUserRepository connectUserRepository, IotEncryption iotEncryption) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
         this.interestCommonCodeRepository = interestCommonCodeRepository;
@@ -45,6 +45,7 @@ public class SignUpService {
         this.householdRepository = householdRepository;
         this.mirrorRepository = mirrorRepository;
         this.connectUserRepository = connectUserRepository;
+        this.iotEncryption = iotEncryption;
     }
 
     public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
@@ -103,7 +104,7 @@ public class SignUpService {
 
         Household newHousehold = Household.builder()
                 .householdName(requestHouseholdDto.getHouseholdName())
-                .createUserId(userId)
+                .createUserId(user)
                 .build();
 
         householdRepository.save(newHousehold);
@@ -142,15 +143,16 @@ public class SignUpService {
     public int registerHousehold(Long userId, Long householdId) {
 
         Optional<User> user = userRepository.findByUserId(userId);
+        Household household = householdRepository.findById(householdId).get();
 
         // 사용자에게 household 지정
         user.ifPresent(selectUser -> {
-            selectUser.setHouseholdId(householdId);
+            selectUser.setHousehold(household);
             userRepository.save(selectUser);
         });
 
         // 해당 집에 이미 사람이 존재하는지 확인
-        List<User> usersInSameHousehold = userRepository.findByHouseholdId(householdId);
+        List<User> usersInSameHousehold = userRepository.findByHouseholdHouseholdId(householdId);
 
         // 존재하는 사람들은 ConnectUser로 추가
         // 마찬가지로, 이미 존재했던 사람들도 해당 사람들이 뜨도록 쌍방으로 추
@@ -191,7 +193,7 @@ public class SignUpService {
     public int registerMirror(Long userId, RequestMirrorDto requestMirrorDto) {
 
         String mirrorId = requestMirrorDto.getMirrorId();
-        String mirrorIdDecryption = IotEncryption.decryptionText(mirrorId);
+        String mirrorIdDecryption = iotEncryption.decryptionText(mirrorId);
 
         Long mirrorPlaceCode = requestMirrorDto.getMirrorPlaceCode();
 
@@ -200,7 +202,7 @@ public class SignUpService {
 
         Mirror mirror = Mirror.builder()
                 .mirrorId(mirrorIdDecryption)
-                .mirrorGroupId(user.get().getHouseholdId())
+                .mirrorGroupId(user.get().getHousehold().getHouseholdId())
                 .mirrorPlaceCode(mirrorPlaceCode)
                 .build();
         mirrorRepository.save(mirror);

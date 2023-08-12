@@ -26,7 +26,6 @@ public class EmotionController {
     @Operation(summary = "나의 감정 조회", description = "나의 일주일간의 감정을 조회합니다.")
     public ApiUtils.ApiResult<List<EmotionDto.EmotionRes>> getMyEmotion(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
-        userId = 2L;
         return success(emotionService.getMyEmotion(userId));
     }
 
@@ -35,7 +34,6 @@ public class EmotionController {
     @Operation(summary = "가족 감정 조회", description = "가족의 일주일간의 감정을 조회합니다.")
     public ApiUtils.ApiResult<List<EmotionDto.EmotionFamilyResList>> getMyFamilyEmotion(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
-        userId = 2L;
         return success(emotionService.getFamilyEmotion(userId));
     }
 }

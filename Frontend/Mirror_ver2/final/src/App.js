@@ -10,6 +10,7 @@ import Modals from './components/Modals'
 const userEmail = 'test2@google.com'; // 사용자 이메일 추후 수정
 
 function App() {
+  // 현재 시간
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
     setIsVisible(prevState => !prevState);
   };
 
+  // 스낵바
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleButtonClick = () => {
@@ -44,9 +46,20 @@ function App() {
     setOpenSnackbar(false);
   };
 
+  // Socket
   const [message, setMessage] = useState('');
   const [messageTextArea, setMessageTextArea] = useState('');
   const [webSocket, setWebSocket] = useState(null);
+
+  // Snackbars Props
+  const [snackbarsCommandMessage, setSnackbarsCommandMessage] = useState('');
+  const [tts, setTts] = useState('');
+  const [ttsType, setTtsType] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  // Modals Props
+  const [modalsCommandMessage, setModalsCommandMessage] = useState('');
+  const [youtubeKey, setYoutubeKey] = useState('');
 
   useEffect(() => {
     // 웹 서버를 접속한다.
@@ -67,8 +80,20 @@ function App() {
     };
     // 소켓 서버로부터 메시지가 오면 호출되는 함수.
     socket.onmessage = (event) => {
-      console.log(event)
-      setMessageTextArea(prev => prev + "Receive From Server => " + event.data + "\n");
+      const data = JSON.parse(event.data);
+      setSnackbarsCommandMessage(data.order);
+      setModalsCommandMessage(data.order);
+      setMessageTextArea(prev => prev + "Receive From Server => " + snackbarsCommandMessage + "\n");
+      if (data.order == 'TTS') {
+        setTts(data.query.content);
+        setTtsType(data.query.type);
+        setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
+      } else if (data.order == 'USERINFO') {
+        console.log(data.query.email);
+        setUserEmail(data.query.email);
+      } else if (data.order == 'YOUTUBE') {
+        setYoutubeKey(data.query.key);
+      }
     };
 
     return () => {
@@ -95,8 +120,16 @@ function App() {
       <div className="time">{formattedTimeWithAmPm}</div>
       <div className="btn-container">
         {/* <sendMessage/> */}
-        <Modals/>
-        <Snackbars />
+        <Modals
+          commandMessage={modalsCommandMessage}
+          youtubeKey={youtubeKey}
+        />
+        <Snackbars
+          commandMessage={snackbarsCommandMessage}
+          tts={tts}
+          ttsType={ttsType}
+          userEmail={userEmail}
+        />
       </div>
       <form className="socket">
         {/* 서버로 메시지를 보낼 텍스트 박스 */}

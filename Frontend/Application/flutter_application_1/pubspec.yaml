@@ -34,6 +34,8 @@ dependencies:
   http: ^1.1.0
   google_sign_in: ^6.1.4
   url_launcher: ^6.1.12
+  video_player: ^2.7.0
+  path_provider: ^2.1.0
 
   
 
@@ -58,6 +60,17 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - lib/assets/MirrorMe_Splash.png
+    - lib/assets/MirrorMe_Main.png
+    - lib/assets/messageicon.png
+    - lib/assets/connecticon.png
+    - lib/assets/newsicon.png
+    - lib/assets/emotionicon.png
+    - lib/assets/homeicon.png
+    - lib/assets/familyicon.png
+    - lib/assets/settingicon.png
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
