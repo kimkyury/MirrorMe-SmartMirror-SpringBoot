@@ -2,7 +2,7 @@ package com.mirror.backend.api.service;
 
 
 import com.mirror.backend.api.dto.Alias;
-import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.UserDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
@@ -53,16 +53,16 @@ public class IotService {
         return mirror.getMirrorGroupId();
     }
 
-    public List<IotResponseUserDto> findUsersInfo(String encryptedCode) {
+    public List<UserDto.IotUsersRes> findUsersInfo(String encryptedCode) {
 
         Long mirrorGroupId = findMirrorGroupId(encryptedCode);
         List<User> usersInSameHouse = userRepository.findByHouseholdHouseholdId(mirrorGroupId);
-        List<IotResponseUserDto> responseUserDtoList = new ArrayList<>();
+        List<UserDto.IotUsersRes> iotUsersResList = new ArrayList<>();
 
         for(User user : usersInSameHouse){
             List<Alias> aliases = findConnectUserAlias(user.getUserId());
             String imgData = findUserProfileImg(user.getUserEmail());
-            IotResponseUserDto userDto = IotResponseUserDto.builder()
+            UserDto.IotUsersRes userDto = UserDto.IotUsersRes.builder()
                     .userId(user.getUserId())
                     .userName(user.getUserName())
                     .userEmail(user.getUserEmail())
@@ -70,10 +70,10 @@ public class IotService {
                     .profileImage(imgData)
                     .build();
 
-            responseUserDtoList.add(userDto);
+            iotUsersResList.add(userDto);
         }
 
-        return responseUserDtoList;
+        return iotUsersResList;
     }
 
     private String findUserProfileImg(String userEmail){
