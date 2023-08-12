@@ -1,6 +1,6 @@
 package com.mirror.backend.api.controller;
 
-import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.dto.MessageDto;
 import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.service.VideoService;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -27,7 +27,7 @@ public class VideoController {
 
     @PostMapping("/message")
     @Operation(summary = "영상 메시지 확인 API", description = "iot측에서 주는 text로 영상메시지인지 조회합니다.")
-    public ApiUtils.ApiResult<Integer> getMessageCheck(@RequestBody Message text) {
+    public ApiUtils.ApiResult<Integer> getMessageCheck(@RequestBody MessageDto text) {
         return success(videoService.matchVideo(text.getText()));
     }
 
@@ -38,16 +38,15 @@ public class VideoController {
         return success(video);
     }
 
-    @GetMapping(value = "/message")
+    @GetMapping("/message")
     public Resource getOneMessage(@RequestParam Long videoId) throws IOException {
         FileInputStream videoDetail = videoService.getVideoDetail(videoId);
         return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
     }
 
-    @GetMapping(value = "/message/count")
-    public ApiUtils.ApiResult<List<Message.ResponseMessageCountFamily>> getMessageCount(@RequestParam Long userId, @RequestParam int month) throws IOException {
-        List<Message.ResponseMessageCountFamily> messageCountFamily = videoService.getMessageCountFamily(userId, month);
+    @GetMapping( "/message/count")
+    public ApiUtils.ApiResult<List<MessageDto.ResponseMessageCountFamily>> getMessageCount(@RequestParam Long userId, @RequestParam int month) throws IOException {
+        List<MessageDto.ResponseMessageCountFamily> messageCountFamily = videoService.getMessageCountFamily(userId, month);
         return success(messageCountFamily);
     }
-
 }
