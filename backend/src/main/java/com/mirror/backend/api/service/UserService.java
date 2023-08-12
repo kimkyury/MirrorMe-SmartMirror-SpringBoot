@@ -52,19 +52,18 @@ public class UserService {
 
     public ResponseUserInfoDto getUserInfo(Long userId) {
 
-        Optional<User> userOptional = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow( () -> new NoSuchElementException());
 
-        User user = userOptional.get();
         ResponseUserInfoDto userInfo = ResponseUserInfoDto.builder()
                 .userEmail(user.getUserEmail())
                 .userName(user.getUserName())
                 .createAt(user.getCreateAt())
                 .modifiedAt(user.getModifiedAt())
-                .householdId(user.getHouseholdId())
+                .householdId(user.getHousehold().getHouseholdId())
                 .build();
 
         return userInfo;
-
     }
 
     public User createUser(String userEmail){
@@ -84,7 +83,10 @@ public class UserService {
     public boolean isExistUser(String email){
 
         Optional<User> user = userRepository.findByUserEmail(email);
-        if(user.isEmpty()) return false;
+
+        if ( user.isEmpty()){
+            return false;
+        }
 
         return true;
     }
@@ -160,7 +162,7 @@ public class UserService {
     public int createConnectUsersFromHouseholdId(Long userId, Long householdId) {
 
         // 1. householdId를 가지는 모든 회원들을 데려온다
-        List<User> userInSameHouseholdList = userRepository.findByHouseholdId(householdId);
+        List<User> userInSameHouseholdList = userRepository.findByHouseholdHouseholdId(householdId);
 
         if ( userInSameHouseholdList.size() == 0){
             return Result.NOT_FOUNT_USER;

@@ -14,8 +14,9 @@ class Splash extends StatelessWidget {
       );
     });
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
-        child: Text('Intro Page'),
+        child: Image.asset('lib/assets/MirrorMe_Splash.png'),
       )
     );
   }

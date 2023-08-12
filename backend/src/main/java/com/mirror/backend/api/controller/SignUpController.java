@@ -80,10 +80,8 @@ public class SignUpController {
 
         ResponseHouseholdDto result = signUpService.searchHousehold(createUserEmail);
 
-        if ( result == null){
+        if ( result == null)
             success("찾는 사용자가 없거나, 해당사용자가 만든 가정은 존재하지 않습니다.");
-        }
-
         return success(result);
     }
 
@@ -108,8 +106,6 @@ public class SignUpController {
 
         // TODO: mirrorId가 암호화 되어있다면 암호화 로직을 포함시켜야 함
         int result = signUpService.registerMirror(userId, requestMirrorDto);
-
-        System.out.println(result);
 
         return success("Mirror 등록 완료");
     }

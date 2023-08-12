@@ -1,8 +1,13 @@
 package com.mirror.backend.api.service.impl;
 
+import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.VideoMessage;
+import com.mirror.backend.api.repository.ConnectUserRepository;
+import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.api.repository.VideoRepository;
 import com.mirror.backend.api.service.VideoService;
+import com.mirror.backend.common.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +27,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Autowired
     private VideoRepository videoRepository;
+
+    @Autowired
+    private ConnectUserRepository connectUserRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public int matchVideo(String text) {
@@ -46,28 +57,30 @@ public class VideoServiceImpl implements VideoService {
     // 영상 메시지 한 개 조회
     @Override
     public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
-        VideoMessage videoMessage = videoRepository.findByVideoId(videoId);
+        VideoMessage videoMessage = videoRepository.findByVideoId(videoId)
+                .orElseThrow(() -> new NotFoundException("Not Found Video"));
         String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
-
-//        try {
-//            InputStream inputStream =
-//
-//            StreamingResponseBody responseBody = outputStream -> {
-//                byte[] buffer = new byte[1024];
-//                int bytesRead;
-//                while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                    outputStream.write(buffer, 0, bytesRead);
-//                }
-//                inputStream.close();
-//            };
-//
-//            videoMessage.update('Y');
-//            videoRepository.save(videoMessage);
-//            return responseBody;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         return new FileInputStream(videoUrl);
+    }
+
+    @Override
+    public List<Message.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month) {
+        List<Message.ResponseMessageCountFamily> res = new ArrayList<>();
+        List<ConnectUser> familyId = connectUserRepository.findByIdUserId(userId);
+        for(ConnectUser connectUser : familyId) {
+            Long connectUserId = connectUser.getId().getConnectUserId();
+
+            String connectUserAlias = connectUser.getConnectUserAlias();
+            String userEmail = userRepository.findByUserId(connectUserId).get().getUserEmail();
+
+            Integer monthCount = videoRepository.findByMonth(month, userEmail);
+            Message.ResponseMessageCountFamily responseMessageCountFamily = Message.ResponseMessageCountFamily.builder()
+                    .connectUserAlias(connectUserAlias)
+                    .messageCount(monthCount)
+                    .build();
+            res.add(responseMessageCountFamily);
+        }
+        return res;
     }
 
     @Override

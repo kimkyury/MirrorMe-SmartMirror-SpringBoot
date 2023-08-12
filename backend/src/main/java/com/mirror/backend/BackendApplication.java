@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.dto.Message;
 import com.mirror.backend.api.entity.VideoMessage;
 import com.mirror.backend.api.repository.VideoRepository;
+import com.mirror.backend.common.exception.FailConvertException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @EnableScheduling
 @SpringBootApplication
@@ -38,10 +40,10 @@ public class BackendApplication {
         LocalDateTime minusMinuteDate = LocalDateTime.now().minusMinutes(1);
         String dateMinusNow = minusMinuteDate.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
 
-        System.out.println("dateNow = " + dateMinusNow);
         String folderPath = "/message/" + dateMinusNow;
 
-        File fileDirectory = new File(folderPath);
+        File fileDirectory = Optional.of(new File(folderPath))
+                .orElseThrow(() -> new FailConvertException("잘못된 파일입니다."));
 
         File[] files = fileDirectory.listFiles((dir, name) -> name.endsWith(".json"));
         if (files != null) {
@@ -53,7 +55,7 @@ public class BackendApplication {
                 String videoPath = folderPath + "/" + videoMessage.getFileName();
                 VideoMessage vm = VideoMessage.builder()
                         .requestMessage(videoMessage)
-                        .date(minusMinuteDate.toString())
+                        .date(minusMinuteDate)
                         .build();
 
                 Long videoId = videoRepository.save(vm).getVideoId();

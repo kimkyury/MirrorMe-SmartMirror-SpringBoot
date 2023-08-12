@@ -36,12 +36,13 @@ def text_to_speech(tts_text):
 	)
 
 	# The response's audio_content is binary.
-	with open("output.mp3", "wb") as out:
+	with open("./output.mp3", "wb") as out:
 	    # Write the response to the output file.
 	    out.write(response.audio_content)
 	    # print('Audio content written to file "output.mp3"')
+	
 	print(tts_text)
-	playsound("output.mp3")
+	playsound("./output.mp3")
 	
 	
 if __name__ == '__main__':    

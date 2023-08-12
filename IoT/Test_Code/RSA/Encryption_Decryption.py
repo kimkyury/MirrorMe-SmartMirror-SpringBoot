@@ -4,9 +4,13 @@ import time
 def Encryption(Sentence : str, n : int, e : int) -> str: return "".join([chr(pow(i,e,n)) for i in base64.b64encode(Sentence.encode('utf-8'))])
 def Decryption(Sentence: str, n: int, d: int) -> str: return base64.b64decode("".join([chr(pow(j,d,n)) for j in [ord(i) for i in Sentence]])).decode('utf-8')
 
+
+
 N = 1517
 PNA = 1421
 PNB = 1061
+
+print(Encryption("6rBZ68bBiJ46ntHGBfJP",N,PNA))
 
 n ="""
  
