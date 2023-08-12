@@ -1,9 +1,8 @@
 package com.mirror.backend.api.service;
 
-import com.mirror.backend.api.dto.Message;
+import com.mirror.backend.api.dto.MessageDto;
 import com.mirror.backend.api.entity.VideoMessage;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +12,6 @@ public interface VideoService {
     int matchVideo(String text);
     List<VideoMessage> getVideo(String userEmail);
     FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException;
-    List<Message.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month);
-    String transferFile(MultipartFile videoFile, String filePath);
+    List<MessageDto.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month);
+    List<MessageDto.ResponseMessageDetail> unReadMessageList(String userEmail);
 }
