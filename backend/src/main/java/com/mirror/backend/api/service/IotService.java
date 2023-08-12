@@ -3,20 +3,19 @@ package com.mirror.backend.api.service;
 
 import com.mirror.backend.api.dto.Alias;
 import com.mirror.backend.api.dto.IotResponseUserDto;
+import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
 import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.IotEncryption;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,7 @@ public class IotService {
     private final ConnectUserRepository connectUserRepository;
     private final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
     private final RedisFirstMirrorTextRepository redisFirstMirrorTextRepository;
+    private final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
 
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
@@ -113,6 +113,18 @@ public class IotService {
 
         ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
                 .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
+                .build();
+
+        return dto;
+    }
+
+    public ResponseFamilyBirthdayScheduleDto getBirthdayUserText(String userEmail) {
+
+        RedisFamilyBirthday redisFamilyBirthday = redisFamilyBirthdayRepository.findById(userEmail)
+                .orElseThrow( () -> new NoSuchElementException("생성된 생일관련 TEXT가 없습니다. "));
+
+        ResponseFamilyBirthdayScheduleDto dto = ResponseFamilyBirthdayScheduleDto.builder()
+                .familyBirthdayText(redisFamilyBirthday.getFamilyBirthday())
                 .build();
 
         return dto;

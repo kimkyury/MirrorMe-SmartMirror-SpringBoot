@@ -81,7 +81,7 @@ public class MirrorFirstTextScheduler {
                 continue;
             }
         }
-
+        System.out.println("------------ Finish Scheduler ----------");
     }
 
     private void saveRedisFirstText(String textCode, String isRainyText, String  userEmail) {
