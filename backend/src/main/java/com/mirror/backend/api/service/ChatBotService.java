@@ -1,9 +1,9 @@
 package com.mirror.backend.api.service;
 
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
+import com.mirror.backend.api.dto.TextDto.RequestChatBotDto;
+import com.mirror.backend.api.dto.TextDto.ResponseChatBotDto;
+import com.mirror.backend.api.dto.TextDto.TextSummaryScheduleDto;
 import com.mirror.backend.api.entity.TextSummarySchedule;
 import com.mirror.backend.api.info.ChatGPT;
 import com.mirror.backend.api.repository.TextSummaryScheduleRepository;
@@ -56,13 +56,14 @@ public class ChatBotService {
         return response;
     }
 
-    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
+    public TextSummaryScheduleDto getSummerySchedule(String userEmail) {
         TextSummarySchedule textSummarySchedule = redisSummeryCalendarrepository.findById(userEmail)
                 .orElseThrow( () -> new NoSuchElementException());
 
-        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(textSummarySchedule.getTextSummarySchedule())
+        TextSummaryScheduleDto dto = TextSummaryScheduleDto.builder()
+                .text(textSummarySchedule.getTextSummarySchedule())
                 .build();
+
         return dto;
     }
 }
