@@ -38,8 +38,8 @@ public class TextEmotionBasedContactRecommendationScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-    @Scheduled(cron = "0 * * * * ?")   // Develop
-//    @Scheduled(cron = "0 0 0 * * ?") // Distribution
+//    @Scheduled(cron = "0 * * * * ?")   // Develop
+    @Scheduled(cron = "0 2 0 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: EmotionBased Contact Recommendation ----------");

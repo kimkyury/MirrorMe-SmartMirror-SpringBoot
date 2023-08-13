@@ -35,8 +35,8 @@ public class TextVideoViewScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // develop
+    @Scheduled(cron = "0 5 0 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Video View Calendar----------");

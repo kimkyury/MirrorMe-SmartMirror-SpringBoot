@@ -32,8 +32,8 @@ public class TextSummaryCalendarScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "30 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "30 0 0 * * ?") // 배용, 매일 자정 30초 마다 실행
+//    @Scheduled(cron = "30 * * * * ?") // Develop
+    @Scheduled(cron = "0 0 0 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Summery Calendar----------");
