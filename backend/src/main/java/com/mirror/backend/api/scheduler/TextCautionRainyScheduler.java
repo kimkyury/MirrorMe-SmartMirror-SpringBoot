@@ -31,8 +31,8 @@ public class TextCautionRainyScheduler {
     public final WeatherServiceImpl weatherService;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "40 * * * * ?")   // 개발용, 매분 30초마다 실행
-    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
+    @Scheduled(cron = "40 * * * * ?")   // 개발용, 매분 30초마다 실행
+//    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Warning RainyWeather ----------");
@@ -109,9 +109,9 @@ public class TextCautionRainyScheduler {
 
         for(ShortTermForecast shortTermForecast1 : shortTermForecast){
             if (shortTermForecast1.getPTY() == 1 || shortTermForecast1.getPTY() == 2)
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
 
     public void saveRedisIsRainy(boolean isRainy, String householdId){

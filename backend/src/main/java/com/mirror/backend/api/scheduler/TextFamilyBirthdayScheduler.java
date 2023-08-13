@@ -34,7 +34,7 @@ public class TextFamilyBirthdayScheduler {
     public final TokenUtil tokenUtil;
 
 //    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정마다 실행
+    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정 1분 마다 실행
     public void fetchRedisData() {
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 

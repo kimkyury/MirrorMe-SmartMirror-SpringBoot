@@ -2,10 +2,10 @@ package com.mirror.backend.api.scheduler;
 
 
 import com.mirror.backend.api.dto.Event;
-import com.mirror.backend.api.entity.TextSummarySchedule;
 import com.mirror.backend.api.entity.GoogleOAuthToken;
-import com.mirror.backend.api.repository.TextSummaryScheduleRepository;
+import com.mirror.backend.api.entity.TextSummarySchedule;
 import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
+import com.mirror.backend.api.repository.TextSummaryScheduleRepository;
 import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
@@ -21,7 +21,7 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
-public class TextSummaryCalendarScheduler {
+public class TextVideoViewScheduler {
 
     public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
     public final TextSummaryScheduleRepository textSummaryScheduleRepository;
@@ -32,8 +32,8 @@ public class TextSummaryCalendarScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "30 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "30 0 0 * * ?") // 배용, 매일 자정 30초 마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Summery Calendar----------");
