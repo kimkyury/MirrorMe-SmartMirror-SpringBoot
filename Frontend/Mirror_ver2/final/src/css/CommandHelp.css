@@ -1,0 +1,22 @@
+.command-help-parent-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .command-help-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .command-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }

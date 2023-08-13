@@ -4,10 +4,10 @@ import { Button, CircularProgress } from '@mui/material';
 
 import VideoMessagePlus from './VideoMessagePlus';
 
-function VideoMessage() {
+function VideoMessage(props) {
   const [messageList, setMessageList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const userEmail = 'woneee99@gmail.com';
+  const userEmail = props.userEmail;
 
   useEffect(() => {
     const fetchMessageList = async () => {
