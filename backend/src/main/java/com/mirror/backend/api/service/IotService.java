@@ -24,9 +24,9 @@ public class IotService {
     private final MirrorRepository mirrorRepository;
     private final UserRepository userRepository;
     private final ConnectUserRepository connectUserRepository;
-    private final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    private final RedisFirstMirrorTextRepository redisFirstMirrorTextRepository;
-    private final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
+    private final TextSummaryScheduleRepository textSummaryScheduleRepository;
+    private final TextFirstMeetingRepository textFirstMeetingRepository;
+    private final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
 
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
@@ -38,11 +38,11 @@ public class IotService {
 
 //       TODO: Delete Encoding, Decoding Test Annotation
 
-//        String encode= iotEncryption.encryptionText(encryptedCode);
-//        System.out.println("암호화: " + encode);
-//        String decode= iotEncryption.decryptionText(encode);
-//        System.out.println("복호화: " + decode);
-//        encryptedCode = encode;
+        String encode= iotEncryption.encryptionText(encryptedCode);
+        System.out.println("암호화: " + encode);
+        String decode= iotEncryption.decryptionText(encode);
+        System.out.println("복호화: " + decode);
+        encryptedCode = encode;
 
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
         System.out.println("해독된 mirrorID: " + mirrorId);
@@ -108,11 +108,11 @@ public class IotService {
 
     public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
 
-        RedisSummeryCalendar redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail)
+        TextSummarySchedule textSummarySchedule = textSummaryScheduleRepository.findById(userEmail)
                 .orElseThrow( () -> new NoSuchElementException());
 
         ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
+                .summeryCalendarText(textSummarySchedule.getTextSummarySchedule())
                 .build();
 
         return dto;
@@ -120,11 +120,11 @@ public class IotService {
 
     public ResponseFamilyBirthdayScheduleDto getBirthdayUserText(String userEmail) {
 
-        TextFamilyBirthday textFamilyBirthday = redisFamilyBirthdayRepository.findById(userEmail)
+        TextFamilyBirthday textFamilyBirthday = textFamilyBirthdayRepository.findById(userEmail)
                 .orElseThrow( () -> new NoSuchElementException("생성된 생일관련 TEXT가 없습니다. "));
 
         ResponseFamilyBirthdayScheduleDto dto = ResponseFamilyBirthdayScheduleDto.builder()
-                .familyBirthdayText(textFamilyBirthday.getFamilyBirthday())
+                .familyBirthdayText(textFamilyBirthday.getTextFamilyBirthday())
                 .build();
 
         return dto;
@@ -132,7 +132,7 @@ public class IotService {
 
     public ResponseFirstMirrorTextDto getFirstMirrorTextDto(String userEmail){
 
-        TextFirstMeeting textFirstMeeting = redisFirstMirrorTextRepository
+        TextFirstMeeting textFirstMeeting = textFirstMeetingRepository
                 .findById(userEmail).orElseThrow(
                         () -> new NoSuchElementException("해당 유저는 최조Text를 갖고 있지 않습니다. ")
                 );
@@ -142,7 +142,7 @@ public class IotService {
             return null;
 
         textFirstMeeting.setIsUsed("1");
-        redisFirstMirrorTextRepository.save(textFirstMeeting);
+        textFirstMeetingRepository.save(textFirstMeeting);
 
         ResponseFirstMirrorTextDto firstMirrorTextDto = ResponseFirstMirrorTextDto.builder()
                 .textCode(textFirstMeeting.getTextCode())

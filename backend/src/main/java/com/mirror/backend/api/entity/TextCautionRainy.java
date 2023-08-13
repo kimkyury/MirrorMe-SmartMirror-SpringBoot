@@ -8,20 +8,20 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @Setter
-@RedisHash("isRainy")
+@RedisHash("textCautionRainy")
 public class TextCautionRainy {
 
     @Id
     private String householdId;
     private String isRainyCode;
-    private String isRainyText;
+    private String textCautionRainy;
     private String targetDay;
 
     @Builder
-    public TextCautionRainy(String householdId, String isRainyCode, String isRainyText, String targetDay) {
+    public TextCautionRainy(String householdId, String isRainyCode, String textCautionRainy, String targetDay) {
         this.householdId = householdId;
         this.isRainyCode = isRainyCode;
-        this.isRainyText = isRainyText;
+        this.textCautionRainy = textCautionRainy;
         this.targetDay = targetDay;
     }
 }

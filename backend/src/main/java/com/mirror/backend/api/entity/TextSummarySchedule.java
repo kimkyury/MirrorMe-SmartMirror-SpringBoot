@@ -6,18 +6,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash("summeryCalendar")
-public class RedisSummeryCalendar {
+@RedisHash("textSummarySchedule")
+public class TextSummarySchedule {
 
     @Id
     private String userEmail;
-    private String summeryCalendar;
+    private String textSummarySchedule;
     private String targetDay;
 
     @Builder
-    public RedisSummeryCalendar(String userEmail, String summeryCalendar, String targetDay) {
+    public TextSummarySchedule(String userEmail, String textSummarySchedule, String targetDay) {
         this.userEmail = userEmail;
-        this.summeryCalendar = summeryCalendar;
+        this.textSummarySchedule = textSummarySchedule;
         this.targetDay = targetDay;
     }
 }

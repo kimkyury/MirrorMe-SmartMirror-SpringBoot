@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RedisFamilyBirthdayRepository extends CrudRepository<TextFamilyBirthday, String> {
+public interface TextFamilyBirthdayRepository extends CrudRepository<TextFamilyBirthday, String> {
 
 }

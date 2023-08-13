@@ -21,13 +21,12 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class WeatherRainyScheduler {
+public class TextCautionRainyScheduler {
 
     @Value("${data.service-key}")
     private String dataServiceKey;
 
-    public final RedisUserTokenRepository redisUserTokenRepository;
-    public final RedisIsRainyRepository redisIsRainyRepository;
+    public final TextCautionRainyRepository textCautionRainyRepository;
     public final HouseholdRepository householdRepository;
     public final WeatherServiceImpl weatherService;
     public final TokenUtil tokenUtil;
@@ -123,17 +122,17 @@ public class WeatherRainyScheduler {
             textCautionRainy = TextCautionRainy.builder()
                     .householdId(householdId)
                     .isRainyCode("1")
-                    .isRainyText("오늘은 비가 올텐데, 나가신다면 우산 가져가세요!")
+                    .textCautionRainy("오늘은 비가 올텐데, 나가신다면 우산 가져가세요!")
                     .build();
         }else{
             textCautionRainy = TextCautionRainy.builder()
                     .householdId(String.valueOf(householdId))
                     .isRainyCode("0")
-                    .isRainyText("오늘은 비가 안 와요!")
+                    .textCautionRainy("오늘은 비가 안 와요!")
                     .build();
         }
 
-        redisIsRainyRepository.save(textCautionRainy);
+        textCautionRainyRepository.save(textCautionRainy);
     }
 
 

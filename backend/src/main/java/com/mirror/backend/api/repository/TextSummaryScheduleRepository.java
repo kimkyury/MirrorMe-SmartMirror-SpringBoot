@@ -1,10 +1,10 @@
 package com.mirror.backend.api.repository;
 
-import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.TextSummarySchedule;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RedisUserTokenRepository extends CrudRepository<RedisUserToken, String> {
+public interface TextSummaryScheduleRepository extends CrudRepository<TextSummarySchedule, String> {
 
 }
