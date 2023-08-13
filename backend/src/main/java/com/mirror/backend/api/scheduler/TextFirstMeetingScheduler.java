@@ -1,51 +1,42 @@
 package com.mirror.backend.api.scheduler;
 
 
-import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
-import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
-import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import springfox.documentation.service.OAuth;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class MirrorFirstTextScheduler {
+public class TextFirstMeetingScheduler {
 
-    public final RedisUserTokenRepository redisUserTokenRepository;
-    public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    public final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
-    public final RedisIsRainyRepository redisIsRainyRepository;
-    public final RedisFirstMirrorTextRepository redisFirstMirrorTextRepository;
+    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    public final TextSummaryScheduleRepository textSummaryScheduleRepository;
+    public final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
+    public final TextCautionRainyRepository textCautionRainyRepository;
+    public final TextFirstMeetingRepository textFirstMeetingRepository;
     public final UserRepository userRepository;
 
     public final TokenUtil tokenUtil;
     public final OAuthService oAuthService;
 
 //    @Scheduled(cron = "0 * * * * ?") // 개발용
-    @Scheduled(cron = "5 0 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
+    @Scheduled(cron = "0 5 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
     public void fetchRedisData() {
         System.out.println("------------Scheduler: First Text----------");
         // redis내의 유저 Token을 가져온다
-        Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
-        Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
+        Iterable<GoogleOAuthToken> googleOauthToken= googleOAuthTokenRepository.findAll();
+        Iterator<GoogleOAuthToken> iterator = googleOauthToken.iterator();
 
         while(iterator.hasNext()){
-            RedisUserToken userTokenInfo = iterator.next();
+            GoogleOAuthToken userTokenInfo = iterator.next();
             String accessToken = userTokenInfo.getAccessToken();
             String refreshToken = userTokenInfo.getRefreshToken();
 
@@ -61,23 +52,23 @@ public class MirrorFirstTextScheduler {
             String today = EtcUtil.getTodayYYYYMMDD();
 
             // 오늘 기준의 날씨 기상정보에서 비가 오는지 확인한다
-            RedisIsRainy redisIsRainy = redisIsRainyRepository.findById(String.valueOf(userHouseholdId)).get();
-            if (redisIsRainy.getIsRainyCode().equals(String.valueOf(1))){
-                saveRedisFirstText("0101", redisIsRainy.getIsRainyText(), userEmail);
+            TextCautionRainy textCautionRainy = textCautionRainyRepository.findById(String.valueOf(userHouseholdId)).get();
+            if (textCautionRainy.getIsRainyCode().equals(String.valueOf(1))){
+                saveRedisFirstText("0101", textCautionRainy.getTextCautionRainy(), userEmail);
                 continue;
             }
 
             // 해당 유저의 친인척의 생일 정보가 있는지 확인한다
-            Optional<RedisFamilyBirthday> redisFamilyBirthdayOptional = redisFamilyBirthdayRepository.findById(userEmail);
-            if ( redisFamilyBirthdayOptional.isPresent() && redisFamilyBirthdayOptional.get().getTargetDay().equals(today)){
-                saveRedisFirstText("0202", redisFamilyBirthdayOptional.get().getFamilyBirthday(), userEmail);
+            Optional<TextFamilyBirthday> textFamilyBirthdayOptional = textFamilyBirthdayRepository.findById(userEmail);
+            if ( textFamilyBirthdayOptional.isPresent() && textFamilyBirthdayOptional.get().getTargetDay().equals(today)){
+                saveRedisFirstText("0202", textFamilyBirthdayOptional.get().getTextFamilyBirthday(), userEmail);
                 continue;
             }
 
             // 해당 유저의 3줄 요약 정보가 있는지 확인한다
-            Optional<RedisSummeryCalendar> redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail);
-            if (redisSummeryCalendar.isPresent() && redisSummeryCalendar.get().getTargetDay().equals(today)){
-                saveRedisFirstText("0301", redisSummeryCalendar.get().getSummeryCalendar(), userEmail);
+            Optional<TextSummarySchedule> textSumaryScheduleOptional = textSummaryScheduleRepository.findById(userEmail);
+            if (textSumaryScheduleOptional.isPresent() && textSumaryScheduleOptional.get().getTargetDay().equals(today)){
+                saveRedisFirstText("0301", textSumaryScheduleOptional.get().getTextSummarySchedule(), userEmail);
                 continue;
             }
         }
@@ -85,14 +76,14 @@ public class MirrorFirstTextScheduler {
     }
 
     private void saveRedisFirstText(String textCode, String isRainyText, String  userEmail) {
-        RedisMirrorFirstText redisFirstMirrorText = RedisMirrorFirstText.builder()
+        TextFirstMeeting testFirstMeeting = TextFirstMeeting.builder()
                 .userEmail(userEmail)
                 .textContent(isRainyText)
                 .textCode(textCode)
                 .isUsed("0")
                 .build();
 
-        redisFirstMirrorTextRepository.save(redisFirstMirrorText);
+        textFirstMeetingRepository.save(testFirstMeeting);
     }
 
 

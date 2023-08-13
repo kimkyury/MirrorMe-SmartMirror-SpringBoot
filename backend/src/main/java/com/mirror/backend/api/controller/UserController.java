@@ -130,10 +130,10 @@ public class UserController {
 
     @GetMapping("/friends")
     @Operation(summary = "자신의 친인척 정보를 조회합니다.", description = "조회합니다." )
-    public ApiUtils.ApiResult<List<ConnectUser>> getConnectUsers(HttpServletRequest request) {
+    public ApiUtils.ApiResult<List<ConnectUserDto.ConnectUserRes>> getConnectUsers(HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("user_id");
-        List<ConnectUser> connectUsers = userService.getConnectUsers(userId);
+        List<ConnectUserDto.ConnectUserRes> connectUsers = userService.getConnectUsers(userId);
 
         if ( connectUsers.size() == 0){
             success("해당 유저는 저장된 connectMember가 없습니다.");
