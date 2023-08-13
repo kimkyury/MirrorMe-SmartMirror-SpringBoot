@@ -18,13 +18,13 @@ from Recognition import find_user, get_user_face
 import random
 import json
 
+import requests
 
 ###############################################################################################
 ###############################################################################################
 # 서버에서 유저 데이터 받아오기
 
 from get_user_info import encryption, decryption, decode_base64_image, save_image_as_png
-import requests
 # 장치 고유 시리얼 넘버
 DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
 URL_USER_DATA = "http://i9e101.p.ssafy.io:8080/api/iot/users"
@@ -332,19 +332,74 @@ async def appear(*arg):
     # os.system("xset dpms force standby")
     # os.system("xset dpms force suspend")
     global STATUS
+    if STATUS != SCREEN_OFF:
+        return
+    
+    # 얼굴 인식
+    # 유저이름 인코딩 중요!
+    print("start...")
+    try:
+        get_user_face.getUserFaceImage()
+        print("make face image finished")
+    except:
+        pass
+    
+    print("find user")
+    user_email = find_user.getUserName()
+    print("user :", user_email)
+
+    with open("./user_data.json", "r") as f:
+        user_data = json.load(f)
+        for user in user_data:
+            if user["userEmail"] == user_email:
+                user_name = user["userName"]
+                break
+
+        del user_data
+
+    task = asyncio.create_task(user_email)
+
+    tts(user_name + "님 안녕하세요!")
+
+    speech = await task
+
+    if speech:
+        if client_role.get("react", False):
+            await client[client_role["react"]].send(speech)
+        tts(speech["conetent"])
+
+
     STATUS = WAITTING
 
-    # 얼굴 인식 처리
-    # 처리 후 정보를 react로 보내야 됨
+async def callSpeech(user_email):
+    print("서버에 유저 데이터 요청")
 
-    pass
-# 없어지면 
+    URL_MENT = "http://i9e101.p.ssafy.io:8080/api/iot/text/first?userEmail="
+
+
+    response = requests.get(URL_MENT + user_email)
+
+    if response.json()['success']:
+        text_code = response.json()["response"]["textCode"]
+        text_content = response.json()["response"]["textContent"]
+
+        return {
+            "content" : text_content,
+            "type" : text_code
+        }
+    
+    return False
+
+
 async def disappear(*arg):
     global STATUS
-    if STATUS == WAITTING:
+    if STATUS != WAITTING:
         # 이건 리눅스에서만 기능한다.
         # os.system("xset dpms force off")
         # 스피커와 카메라로 사용 종료 보내기
+
+
+
 
         STATUS = SCREEN_OFF
 
@@ -363,7 +418,10 @@ order_fun = {"CALL" : call,
             "YOUTUBE" : youtube,
             "CANTUNDERSTAND" : chatgpt,
             "LEFT": left,
-            "RIGHT": right}
+            "RIGHT": right,
+            "appear!": appear,
+            "disappear!": disappear,
+            }
 
 
 # async def serialArduino():
