@@ -1,11 +1,10 @@
 package com.mirror.backend.api.repository;
 
-import com.mirror.backend.api.entity.RedisFamilyBirthday;
-import com.mirror.backend.api.entity.RedisIsRainy;
+import com.mirror.backend.api.entity.TextCautionRainy;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RedisIsRainyRepository extends CrudRepository<RedisIsRainy, String> {
+public interface RedisIsRainyRepository extends CrudRepository<TextCautionRainy, String> {
 
 }

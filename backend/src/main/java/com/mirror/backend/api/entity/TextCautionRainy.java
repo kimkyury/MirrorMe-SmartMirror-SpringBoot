@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @Setter
 @RedisHash("isRainy")
-public class RedisIsRainy {
+public class TextCautionRainy {
 
     @Id
     private String householdId;
@@ -18,7 +18,7 @@ public class RedisIsRainy {
     private String targetDay;
 
     @Builder
-    public RedisIsRainy(String householdId, String isRainyCode, String isRainyText, String targetDay) {
+    public TextCautionRainy(String householdId, String isRainyCode, String isRainyText, String targetDay) {
         this.householdId = householdId;
         this.isRainyCode = isRainyCode;
         this.isRainyText = isRainyText;
