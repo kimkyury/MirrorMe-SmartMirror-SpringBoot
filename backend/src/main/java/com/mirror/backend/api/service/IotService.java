@@ -35,14 +35,14 @@ public class IotService {
     public Long findMirrorGroupId(String encryptedCode){
 
         System.out.println("원본: " + encryptedCode);
-
-//       TODO: Delete Encoding, Decoding Test Annotation
-
-        String encode= iotEncryption.encryptionText(encryptedCode);
-        System.out.println("암호화: " + encode);
-        String decode= iotEncryption.decryptionText(encode);
-        System.out.println("복호화: " + decode);
-        encryptedCode = encode;
+//
+////       TODO: Delete Encoding, Decoding Test Annotation
+//
+//        String encode= iotEncryption.encryptionText(encryptedCode);
+//        System.out.println("암호화: " + encode);
+//        String decode= iotEncryption.decryptionText(encode);
+//        System.out.println("복호화: " + decode);
+//        encryptedCode = encode;
 
         String mirrorId = iotEncryption.decryptionText(encryptedCode);
         System.out.println("해독된 mirrorID: " + mirrorId);
