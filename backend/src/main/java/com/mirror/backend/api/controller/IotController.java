@@ -2,10 +2,8 @@ package com.mirror.backend.api.controller;
 
 
 import com.mirror.backend.api.dto.EmotionDto;
+import com.mirror.backend.api.dto.TextDto.*;
 import com.mirror.backend.api.dto.UserDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.IotService;
 import com.mirror.backend.common.utils.ApiUtils;
@@ -46,10 +44,10 @@ public class IotController {
     }
 
     @GetMapping("/text/calendar/summary")
-    @Operation(summary = "하루 일정 요약 조회", description = "한 유저의 하루 일정 요약 TEXT를 조회합니다.")
-    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummeryScheduleText(String userEmail){
+    @Operation(summary = "하루 일정 요약 TEXT 조회", description = "한 유저의 하루 일정 요약 TEXT를 조회합니다.")
+    public ApiUtils.ApiResult<TextSummaryScheduleDto> getSummeryScheduleText(String userEmail){
 
-        ResponseSummaryScheduleDto summaryScheduleTextDto = iotService.getSummerySchedule(userEmail);
+        TextSummaryScheduleDto summaryScheduleTextDto = iotService.getSummerySchedule(userEmail);
         if ( summaryScheduleTextDto == null)
             return ApiUtils.success(null);
 
@@ -57,25 +55,59 @@ public class IotController {
     }
 
     @GetMapping("/text/birth")
-    @Operation(summary = "가족 생일 알림 TEXT조회", description = "가족중 7일 이내에 생일인 사람과 선물 추천에 대한 TEXT를 조회합니다.")
-    public ApiUtils.ApiResult<ResponseFamilyBirthdayScheduleDto> getBirthdayUserText(String userEmail){
+    @Operation(summary = "가족 생일 알림 TEXT 조회", description = "가족중 7일 이내에 생일인 사람과 선물 추천에 대한 TEXT를 조회합니다.")
+    public ApiUtils.ApiResult<TextFamilyBirthdayDto> getBirthdayUserText(String userEmail){
 
-        ResponseFamilyBirthdayScheduleDto responseFamilyBirthdayScheduleDto = iotService.getBirthdayUserText(userEmail);
-        if ( responseFamilyBirthdayScheduleDto == null)
+        TextFamilyBirthdayDto textFamilyBirthdayDto = iotService.getBirthdayUserText(userEmail);
+        if ( textFamilyBirthdayDto == null)
             return ApiUtils.success(null);
 
-        return ApiUtils.success(responseFamilyBirthdayScheduleDto);
+        return ApiUtils.success(textFamilyBirthdayDto);
+    }
+
+    @GetMapping("/text/video")
+    @Operation(summary = "수신 메시지 안내 TEXT 조회", description = "수신된 메시지에 대한 TEXT를 조회합니다.")
+    public ApiUtils.ApiResult<TextVideoViewDto> getVideoViewText(String userEmail){
+
+        TextVideoViewDto textVideoViewDto = iotService.getTextVideoViewText(userEmail);
+        if ( textVideoViewDto == null)
+            return ApiUtils.success(null);
+
+        return ApiUtils.success(textVideoViewDto);
+    }
+
+    @GetMapping("/text/contact")
+    @Operation(summary = "가족 중 화난 사람에게 연락 권장 TEXT 조회", description = "가족 중 전날에 화가 나있던 사람에게 연락할 것을 권장하는 TEXT를 조회합니다. ")
+    public ApiUtils.ApiResult<TextEmotionBasedContactRecommendationDto> getContactRecommendationText(String userEmail){
+
+        TextEmotionBasedContactRecommendationDto textEmotionBasedContactRecommendationDto
+                = iotService.getTextEmotionBasedContactRecommendationText(userEmail);
+        if ( textEmotionBasedContactRecommendationDto == null)
+            return ApiUtils.success(null);
+
+        return ApiUtils.success(textEmotionBasedContactRecommendationDto);
+    }
+
+    @GetMapping("/text/rainy")
+    @Operation(summary = "비 관련 TEXT조회", description = "비 유무에 따라 우산을 권장하는 TEXT를 조회합니다.")
+    public ApiUtils.ApiResult<TextCautionRainyDto> getCautionRainyText(String userEmail){
+
+        TextCautionRainyDto textCautionRainyDto = iotService.getCautionRainyText(userEmail);
+        if ( textCautionRainyDto == null)
+            return ApiUtils.success(null);
+
+        return ApiUtils.success(textCautionRainyDto);
     }
 
     @GetMapping("/text/first")
-    @Operation(summary = "유저 만남시 최초 TEXT 조회", description = "한 유저의 하루 중 최초 만남시의 TEXT를 조회합니다. ")
-    public ApiUtils.ApiResult<ResponseFirstMirrorTextDto> getFirstMirrorText(String userEmail){
+    @Operation(summary = "유저 만남시 최초 TEXT 조회", description = "한 유저의 하루 중 최초 만남시의 TEXT를 조회합니다. (우선순위: Video > RecommendContact > Birth > Rainy > Calendar")
+    public ApiUtils.ApiResult<TextFirstMeetingDto> getFirstMirrorText(String userEmail){
 
-        ResponseFirstMirrorTextDto responseFirstMirrorTextDto = iotService.getFirstMirrorTextDto(userEmail);
-        if ( responseFirstMirrorTextDto == null)
+        TextFirstMeetingDto textFirstMeetingDto = iotService.getFirstMirrorTextDto(userEmail);
+        if ( textFirstMeetingDto == null)
             return ApiUtils.success(null);
 
-        return ApiUtils.success(responseFirstMirrorTextDto);
+        return ApiUtils.success(textFirstMeetingDto);
     }
 
     @PostMapping
