@@ -1,9 +1,25 @@
-version: '3'
+version: "3.7"
 
 services:
-  app:
-    build: .
-    image: woneee99/front
+  nginx:
+    image: woneee99/nginx
+    restart: always
+    container_name: nginx
+    build:
+      context: ./
+      dockerfile: Dockerfile
     ports:
-      - '3000:3000'
-    command: 'npm run start'
+      - "3000:80"
+    networks:
+      - frontend
+  client:
+    build:
+      context: ./ 
+      dockerfile: Dockerfile
+    networks:
+      - frontend
+  
+networks:
+  frontend:
+    driver: bridge
+
