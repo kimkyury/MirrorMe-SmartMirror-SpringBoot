@@ -1,61 +1,102 @@
 package com.mirror.backend.api.scheduler;
 
 
+import com.mirror.backend.api.dto.EmotionDto;
+import com.mirror.backend.api.dto.UserDto;
+import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.GoogleOAuthToken;
-import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
-import com.mirror.backend.api.repository.TextVideoViewRepository;
+import com.mirror.backend.api.entity.TextEmotionBasedContactRecommendation;
+import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.info.GoogleOAuth;
+import com.mirror.backend.api.repository.*;
+import com.mirror.backend.api.service.EmotionService;
 import com.mirror.backend.api.service.OAuthService;
+import com.mirror.backend.api.service.impl.EmotionServiceImpl;
 import com.mirror.backend.api.service.impl.VideoServiceImpl;
 import com.mirror.backend.common.utils.ChatGptUtil;
+import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class TextEmotionBasedContactRecommendationScheduler {
 
     public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    public final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
+    public final UserRepository userRepository;
+    public final ConnectUserRepository connectUserRepository;
 
     public final OAuthService oAuthService;
+    public final EmotionServiceImpl emotionService;
 
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "0 0 0 * * ?") // 배용, 매일 자정마다 실행
+    @Scheduled(cron = "0 * * * * ?")   // Develop
+//    @Scheduled(cron = "0 0 0 * * ?") // Distribution
     public void fetchRedisData() {
 
-        System.out.println("------------Scheduler: Video View Calendar----------");
+        System.out.println("------------Scheduler: EmotionBased Contact Recommendation ----------");
 
         Iterable<GoogleOAuthToken> googleOAuthToken = googleOAuthTokenRepository.findAll();
         Iterator<GoogleOAuthToken> iterator = googleOAuthToken.iterator();
 
         while (iterator.hasNext()) {
-            GoogleOAuthToken userTokenInfo = iterator.next();
 
-            String accessToken = userTokenInfo.getAccessToken();
-            String refreshToken = userTokenInfo.getRefreshToken();
+            String userEmail = getUserEmailUseGoogleOAuthToken(iterator);
+            User user = userRepository.findByUserEmail(userEmail).get();
+            Long userId = user.getUserId();
+            List<UserDto> angryResList =  emotionService.familyAngryList(userId);
 
-            // AccessToken의 유효성 검사, 만약 불일치시 재발급
-            accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+            for(UserDto angryUser : angryResList){
 
-            // 1. 해당 유저의 이메일을 가져온다
-            String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
+                ConnectUser connectUserInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(
+                        userId, angryUser.getUserId()).get();
+                String angryUserAlias = connectUserInfo.getConnectUserAlias();
 
-            // 2. ResponseVideoList를 가져온다 (videoService)
-
-            // 3. 해당 List가 존재한다면, 열람해보겠냐는 질문이 담긴 텍스트를 보낸다
-
-            // 4. 해당 Text를 Redis에 저장한다
-
+                String text = getTextEmotionBasedContactRecommendation(user.getUserName(), angryUserAlias);
+                saveTextEmotionBasedContactRecommendationToRedis(userEmail, text);
+            }
         }
+
         System.out.println("------------ Finish Scheduler ----------");
     }
 
+    public String  getUserEmailUseGoogleOAuthToken(Iterator<GoogleOAuthToken> iterator){
 
+        GoogleOAuthToken userTokenInfo = iterator.next();
+        String accessToken = userTokenInfo.getAccessToken();
+        String refreshToken = userTokenInfo.getRefreshToken();
+        accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
 
+        return userEmail;
+    }
+
+    public String getTextEmotionBasedContactRecommendation(String userName, String angryUserAlias){
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName).append("님, ")
+                .append("어제 ").append(angryUserAlias).append("님의 기분이 안 좋아보이셨어요. ")
+                .append("연락해 보시는 건 어떠세요?");
+
+        return sb.toString();
+    }
+
+    public  void saveTextEmotionBasedContactRecommendationToRedis(String userEmail, String text){
+
+        TextEmotionBasedContactRecommendation textEmotionBasedContactRecommendation = TextEmotionBasedContactRecommendation.builder()
+                .userEmail(userEmail)
+                .textEmotionBasedContactRecommendation(text)
+                .targetDay(EtcUtil.getTodayYYYYMMDD())
+                .build();
+
+        textEmotionBasedContactRecommendationRepository.save(textEmotionBasedContactRecommendation);
+    }
 }
