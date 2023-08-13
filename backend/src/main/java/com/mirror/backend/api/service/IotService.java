@@ -2,10 +2,8 @@ package com.mirror.backend.api.service;
 
 
 import com.mirror.backend.api.dto.Alias;
+import com.mirror.backend.api.dto.TextDto.*;
 import com.mirror.backend.api.dto.UserDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.IotEncryption;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,9 @@ public class IotService {
     private final TextSummaryScheduleRepository textSummaryScheduleRepository;
     private final TextFirstMeetingRepository textFirstMeetingRepository;
     private final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
+    private final TextCautionRainyRepository textCautionRainyRepository;
+    private final TextVideoViewRepository textVideoViewRepository;
+    private final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
 
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
@@ -106,31 +108,57 @@ public class IotService {
     }
 
 
-    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
+    public TextSummaryScheduleDto getSummerySchedule(String userEmail) {
 
-        TextSummarySchedule textSummarySchedule = textSummaryScheduleRepository.findById(userEmail)
-                .orElseThrow( () -> new NoSuchElementException());
+        Optional<TextSummarySchedule> textSummaryScheduleOptional = textSummaryScheduleRepository.findById(userEmail);
+        if ( textSummaryScheduleOptional.isEmpty()) return null;
 
-        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(textSummarySchedule.getTextSummarySchedule())
+        TextSummaryScheduleDto dto = TextSummaryScheduleDto.builder()
+                .text(textSummaryScheduleOptional.get().getTextSummarySchedule())
                 .build();
 
         return dto;
     }
 
-    public ResponseFamilyBirthdayScheduleDto getBirthdayUserText(String userEmail) {
+    public TextFamilyBirthdayDto getBirthdayUserText(String userEmail) {
 
-        TextFamilyBirthday textFamilyBirthday = textFamilyBirthdayRepository.findById(userEmail)
-                .orElseThrow( () -> new NoSuchElementException("생성된 생일관련 TEXT가 없습니다. "));
+        Optional<TextFamilyBirthday> textFamilyBirthdayOptional = textFamilyBirthdayRepository.findById(userEmail);
+        if( textFamilyBirthdayOptional.isEmpty()) return null;
 
-        ResponseFamilyBirthdayScheduleDto dto = ResponseFamilyBirthdayScheduleDto.builder()
-                .familyBirthdayText(textFamilyBirthday.getTextFamilyBirthday())
+        TextFamilyBirthdayDto dto = TextFamilyBirthdayDto.builder()
+                .text(textFamilyBirthdayOptional.get().getTextFamilyBirthday())
                 .build();
 
         return dto;
     }
 
-    public ResponseFirstMirrorTextDto getFirstMirrorTextDto(String userEmail){
+    public TextVideoViewDto getTextVideoViewText(String userEmail) {
+
+        Optional<TextVideoView> textVideoViewOptional = textVideoViewRepository.findById(userEmail);
+        if (textVideoViewOptional.isEmpty()) return null;
+
+        TextVideoViewDto dto = TextVideoViewDto.builder()
+                .text(textVideoViewOptional.get().getTextVideoView())
+                .build();
+
+        return dto;
+    }
+
+    public TextEmotionBasedContactRecommendationDto getTextEmotionBasedContactRecommendationText(String userEmail) {
+
+        Optional<TextEmotionBasedContactRecommendation> textEmotionBasedContactRecommendationOptional
+                = textEmotionBasedContactRecommendationRepository.findById(userEmail);
+        if ( textEmotionBasedContactRecommendationOptional.isEmpty()) return null;
+
+        TextEmotionBasedContactRecommendationDto dto = TextEmotionBasedContactRecommendationDto.builder()
+                .text(textEmotionBasedContactRecommendationOptional.get()
+                .getTextEmotionBasedContactRecommendation())
+                .build();
+
+        return dto;
+    }
+
+    public TextFirstMeetingDto getFirstMirrorTextDto(String userEmail){
 
         TextFirstMeeting textFirstMeeting = textFirstMeetingRepository
                 .findById(userEmail).orElseThrow(
@@ -144,11 +172,24 @@ public class IotService {
         textFirstMeeting.setIsUsed("1");
         textFirstMeetingRepository.save(textFirstMeeting);
 
-        ResponseFirstMirrorTextDto firstMirrorTextDto = ResponseFirstMirrorTextDto.builder()
+        TextFirstMeetingDto firstMirrorTextDto = TextFirstMeetingDto.builder()
                 .textCode(textFirstMeeting.getTextCode())
                 .textContent(textFirstMeeting.getTextContent())
                 .build();
 
         return firstMirrorTextDto;
+    }
+
+    public TextCautionRainyDto getCautionRainyText(String userEmail) {
+
+        Long householdId = userRepository.findByUserEmail(userEmail).get().getHousehold().getHouseholdId();
+        TextCautionRainy textCautionRainy = textCautionRainyRepository.findById(String.valueOf(householdId)).get();
+
+        TextCautionRainyDto textCautionRainyDto = TextCautionRainyDto.builder()
+                .text(textCautionRainy.getTextCautionRainy())
+                .build();
+
+        return textCautionRainyDto;
+
     }
 }
