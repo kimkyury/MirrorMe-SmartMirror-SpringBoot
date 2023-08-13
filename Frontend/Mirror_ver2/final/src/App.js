@@ -36,6 +36,20 @@ function App() {
     setIsVisible(prevState => !prevState);
   };
 
+  // 출현 후 특정 시간 이후에 사라짐
+  useEffect (() => {
+    if (isVisible) {
+      const timeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 7000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [isVisible])
+
+  // 스낵바
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleButtonClick = () => {
