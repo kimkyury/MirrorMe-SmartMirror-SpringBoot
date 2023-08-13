@@ -98,9 +98,20 @@
 }
 
 .send-body {
-  margin-top: 50px;
+  margin-top: 40px;
   justify-content: center;
   align-items: center;
+}
+
+.sendAlert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.sendAlertText {
+  text-align: center;
 }
 
 .h1-container {
