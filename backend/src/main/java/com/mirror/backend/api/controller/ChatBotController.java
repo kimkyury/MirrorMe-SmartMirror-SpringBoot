@@ -1,9 +1,9 @@
 package com.mirror.backend.api.controller;
 
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
+import com.mirror.backend.api.dto.TextDto.RequestChatBotDto;
+import com.mirror.backend.api.dto.TextDto.ResponseChatBotDto;
+import com.mirror.backend.api.dto.TextDto.TextSummaryScheduleDto;
 import com.mirror.backend.api.service.ChatBotService;
 import com.mirror.backend.common.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,9 @@ public class ChatBotController {
     }
 
     @GetMapping("/calendar/summary")
-    public ApiUtils.ApiResult<ResponseSummaryScheduleDto> getSummerySchedule(HttpServletRequest request){
+    public ApiUtils.ApiResult<TextSummaryScheduleDto> getSummerySchedule(HttpServletRequest request){
         String userEmail = (String)request.getParameter("user_email");
-        ResponseSummaryScheduleDto summaryScheduleDto = chatBotService.getSummerySchedule(userEmail);
+        TextSummaryScheduleDto summaryScheduleDto = chatBotService.getSummerySchedule(userEmail);
 
         if ( summaryScheduleDto == null){
             return success(null);
