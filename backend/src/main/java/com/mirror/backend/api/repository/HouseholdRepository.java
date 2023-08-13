@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface HouseholdRepository extends JpaRepository<Household, Long> {
 
-    Optional<Household> findByCreateUserId(Long createUserId);
+    Optional<Household> findByCreateUserUserId(Long createUserId);
 
 }

@@ -30,13 +30,13 @@ public class SignUpController {
     @PostMapping("/profile")
     @Operation(summary = "Profile(userName, Interests) 생성", description = "가입 유저의 실제이름, 관심사 정보를 생성합니다. ")
     public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
-                                             @RequestBody RequestCreateUserDto requestCreateUserDto) {
+                                             @RequestBody UserDto.UserInitInfoReq userInitInfoReq) {
 
         String userEmail = (String) request.getAttribute("user_email");
         Long userId = (Long)request.getAttribute("user_id");
 
         // 해당 이메일을 가진 유저의 정보 업데이트하기
-        int result = signUpService.updateInitUser(userEmail, userId,requestCreateUserDto);
+        int result = signUpService.updateInitUser(userEmail, userId, userInitInfoReq);
 
         if ( result == Result.FAIL )
             return fail("user 추가 정보 생성 실패");
@@ -61,27 +61,25 @@ public class SignUpController {
     // household 등록
     @PostMapping("/households")
     @Operation(summary = "새로운 가정 생성", description = "사용자가 새로운 가정을 생성합니다. ")
-    public ApiUtils.ApiResult<ResponseHouseholdDto> createHousehold(HttpServletRequest request,
-                                                                    @RequestBody RequestHouseholdDto requestHouseholdDto) {
+    public ApiUtils.ApiResult<HouseholdDto.HouseholdPostRes> createHousehold(HttpServletRequest request,
+                                                                            @RequestBody HouseholdDto.HouseholdReq householdReq) {
         Long userId = (Long) request.getAttribute("user_id");
 
-        ResponseHouseholdDto result = signUpService.createHousehold(userId, requestHouseholdDto);
+        HouseholdDto.HouseholdPostRes householdPostRes = signUpService.createHousehold(userId, householdReq);
 
-        return success(result);
+        return success(householdPostRes);
     }
 
     // household 조회
     @GetMapping("/households")
     @Operation(summary = "기존의 가정 검색", description = "사용자가 기존에 있는 가정을, 생성자 Email로 검색합니다. ")
-    public ApiUtils.ApiResult<ResponseHouseholdDto> searchHousehold(HttpServletRequest request,
-                                                        @RequestParam String createUserEmail) {
+    public ApiUtils.ApiResult<HouseholdDto.HouseHoldGetRes> searchHousehold(HttpServletRequest request,
+                                                                            @RequestParam String createUserEmail) {
 
-        String userEmail = (String) request.getAttribute("user_email");
-
-        ResponseHouseholdDto result = signUpService.searchHousehold(createUserEmail);
-
+        HouseholdDto.HouseHoldGetRes result = signUpService.searchHousehold(createUserEmail);
         if ( result == null)
-            success("찾는 사용자가 없거나, 해당사용자가 만든 가정은 존재하지 않습니다.");
+            success("해당 가정을 조회할 수 없습니다."); // 검색한 가정이 존재하지 않음
+
         return success(result);
     }
 
@@ -91,7 +89,7 @@ public class SignUpController {
                                                         @RequestParam(name="householdId", required = true) Long householdId) {
 
         Long userId = (Long) request.getAttribute("user_id");
-        int result = signUpService.registerHousehold(userId,householdId );
+        signUpService.registerHousehold(userId,householdId );
 
         return success("사용자 가정 등록 및, 기존 사용자간 연락처 업데이트 완료 ");
     }
@@ -100,12 +98,12 @@ public class SignUpController {
     @PostMapping("/mirror")
     @Operation(summary = "사용자의 미러 등록", description = "사용자가 새로운 미러를 본인의 가정으로 등록합니다")
     public ApiUtils.ApiResult<String> registerMirror(HttpServletRequest request,
-                                                        @RequestBody RequestMirrorDto requestMirrorDto) {
+                                                        @RequestBody MirrorDto.MirrorReq mirrorReq) {
 
         Long userId = (Long) request.getAttribute("user_id");
 
         // TODO: mirrorId가 암호화 되어있다면 암호화 로직을 포함시켜야 함
-        int result = signUpService.registerMirror(userId, requestMirrorDto);
+        int result = signUpService.registerMirror(userId, mirrorReq);
 
         return success("Mirror 등록 완료");
     }

@@ -14,7 +14,6 @@ public class ResponseGoogleOAuthDto {
     private String tokenType;
     private String idToken;
 
-
     @Override
     public String toString() {
         return "GoogleOAuthResponseDto{" +
