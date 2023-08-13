@@ -8,13 +8,15 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-public class TextFamilyBirthdayDto implements Serializable {
+public class TextCautionRainy implements Serializable {
 
-    private final String textCode = "0202";
+    private final String textCode = "0301";
+    private Long householdId;
     private String text;
 
     @Builder
-    public TextFamilyBirthdayDto(String text) {
+    public TextCautionRainy(Long householdId, String text) {
+        this.householdId = householdId;
         this.text = text;
     }
 }

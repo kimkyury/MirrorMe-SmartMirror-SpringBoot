@@ -1,4 +1,4 @@
-package com.mirror.backend.api.dto.chatbotDtos;
+package com.mirror.backend.api.dto.TextDto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,12 +8,13 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-public class ResponseSummaryScheduleDto implements Serializable {
-    private String summeryCalendarText;
+public class TextSummaryScheduleDto implements Serializable {
 
+    private final String textCode = "0301";
+    private String text;
 
     @Builder
-    public ResponseSummaryScheduleDto(String summeryCalendarText) {
-        this.summeryCalendarText = summeryCalendarText;
+    public TextSummaryScheduleDto(String text) {
+        this.text = text;
     }
 }
