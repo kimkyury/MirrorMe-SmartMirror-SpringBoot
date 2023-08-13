@@ -20,11 +20,10 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class FmailyBirthDayScheduler {
+public class TextFamilyBirthdayScheduler {
 
-    public final RedisUserTokenRepository redisUserTokenRepository;
-    public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    public final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
+    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    public final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
     public final ConnectUserRepository connectUserRepository;
     public final UserRepository userRepository;
 
@@ -87,7 +86,7 @@ public class FmailyBirthDayScheduler {
 
     private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {
         // 1. User의 Token 찾아오기
-        RedisUserToken birthUserToken = redisUserTokenRepository.findById(todayBirthUser.getUserEmail()).get();
+        GoogleOAuthToken birthUserToken = googleOAuthTokenRepository.findById(todayBirthUser.getUserEmail()).get();
         String accessToken = birthUserToken.getAccessToken();
         String refreshToken = birthUserToken.getRefreshToken();
 
@@ -144,7 +143,7 @@ public class FmailyBirthDayScheduler {
         sb.append("다음과 같은 일정들이 있습니다. 이런 사람은 어떤 선물이 필요할까요?");
         sb.append(" { " + birthUserEventInFuture + " } ");
         sb.append("최대한 간략하게 한 가지 선물만 추천해주세요. 또한 이유도 설명해주세요. (대답이 한글 기준 20자가 넘지않도록) ");
-        sb.append("대답 형식은 다음과 같이 부탁드립니다. '{선물}을 준비해보시는게 어떠세요? {이유가 되는 상대의 일정}이 있거든요!");
+        sb.append("대답 형식은 다음과 같이 부탁드립니다. '(선물)을 준비해보시는게 어떠세요? (이유가 되는 상대의 일정)이 있거든요!");
         String answer = chatGptUtil.createMessage(sb.toString());
 
         return answer;
@@ -160,11 +159,11 @@ public class FmailyBirthDayScheduler {
 
         TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
-                .familyBirthday(sb.toString())
+                .textFamilyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(textFamilyBirthday);
+        textFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 
     public void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
@@ -177,10 +176,10 @@ public class FmailyBirthDayScheduler {
 
         TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
-                .familyBirthday(sb.toString())
+                .textFamilyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(textFamilyBirthday);
+        textFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 }

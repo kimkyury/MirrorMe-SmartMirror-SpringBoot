@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @Setter
-@RedisHash("mirrorFirstText")
+@RedisHash("textFirstMeeting")
 public class TextFirstMeeting {
 
     @Id
