@@ -15,7 +15,7 @@ function ModalBottons(props) {
   const [isMessageSent, setIsMessageSent] = useState(false);
 
   const commandMessage = props.commandMessage;
-  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT"
+  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT", "EXIT"
   const youtubeKey = props.youtubeKey;
 
   useEffect(() => {

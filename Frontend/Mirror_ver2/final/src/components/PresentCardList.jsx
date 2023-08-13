@@ -8,6 +8,8 @@ function PresentCardList(props) {
     { name: 'Chicken', image: '' },
     { name: 'IcecreamCake', image: '' },
     { name: 'Money', image: '' },
+    { name: 'Keyboard', image: '' },
+    { name: 'Bag', image: '' },
   ]);
 
   const [randomPresentList, setRandomPresentList] = useState([]);
