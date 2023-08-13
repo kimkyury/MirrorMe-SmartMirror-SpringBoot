@@ -1,4 +1,4 @@
-package com.mirror.backend.api.dto.chatbotDtos;
+package com.mirror.backend.api.dto.TextDto;
 
 import lombok.Builder;
 import lombok.Getter;

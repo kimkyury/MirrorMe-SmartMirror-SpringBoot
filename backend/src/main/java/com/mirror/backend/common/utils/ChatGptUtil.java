@@ -1,7 +1,5 @@
 package com.mirror.backend.common.utils;
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
 import com.mirror.backend.api.info.ChatGPT;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
