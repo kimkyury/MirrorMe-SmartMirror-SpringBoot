@@ -33,8 +33,8 @@ public class TextFamilyBirthdayScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정 1분 마다 실행
+//    @Scheduled(cron = "0 * * * * ?")   // 개발용
+    @Scheduled(cron = "0 1 0 * * ?") // 배포용
     public void fetchRedisData() {
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 
@@ -44,7 +44,6 @@ public class TextFamilyBirthdayScheduler {
 
         for (String birthday : upcomingBirthdayLists) {
             List<User> birthdayUserList = userRepository.findByBirthday(birthday);
-
             upcomingBirthdayUserAllList.addAll(birthdayUserList);
         }
 
@@ -53,9 +52,8 @@ public class TextFamilyBirthdayScheduler {
         for (User birthdayUser : upcomingBirthdayUserAllList) {
             String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(birthdayUser);
             String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents);     // Request PresentRecommend to GPT
-
-            // 해당 유저의 모든 친인척에게 추우 생일 주인공 알리기
             List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(birthdayUser.getUserId());
+
             for (ConnectUser connectUser : birthUserConnectUser) {
                 System.out.println(connectUser.getId().getConnectUserId() + " " + birthdayUser.getUserId());
                 ConnectUser aliasInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(connectUser.getId().getConnectUserId() , birthdayUser.getUserId()).get();
@@ -68,12 +66,10 @@ public class TextFamilyBirthdayScheduler {
         System.out.println(todayBirthUserList);
         if (todayBirthUserList.size() != 0) {
             for (User todayBirthUser : todayBirthUserList) {
-
                 String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(todayBirthUser);
                 String gptAnswer = getRecommendPresentFromGPT(birthdayUserAllUpcomingEvents); // Request PresentRecommend to GPT
-
-                // 해당 유저의 모든 친인척에게 오늘 생일 주인공 알리기
                 List<ConnectUser> birthUserConnectUser = connectUserRepository.findByIdUserId(todayBirthUser.getUserId());
+
                 for (ConnectUser connectUser : birthUserConnectUser) {
                     ConnectUser aliasInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(connectUser.getId().getConnectUserId(), todayBirthUser.getUserId()).get();
                     saveRedisFamilyBirthday(gptAnswer, connectUser.getConnectUser().getUserEmail(), aliasInfo.getConnectUserAlias());
@@ -100,6 +96,7 @@ public class TextFamilyBirthdayScheduler {
     }
 
     private List<String> getUpcomingBirthdays(){
+
         List<String> birthdays = new ArrayList<>();
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
@@ -108,6 +105,7 @@ public class TextFamilyBirthdayScheduler {
             LocalDate nextDate = today.plusDays(i);
             birthdays.add(nextDate.format(formatter));
         }
+
         return birthdays;
     }
 
@@ -131,6 +129,7 @@ public class TextFamilyBirthdayScheduler {
             boolean chk = now.isBefore(startDate) && !now.isAfter(endDate.plusMonths(6));             // 미래 이벤트임 && 반년 이내의 이벤트임
             if (chk) sb.append(item.getSummary() +", ");
         }
+
         userEventList = sb.toString();
 
         return userEventList;

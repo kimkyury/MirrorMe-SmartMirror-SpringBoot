@@ -39,16 +39,12 @@ public class TextFirstMeetingScheduler {
             GoogleOAuthToken userTokenInfo = iterator.next();
             String accessToken = userTokenInfo.getAccessToken();
             String refreshToken = userTokenInfo.getRefreshToken();
-
-            // AccessToken의 유효성 검사, 만약 불일치시 재발급
             accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
+
             String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
             User user = userRepository.findByUserEmail(userEmail).get();
             Long userHouseholdId = user.getHousehold().getHouseholdId();
 
-            System.out.println(userEmail);
-
-            // 오늘 기준의 데이터를 찾는다
             String today = EtcUtil.getTodayYYYYMMDD();
 
             // 오늘 기준의 날씨 기상정보에서 비가 오는지 확인한다
@@ -72,6 +68,7 @@ public class TextFirstMeetingScheduler {
                 continue;
             }
         }
+
         System.out.println("------------ Finish Scheduler ----------");
     }
 
@@ -85,7 +82,4 @@ public class TextFirstMeetingScheduler {
 
         textFirstMeetingRepository.save(testFirstMeeting);
     }
-
-
-
 }

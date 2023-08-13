@@ -31,24 +31,21 @@ public class TextCautionRainyScheduler {
     public final WeatherServiceImpl weatherService;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "40 * * * * ?")   // 개발용, 매분 30초마다 실행
-    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용, 매일 자정기준 3시간 마다 실행
+//    @Scheduled(cron = "40 * * * * ?")   // 개발용
+    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Warning RainyWeather ----------");
 
-        // 모든 household 가져오기
         Iterable<Household> householdsIterable = householdRepository.findAll();
         Iterator<Household> iterator = householdsIterable.iterator();
 
         while (iterator.hasNext()) {
 
-            // household의 좌표값 얻기
             Household householdInfo = iterator.next();
             int ny = householdInfo.getGridNy();
             int nx = householdInfo.getGridNx();
 
-            // 기상API를 통해 날씨가 어떤지 확인하기
             String HHMM = getCurrentTimeRange();
             String YYYYMMDD = EtcUtil.getTodayYYYYMMDD();
             if ( HHMM.equals("2300")){
@@ -117,7 +114,6 @@ public class TextCautionRainyScheduler {
     public void saveRedisIsRainy(boolean isRainy, String householdId){
 
         TextCautionRainy textCautionRainy = null;
-
         if (isRainy){
             textCautionRainy = TextCautionRainy.builder()
                     .householdId(householdId)
@@ -134,6 +130,4 @@ public class TextCautionRainyScheduler {
 
         textCautionRainyRepository.save(textCautionRainy);
     }
-
-
 }
