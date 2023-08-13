@@ -7,7 +7,7 @@ import VideoMessagePlus from './VideoMessagePlus';
 function VideoMessage() {
   const [messageList, setMessageList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const userEmail = 'test@gmail.com';
+  const userEmail = 'woneee99@gmail.com';
 
   useEffect(() => {
     const fetchMessageList = async () => {
