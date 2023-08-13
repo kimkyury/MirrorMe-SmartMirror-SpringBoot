@@ -345,7 +345,6 @@ async def appear(*arg):
         pass
     
     print("find user")
-    # 이메일만 받아온 뒤 저장된 사람 정보에서 이름 탐색
     user_email = find_user.getUserName()
     print("user :", user_email)
 
@@ -357,19 +356,18 @@ async def appear(*arg):
                 break
 
         del user_data
-    
-    # 유저에게 해줄 말을 가져오고 tts로 인사를 병렬처리
+
     task = asyncio.create_task(user_email)
 
     tts(user_name + "님 안녕하세요!")
 
     speech = await task
 
-    # 해줄 말이 있다면 react로 전송 후 tts출력
     if speech:
         if client_role.get("react", False):
             await client[client_role["react"]].send(speech)
         tts(speech["conetent"])
+
 
     STATUS = WAITTING
 
@@ -391,6 +389,7 @@ async def callSpeech(user_email):
         }
     
     return False
+
 
 async def disappear(*arg):
     global STATUS
