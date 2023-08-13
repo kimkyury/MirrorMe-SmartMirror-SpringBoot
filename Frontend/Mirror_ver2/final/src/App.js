@@ -4,11 +4,12 @@ import { Button, Snackbar } from '@mui/material';
 
 import './App.css';
 
+import Logo from './components/Logo';
 import Snackbars from './components/SnackBars';
 import Modals from './components/Modals';
 import PresentCardList from './components/PresentCardList';
 
-const userEmail = 'test2@google.com'; // 사용자 이메일 추후 수정
+const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
 
 function App() {
   // 현재 시간
@@ -114,61 +115,68 @@ function App() {
 
   return (
     <div>
+      {/* 사용자 이메일 정보 넘겨받기 전까지 Logo Component 보여주기 */}
       <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js" integrity="sha384-7hS1HB/8C1l1g6XTaKP2HvbQg/2jBzXB2X0J/+Uz3Pkb3q1/4H0z2cVBMzqGtJ3" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js" integrity="sha384-Rn9HT+yy0cAmzD7h4p9BaaVG6g2PfE8ii+05BuYp9gRBy2Cjgr99WQQpkKd3m9L/" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/system@5.4.3/dist/mui.min.js" integrity="sha384-oFyjBA1gBAq3z2f3Q2ikzGq/KJQ2BlLJpLuH6lg6b4RtrR+vjp5b3HYJoLk6MBo2" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.3/dist/mui.min.js" integrity="sha384-3nQFj60gZkVx0nq0HP3zqv4mAP+q0/w7foV7mqHn6g+LrTADwG8zBks6XQfnwTo7" crossorigin="anonymous"></script>
-      <div className="time">{formattedTimeWithAmPm}</div>
-      <div className="btn-container">
-        {/* <sendMessage/> */}
-        <Modals
-          commandMessage={modalsCommandMessage}
-          youtubeKey={youtubeKey}
-        />
-        <Snackbars
-          commandMessage={snackbarsCommandMessage}
-          tts={tts}
-          ttsType={ttsType}
-          userEmail={userEmail}
-        />
-      </div>
-      <button onClick={toggleVisibility}>
-        {isVisible ? 'PresentCard 숨기기' : 'PresentCard 보이기'}
-      </button>
-      <div>
-        <CSSTransition
-          in={isVisible} // Control whether the transition is active
-          timeout={500} // Duration of the transition in milliseconds
-          classNames="present-card" // CSS class names for the transition states
-          unmountOnExit // Remove the component from the DOM when not in the 'in' state
-        >
-          <div>
-            <PresentCardList />
+      {userEmail ? (
+        <Logo/>
+        ) :(
+        <div>
+          <div className="time">{formattedTimeWithAmPm}</div>
+          <div className="btn-container">
+            {/* <sendMessage/> */}
+            <Modals
+              commandMessage={modalsCommandMessage}
+              youtubeKey={youtubeKey}
+            />
+            <Snackbars
+              commandMessage={snackbarsCommandMessage}
+              tts={tts}
+              ttsType={ttsType}
+              userEmail={userEmail}
+            />
           </div>
-        </CSSTransition>
-      </div>
-      <form className="socket">
-        {/* 서버로 메시지를 보낼 텍스트 박스 */}
-        <input
-          id="textMessage"
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        {/* 전송 버튼 */}
-        <input onClick={sendMessage} value="Send" type="button" />
-        {/* 접속 종료 버튼 */}
-        <input onClick={() => webSocket.close()} value="Disconnect" type="button" />
-      </form>
-      <br />
-      {/* 출력 area */}
-      <textarea
-        id="messageTextArea"
-        rows="10"
-        cols="50"
-        value={messageTextArea}
-        readOnly
-      ></textarea>
+          <button onClick={toggleVisibility}>
+            {isVisible ? 'PresentCard 숨기기' : 'PresentCard 보이기'}
+          </button>
+          <div>
+            <CSSTransition
+              in={isVisible} // Control whether the transition is active
+              timeout={500} // Duration of the transition in milliseconds
+              classNames="present-card" // CSS class names for the transition states
+              unmountOnExit // Remove the component from the DOM when not in the 'in' state
+            >
+              <div>
+                <PresentCardList />
+              </div>
+            </CSSTransition>
+          </div>
+          <form className="socket">
+            {/* 서버로 메시지를 보낼 텍스트 박스 */}
+            <input
+              id="textMessage"
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            {/* 전송 버튼 */}
+            <input onClick={sendMessage} value="Send" type="button" />
+            {/* 접속 종료 버튼 */}
+            <input onClick={() => webSocket.close()} value="Disconnect" type="button" />
+          </form>
+          <br />
+          {/* 출력 area */}
+          <textarea
+            id="messageTextArea"
+            rows="10"
+            cols="50"
+            value={messageTextArea}
+            readOnly
+          ></textarea>
+        </div>
+        )}
     </div>
   );
 }
