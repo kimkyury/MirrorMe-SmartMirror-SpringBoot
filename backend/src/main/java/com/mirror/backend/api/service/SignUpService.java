@@ -1,18 +1,15 @@
 package com.mirror.backend.api.service;
 
 
-import com.mirror.backend.api.dto.RequestCreateUserDto;
-import com.mirror.backend.api.dto.RequestHouseholdDto;
-import com.mirror.backend.api.dto.RequestMirrorDto;
-import com.mirror.backend.api.dto.ResponseHouseholdDto;
+import com.mirror.backend.api.dto.*;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.entity.keys.ConnectUserKey;
 import com.mirror.backend.api.entity.keys.InterestKey;
 import com.mirror.backend.api.repository.*;
+import com.mirror.backend.common.exception.NotFoundException;
 import com.mirror.backend.common.utils.Constants.Result;
 import com.mirror.backend.common.utils.IotEncryption;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,25 +33,20 @@ public class SignUpService {
     private final RedisTemplate<String, String> redisTemplate;
     private final IotEncryption iotEncryption;
 
-    public int updateInitUser(String userEmail, Long userId, RequestCreateUserDto requestCreateUserDto ){
+    public int updateInitUser(String userEmail, Long userId, UserDto.UserInitInfoReq userInitInfoReq ){
 
         Optional<User> user = userRepository.findByUserEmail(userEmail);
-        if (user.isEmpty())
-            return Result.NOT_FOUNT_USER;
 
-        // Get dtoInfo
-        String userName = requestCreateUserDto.getUserName();
-        List<Long> interestCodes = requestCreateUserDto.getInterestCodes();
+        String userName = userInitInfoReq.getUserName();
+        List<Long> interestCodes = userInitInfoReq.getInterestCodes();
 
-        // Update User (Nickame, UpdateTime)
         user.ifPresent(selectUser -> {
             selectUser.setUserName(userName);
             selectUser.setCreateAt(LocalDateTime.now());
             userRepository.save(selectUser);
         });
 
-        // Create interests (multyKey1; userId, multiKey2: interestId)
-        // 복합키 이용
+        // Save User's Init Interests
         for(int i =0; i<interestCodes.size(); i++){
             InterestKey interestKey = new InterestKey();
             interestKey.setUserId(userId);
@@ -66,12 +58,12 @@ public class SignUpService {
 
             interestRepository.save(interest);
         }
+
         return Result.SUCCESS;
     }
 
-
-    // 프로필 이미지
     public int uploadProfileImage(String userEmail,  MultipartFile profileImg)  {
+
         try {
             byte[] bytes = profileImg.getBytes();
             String encodedImage = Base64.getEncoder().encodeToString(bytes);
@@ -85,47 +77,40 @@ public class SignUpService {
         return Result.SUCCESS;
     }
 
-    public ResponseHouseholdDto createHousehold(Long userId, RequestHouseholdDto requestHouseholdDto) {
+    public HouseholdDto.HouseholdPostRes createHousehold(Long userId, HouseholdDto.HouseholdReq householdReq) {
 
-        Optional<User> userOptional = userRepository.findByUserId(userId);
-        User user = userOptional.get();
-
+        User user = userRepository.findByUserId(userId).get();
         Household newHousehold = Household.builder()
-                .householdName(requestHouseholdDto.getHouseholdName())
-                .createUserId(user)
+                .householdName(householdReq.getHouseholdName())
+                .createUser(user)
                 .build();
-
         householdRepository.save(newHousehold);
 
-        Optional<Household> saveHousehold =householdRepository.findByCreateUserId(userId);
-
-        ResponseHouseholdDto response = ResponseHouseholdDto.builder()
+        Household saveHousehold = householdRepository.findByCreateUserUserId(userId).get();
+        HouseholdDto.HouseholdPostRes householdPostRes = HouseholdDto.HouseholdPostRes.builder()
                 .createUserName(user.getUserName())
                 .createUserEmail(user.getUserEmail())
-                .householdId(saveHousehold.get().getHouseholdId())
-                .householdName(saveHousehold.get().getHouseholdName())
+                .householdId(saveHousehold.getHouseholdId())
+                .householdName(saveHousehold.getHouseholdName())
                 .build();
 
-        return response;
+        return householdPostRes;
     }
 
-    public  ResponseHouseholdDto searchHousehold(String createUserEmail) {
+    public HouseholdDto.HouseHoldGetRes searchHousehold(String createUserEmail) {
 
-        Optional<User> createUserOptional = userRepository.findByUserEmail(createUserEmail);
-        if (createUserOptional.isEmpty()) return null;
+        User createUser = userRepository.findByUserEmail(createUserEmail).get();
+        Optional<Household> household = householdRepository.findByCreateUserUserId(createUser.getUserId());
+        if ( household.isEmpty()) return null;
 
-        User createUser = createUserOptional.get();
-
-        Optional<Household> targetHousehold = householdRepository.findByCreateUserId(createUser.getUserId());
-
-        ResponseHouseholdDto response = ResponseHouseholdDto.builder()
+        HouseholdDto.HouseHoldGetRes houseHoldGetRes = HouseholdDto.HouseHoldGetRes.builder()
                 .createUserName(createUser.getUserName())
                 .createUserEmail(createUser.getUserEmail())
-                .householdId(targetHousehold.get().getHouseholdId())
-                .householdName(targetHousehold.get().getHouseholdName())
+                .householdId(household.get().getHouseholdId())
+                .householdName(household.get().getHouseholdName())
                 .build();
 
-        return response;
+        return houseHoldGetRes;
     }
 
     public int registerHousehold(Long userId, Long householdId) {
@@ -178,24 +163,23 @@ public class SignUpService {
         return Result.SUCCESS;
     }
 
-    public int registerMirror(Long userId, RequestMirrorDto requestMirrorDto) {
+    public int registerMirror(Long userId, MirrorDto.MirrorReq mirrorReq) {
 
-        String mirrorId = requestMirrorDto.getMirrorId();
+        String mirrorId = mirrorReq.getMirrorId();
         String mirrorIdDecryption = iotEncryption.decryptionText(mirrorId);
+        Long mirrorPlaceCode = mirrorReq.getMirrorPlaceCode();
 
-        Long mirrorPlaceCode = requestMirrorDto.getMirrorPlaceCode();
-
-        // 1. user의 householdId조희
-        Optional<User> user = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId).orElseThrow(
+                () -> new NotFoundException("해당 userId는 존재하지 않습니다. ")
+        );
 
         Mirror mirror = Mirror.builder()
                 .mirrorId(mirrorIdDecryption)
-                .mirrorGroupId(user.get().getHousehold().getHouseholdId())
+                .mirrorGroupId(user.getHousehold().getHouseholdId())
                 .mirrorPlaceCode(mirrorPlaceCode)
                 .build();
         mirrorRepository.save(mirror);
 
         return Result.SUCCESS;
-
     }
 }

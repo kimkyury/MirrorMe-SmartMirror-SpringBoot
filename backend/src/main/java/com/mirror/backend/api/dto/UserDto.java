@@ -2,9 +2,13 @@ package com.mirror.backend.api.dto;
 
 import com.mirror.backend.api.entity.Household;
 import com.mirror.backend.api.entity.User;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class UserDto {
@@ -30,7 +34,75 @@ public class UserDto {
     }
 
     @Getter
+    @Setter
+    @ToString
+    public static class UserInitInfoReq{
+
+        private String userName;
+        private List<Long> interestCodes;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class UserSavePasswordReq{
+
+        private String userEmail;
+        private String password;
+    }
+
+    @Getter
+    @ToString
+    public static class UserInfoRes{
+
+        private String userEmail;
+        private String userName;
+        private LocalDateTime createAt;
+        private LocalDateTime modifiedAt;
+        private Long householdId;
+
+        @Builder
+        public UserInfoRes(String userEmail, String userName, LocalDateTime createAt, LocalDateTime modifiedAt, Long householdId) {
+            this.userEmail = userEmail;
+            this.userName = userName;
+            this.createAt = createAt;
+            this.modifiedAt = modifiedAt;
+            this.householdId = householdId;
+        }
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class IotUsersReq{
+
+        private String mirrorId;
+    }
+
+    @Getter
+    @ToString
+    public static class IotUsersRes{
+        private Long userId;
+        private String userName;
+        private String userEmail;
+        private String profileImage;
+        private List<Alias> aliases;
+
+        @Builder
+        public IotUsersRes(Long userId, String userName, String userEmail, String profileImage, List<Alias> aliases) {
+            this.userId = userId;
+            this.userName = userName;
+            this.userEmail = userEmail;
+            this.profileImage = profileImage;
+            this.aliases = aliases;
+        }
+    }
+
+
+
+    @Getter
     public static class HouseHoldDto {
+
         Long householdId;
         String householdName;
         int gridNx;

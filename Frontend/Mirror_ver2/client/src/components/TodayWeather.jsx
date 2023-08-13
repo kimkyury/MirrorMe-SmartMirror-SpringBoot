@@ -152,6 +152,8 @@ function TodayWeather(props) {
                 <h5 className="chance-of-rain">강수 확률 : {weatherInfo.pop}%</h5>
               </div>
             </div>
+
+            {/* Accordion 처럼 넣어도 될 듯 */}
             <div className="weather-button">
               {showWeekWeather ? (
                 <WeekWeather />

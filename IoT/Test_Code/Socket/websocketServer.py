@@ -51,6 +51,11 @@ data = {
         "query": None
     }),
 
+    "gesture_exit": json.dumps({
+        "order": "EXIT",
+        "query": None
+    }),
+
     "say_mirror": json.dumps({
         "order": "TTS",
         "query": {

@@ -11,6 +11,7 @@ import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.RedisUserTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.Constants.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OAuthService {
 
     private final GoogleOAuth googleOAuth;
@@ -35,16 +37,7 @@ public class OAuthService {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    private ResponseLoginDto responseLogin;
-    private ResponseGoogleOAuthDto googleOAuthResponseDto;
-
-    @Autowired
-    public OAuthService(GoogleOAuth googleOAuth, RedisUserTokenRepository redisUserTokenRepository, UserService userService, UserRepository userRepository) {
-        this.googleOAuth = googleOAuth;
-        this.redisUserTokenRepository = redisUserTokenRepository;
-        this.userService = userService;
-        this.userRepository = userRepository;
-    }
+    private GoogleOAuthDto.GoogleOAuthRes googleOAuthResponseDto;
 
     public String getRequestUrlForAuthorizationCode() throws UnsupportedEncodingException {
         String endPoint = GoogleOAuth.REQUEST_AUTH_CODE_URL;
@@ -71,31 +64,17 @@ public class OAuthService {
         return requestUrl.toString();
     }
 
-    public void login(String authCode){
+    public void oAuthGoogleLogin(String authCode){
 
-        googleOAuthResponseDto = new ResponseGoogleOAuthDto();
+        googleOAuthResponseDto = new GoogleOAuthDto.GoogleOAuthRes();
 
-         int RE_LOGIN_USER = 0;
-         int INIT_LOGIN_USER = 1;
-
-         // 1. authCode를 Access/Refresh/Id Token으로 변환하여 지역변수로 저장
         saveGoogleTokens(authCode);
 
-        // 2. idToken을 이용하여 GoogleOAuth 로그인한 user의 googleEmail찾기
         String userEmail = getUserEmailFromIdToken();
-
-        // 3. 해당 Email이 MariaDB에 존재하는 값인지 확인
         boolean isExistUser = userService.isExistUser(userEmail);
+        if (!isExistUser) userService.createUser(userEmail);
 
-
-        // 존재유무에따라, Front에게 추가기입 창을 안내하라는 Signal(0, 1) 설정
-        if (!isExistUser){
-            // 최초의 유저 정보 생성
-            userService.createUser(userEmail);
-        }
-         // 4. userEmail을 Key으로 하여 Access/Refresh Token을 Redis에 저장
         saveUserTokenToRedis(userEmail);
-
     }
 
     public void saveUserTokenToRedis(String userEmail){
@@ -142,14 +121,11 @@ public class OAuthService {
         ObjectMapper mapper = new ObjectMapper();
 
         String endPoint = GoogleOAuth.REQUEST_TOKEN_URL;
-
         String clientId = googleOAuth.getClientId();
         String clientSecret = googleOAuth.getClientSecret();
         String code = authCode;
         String grantType = "authorization_code";
         String redirectUri = googleOAuth.getRedirectUri();
-
-        RestTemplate restTemplate = new RestTemplate();
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", clientId);
@@ -159,6 +135,7 @@ public class OAuthService {
         map.add("redirect_uri", redirectUri);
 
         // 응답받기
+        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity= null ;
         JsonNode returnNode = null;
         try {
@@ -168,26 +145,23 @@ public class OAuthService {
             e.printStackTrace();
         }
 
-        // AccessToken, expiresIn, refreshToken, scope, tokenType, idToken 확인
-         System.out.println("responseEntity: " + responseEntity.toString());
-
         googleOAuthResponseDto.setAccessToken(returnNode.get("access_token").asText());
         googleOAuthResponseDto.setRefreshToken(returnNode.get("refresh_token").asText());
         googleOAuthResponseDto.setIdToken(returnNode.get("id_token").asText());
     }
 
-    public ResponseTokensDto getTokensFromUserEmail(String userEmail) {
+    public TokensDto.TokensRes getTokensFromUserEmail(String userEmail) {
 
         RedisUserToken redisUserToken = redisUserTokenRepository.findById(userEmail).orElseThrow(
                 () -> new NoSuchElementException("해당 Email은 존재하지 않습니다.")
         );
 
-        ResponseTokensDto tokenDto = ResponseTokensDto.builder()
+        TokensDto.TokensRes tokensRes = TokensDto.TokensRes.builder()
                 .accessToken(redisUserToken.getAccessToken())
                 .refreshToken(redisUserToken.getRefreshToken())
                 .build();
 
-        return tokenDto;
+        return tokensRes;
     }
 
     public String getUserEmailFromAccessToken(String accessToken){
@@ -217,14 +191,14 @@ public class OAuthService {
         return userEmail;
     }
 
-    public int saveUserPassword(RequestPasswordDto requestPasswordDto) {
+    public int saveUserPassword(UserDto.UserSavePasswordReq userSavePasswordReq) {
 
-        String userEmail = requestPasswordDto.getUserEmail();
-        String password = requestPasswordDto.getPassword();
+        String userEmail = userSavePasswordReq.getUserEmail();
+        String password = userSavePasswordReq.getPassword();
+
         //TODO: password 암호화
 
         Optional<User> user = userRepository.findByUserEmail(userEmail);
-
         user.ifPresent( selectUser -> {
             selectUser.setPassword(password);
             userRepository.save(selectUser);
@@ -233,12 +207,12 @@ public class OAuthService {
         return Result.SUCCESS;
     }
 
-    public ResponseLoginDto confirmLogin(RequestLoginDto requestLoginDto) {
+    public LoginDto.LoginRes confirmLogin(LoginDto.LoginReq loginReq) {
 
-        String inputUserEmail = requestLoginDto.getUserEmail();
-        String inputPassword = requestLoginDto.getPassword();
+        String inputUserEmail = loginReq.getUserEmail();
+        String inputPassword = loginReq.getPassword();
         User dbUser = userRepository.findByUserEmail(inputUserEmail)
-                .orElseThrow( () -> new NoSuchElementException());
+                .orElseThrow( () -> new NoSuchElementException("해당 Email은 존재하지 않습니다. "));
 
         if ( !inputPassword.equals(dbUser.getPassword()))
             return null; // 유저는 존재하지만, 패스워드가 일치하지 않음
@@ -249,17 +223,16 @@ public class OAuthService {
         else
             isInitLoginUser = 0;
 
-
         RedisUserToken redisUserToken = redisUserTokenRepository.findById(inputUserEmail)
                 .orElseThrow( () -> new NoSuchElementException());
 
-       ResponseLoginDto responseLoginDto = ResponseLoginDto.builder()
+        LoginDto.LoginRes loginRes = LoginDto.LoginRes.builder()
                 .isInitLoginUser(isInitLoginUser)
                 .accessToken(redisUserToken.getAccessToken())
                 .refreshToken(redisUserToken.getRefreshToken())
                 .build();
 
-        return responseLoginDto;
+        return loginRes;
     }
 }
 
