@@ -65,6 +65,7 @@ public class TextSummaryCalendarScheduler {
             String answer = getSummeryCalendarFromGPT(eventInTodayList);
             saveRedisSummeryCalendar(answer, userEmail);
         }
+
         System.out.println("------------ Finish Scheduler ----------");
     }
 
@@ -88,8 +89,8 @@ public class TextSummaryCalendarScheduler {
             if (chk) sb.append(item.getSummary() +", ");
         }
         userEventList = sb.toString();
-        return userEventList;
 
+        return userEventList;
     }
 
     // 3. 해당 Calendar내역을 3줄 요약하도록 GPT한테 요청한다
@@ -106,8 +107,8 @@ public class TextSummaryCalendarScheduler {
         sb.append(" // " + eventInTodayList + " // ");
 
         String answer = chatGptUtil.createMessage(sb.toString());
-        return answer;
 
+        return answer;
     }
 
     public void saveRedisSummeryCalendar(String summeryText, String userEmail){
@@ -125,6 +126,4 @@ public class TextSummaryCalendarScheduler {
 
         textSummaryScheduleRepository.save(textSummarySchedule);
     }
-
-
 }
