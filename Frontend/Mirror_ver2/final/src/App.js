@@ -4,8 +4,9 @@ import { Button, Snackbar } from '@mui/material';
 
 import './App.css';
 
-import Snackbars from './components/SnackBars'
-import Modals from './components/Modals'
+import Snackbars from './components/SnackBars';
+import Modals from './components/Modals';
+import PresentCardList from './components/PresentCardList';
 
 const userEmail = 'test2@google.com'; // 사용자 이메일 추후 수정
 
@@ -130,6 +131,21 @@ function App() {
           ttsType={ttsType}
           userEmail={userEmail}
         />
+      </div>
+      <button onClick={toggleVisibility}>
+        {isVisible ? 'PresentCard 숨기기' : 'PresentCard 보이기'}
+      </button>
+      <div>
+        <CSSTransition
+          in={isVisible} // Control whether the transition is active
+          timeout={500} // Duration of the transition in milliseconds
+          classNames="present-card" // CSS class names for the transition states
+          unmountOnExit // Remove the component from the DOM when not in the 'in' state
+        >
+          <div>
+            <PresentCardList />
+          </div>
+        </CSSTransition>
       </div>
       <form className="socket">
         {/* 서버로 메시지를 보낼 텍스트 박스 */}
