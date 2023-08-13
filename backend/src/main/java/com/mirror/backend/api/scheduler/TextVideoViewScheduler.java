@@ -2,17 +2,16 @@ package com.mirror.backend.api.scheduler;
 
 
 import com.mirror.backend.api.dto.Event;
-import com.mirror.backend.api.entity.RedisSummeryCalendar;
-import com.mirror.backend.api.entity.RedisUserToken;
-import com.mirror.backend.api.repository.RedisSummeryCalendarRepository;
-import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
+import com.mirror.backend.api.entity.TextSummarySchedule;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
+import com.mirror.backend.api.repository.TextSummaryScheduleRepository;
 import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +21,10 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
-public class SummaryCalendarScheduler {
+public class TextVideoViewScheduler {
 
-    public final RedisUserTokenRepository redisUserTokenRepository;
-    public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
+    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    public final TextSummaryScheduleRepository textSummaryScheduleRepository;
 
     public final CalendarService calendarService;
     public final OAuthService oAuthService;
@@ -39,11 +38,11 @@ public class SummaryCalendarScheduler {
 
         System.out.println("------------Scheduler: Summery Calendar----------");
 
-        Iterable<RedisUserToken> redisUserTokenIterable= redisUserTokenRepository.findAll();
-        Iterator<RedisUserToken> iterator = redisUserTokenIterable.iterator();
+        Iterable<GoogleOAuthToken> googleOAuthToken= googleOAuthTokenRepository.findAll();
+        Iterator<GoogleOAuthToken> iterator = googleOAuthToken.iterator();
 
         while (iterator.hasNext()) {
-            RedisUserToken userTokenInfo = iterator.next();
+            GoogleOAuthToken userTokenInfo = iterator.next();
 
             String accessToken = userTokenInfo.getAccessToken();
             String refreshToken = userTokenInfo.getRefreshToken();
@@ -118,13 +117,13 @@ public class SummaryCalendarScheduler {
         sb.append(summeryText);
         sb.append(", 나머지는 App에서 확인해요!");
 
-        RedisSummeryCalendar summeryCalendar = RedisSummeryCalendar.builder()
+        TextSummarySchedule textSummarySchedule = TextSummarySchedule.builder()
                 .userEmail(userEmail)
-                .summeryCalendar(sb.toString())
+                .textSummarySchedule(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisSummeryCalendarRepository.save(summeryCalendar);
+        textSummaryScheduleRepository.save(textSummarySchedule);
     }
 
 
