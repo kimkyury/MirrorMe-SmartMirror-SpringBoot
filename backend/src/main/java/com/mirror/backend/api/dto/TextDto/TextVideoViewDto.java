@@ -6,15 +6,15 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-
 @Getter
 @NoArgsConstructor
-public class ResponseChatBotDto implements Serializable {
+public class TextVideoViewDto implements Serializable {
 
-    private String result;
+    private final String textCode = "0401";
+    private String text;
 
     @Builder
-    public ResponseChatBotDto(String result) {
-        this.result = result;
+    public TextVideoViewDto(String text) {
+        this.text = text;
     }
 }

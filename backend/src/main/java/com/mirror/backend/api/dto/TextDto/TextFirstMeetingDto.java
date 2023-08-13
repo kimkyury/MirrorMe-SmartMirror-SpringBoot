@@ -1,4 +1,4 @@
-package com.mirror.backend.api.dto.chatbotDtos;
+package com.mirror.backend.api.dto.TextDto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-public class ResponseFirstMirrorTextDto implements Serializable {
+public class TextFirstMeetingDto implements Serializable {
 
     private String textCode;
     private String textContent;
 
     @Builder
-    public ResponseFirstMirrorTextDto(String textCode, String textContent) {
+    public TextFirstMeetingDto(String textCode, String textContent) {
         this.textCode = textCode;
         this.textContent = textContent;
     }
