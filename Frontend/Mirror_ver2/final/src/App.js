@@ -8,8 +8,9 @@ import Logo from './components/Logo';
 import Snackbars from './components/SnackBars';
 import Modals from './components/Modals';
 import PresentCardList from './components/PresentCardList';
+import GestureHelp from './components/GestureHelp';
+import CommandHelp from './components/CommandHelp';
 
-const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -90,18 +91,18 @@ function App() {
       setSnackbarsCommandMessage(data.order);
       setModalsCommandMessage(data.order);
       setMessageTextArea(prev => prev + "Receive From Server => " + snackbarsCommandMessage + "\n");
-      if (data.order === 'TTS') {
+      if (data.order === 'TTS') {  // TTS
         setTts(data.query.content);
         setTtsType(data.query.type);
-        console.log(data.query.email);
-        setUserEmail(data.query.email)
         setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
-      // } else if (data.order === 'USERINFO') { // userEmail 받아오기
-      //   setUserEmail(data.query.email);
-      } else if (data.order === 'YOUTUBE') {
+      } else if (data.order === 'USERINFO') { // userEmail 받아오기
+        setUserEmail(data.query.email);
+      } else if (data.order === 'YOUTUBE') {  // 유튜브
         setYoutubeKey(data.query.key);
       }
     };
+
+    console.log(userEmail);
 
     return () => {
       socket.close();
@@ -122,9 +123,8 @@ function App() {
       <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js" integrity="sha384-Rn9HT+yy0cAmzD7h4p9BaaVG6g2PfE8ii+05BuYp9gRBy2Cjgr99WQQpkKd3m9L/" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/system@5.4.3/dist/mui.min.js" integrity="sha384-oFyjBA1gBAq3z2f3Q2ikzGq/KJQ2BlLJpLuH6lg6b4RtrR+vjp5b3HYJoLk6MBo2" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.3/dist/mui.min.js" integrity="sha384-3nQFj60gZkVx0nq0HP3zqv4mAP+q0/w7foV7mqHn6g+LrTADwG8zBks6XQfnwTo7" crossorigin="anonymous"></script>
-      {userEmail ? (
-        <Logo/>
-        ) :(
+      {!userEmail ? 
+        <Logo/> :
         <div>
           <div className="time">{formattedTimeWithAmPm}</div>
           <div className="btn-container">
@@ -154,6 +154,10 @@ function App() {
               </div>
             </CSSTransition>
           </div>
+          <div>
+            <CommandHelp />
+            <GestureHelp />
+          </div>
           <form className="socket">
             <input
               id="textMessage"
@@ -173,7 +177,7 @@ function App() {
             readOnly
           ></textarea>
         </div>
-        )}
+      }
     </div>
   );
 }

@@ -25,7 +25,7 @@ function Snackbars(props) {
   // const [userRefreshToken, getUserRefreshToken] = useState('');
 
   const commandMessage = props.commandMessage;
-  // 목록 : "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT", "TTS"
+  // 목록 : "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT","EXIT", "TTS"
   const tts = props.tts;
   const ttsType = props.ttsType;
   const userEmail = props.userEmail;
@@ -136,7 +136,9 @@ function Snackbars(props) {
             open={openVideoMessageSnackbar}
             autoHideDuration={10000}
             onClose={handleSnackbarClose}
-            message={<VideoMessage />}
+            message={<VideoMessage 
+                      userEmail={userEmail}
+                      />}
             style={{ marginTop: '200px' }}
           />
         </CSSTransition>
