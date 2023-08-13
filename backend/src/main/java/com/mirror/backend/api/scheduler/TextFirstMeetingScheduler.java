@@ -27,8 +27,8 @@ public class TextFirstMeetingScheduler {
     public final TokenUtil tokenUtil;
     public final OAuthService oAuthService;
 
-//    @Scheduled(cron = "0 * * * * ?") // 개발용
-    @Scheduled(cron = "5 0 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
+    @Scheduled(cron = "0 * * * * ?") // 개발용
+//    @Scheduled(cron = "0 5 0 * * ?") // 배용, 매일 자정 5분마다 실행 ( 이전 것들이 다 실행되고 찾을 수 있게)
     public void fetchRedisData() {
         System.out.println("------------Scheduler: First Text----------");
         // redis내의 유저 Token을 가져온다
