@@ -120,11 +120,11 @@ public class IotService {
 
     public ResponseFamilyBirthdayScheduleDto getBirthdayUserText(String userEmail) {
 
-        RedisFamilyBirthday redisFamilyBirthday = redisFamilyBirthdayRepository.findById(userEmail)
+        TextFamilyBirthday textFamilyBirthday = redisFamilyBirthdayRepository.findById(userEmail)
                 .orElseThrow( () -> new NoSuchElementException("생성된 생일관련 TEXT가 없습니다. "));
 
         ResponseFamilyBirthdayScheduleDto dto = ResponseFamilyBirthdayScheduleDto.builder()
-                .familyBirthdayText(redisFamilyBirthday.getFamilyBirthday())
+                .familyBirthdayText(textFamilyBirthday.getFamilyBirthday())
                 .build();
 
         return dto;
@@ -132,21 +132,21 @@ public class IotService {
 
     public ResponseFirstMirrorTextDto getFirstMirrorTextDto(String userEmail){
 
-        RedisMirrorFirstText redisMirrorFirstText = redisFirstMirrorTextRepository
+        TextFirstMeeting textFirstMeeting = redisFirstMirrorTextRepository
                 .findById(userEmail).orElseThrow(
                         () -> new NoSuchElementException("해당 유저는 최조Text를 갖고 있지 않습니다. ")
                 );
 
         // 이미 사용된 Text일 경우
-        if ( redisMirrorFirstText.getIsUsed().equals("1") )
+        if ( textFirstMeeting.getIsUsed().equals("1") )
             return null;
 
-        redisMirrorFirstText.setIsUsed("1");
-        redisFirstMirrorTextRepository.save(redisMirrorFirstText);
+        textFirstMeeting.setIsUsed("1");
+        redisFirstMirrorTextRepository.save(textFirstMeeting);
 
         ResponseFirstMirrorTextDto firstMirrorTextDto = ResponseFirstMirrorTextDto.builder()
-                .textCode(redisMirrorFirstText.getTextCode())
-                .textContent(redisMirrorFirstText.getTextContent())
+                .textCode(textFirstMeeting.getTextCode())
+                .textContent(textFirstMeeting.getTextContent())
                 .build();
 
         return firstMirrorTextDto;

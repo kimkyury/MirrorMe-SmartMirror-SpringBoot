@@ -1,24 +1,15 @@
 package com.mirror.backend.api.scheduler;
 
 
-import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
-import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
-import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import springfox.documentation.service.OAuth;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -61,14 +52,14 @@ public class MirrorFirstTextScheduler {
             String today = EtcUtil.getTodayYYYYMMDD();
 
             // 오늘 기준의 날씨 기상정보에서 비가 오는지 확인한다
-            RedisIsRainy redisIsRainy = redisIsRainyRepository.findById(String.valueOf(userHouseholdId)).get();
-            if (redisIsRainy.getIsRainyCode().equals(String.valueOf(1))){
-                saveRedisFirstText("0101", redisIsRainy.getIsRainyText(), userEmail);
+            TextCautionRainy textCautionRainy = redisIsRainyRepository.findById(String.valueOf(userHouseholdId)).get();
+            if (textCautionRainy.getIsRainyCode().equals(String.valueOf(1))){
+                saveRedisFirstText("0101", textCautionRainy.getIsRainyText(), userEmail);
                 continue;
             }
 
             // 해당 유저의 친인척의 생일 정보가 있는지 확인한다
-            Optional<RedisFamilyBirthday> redisFamilyBirthdayOptional = redisFamilyBirthdayRepository.findById(userEmail);
+            Optional<TextFamilyBirthday> redisFamilyBirthdayOptional = redisFamilyBirthdayRepository.findById(userEmail);
             if ( redisFamilyBirthdayOptional.isPresent() && redisFamilyBirthdayOptional.get().getTargetDay().equals(today)){
                 saveRedisFirstText("0202", redisFamilyBirthdayOptional.get().getFamilyBirthday(), userEmail);
                 continue;
@@ -85,7 +76,7 @@ public class MirrorFirstTextScheduler {
     }
 
     private void saveRedisFirstText(String textCode, String isRainyText, String  userEmail) {
-        RedisMirrorFirstText redisFirstMirrorText = RedisMirrorFirstText.builder()
+        TextFirstMeeting redisFirstMirrorText = TextFirstMeeting.builder()
                 .userEmail(userEmail)
                 .textContent(isRainyText)
                 .textCode(textCode)

@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @Setter
 @RedisHash("familyBirth")
-public class RedisFamilyBirthday {
+public class TextFamilyBirthday {
 
     @Id
     private String userEmail;
@@ -17,7 +17,7 @@ public class RedisFamilyBirthday {
     private String targetDay;
 
     @Builder
-    public RedisFamilyBirthday(String userEmail, String familyBirthday, String targetDay) {
+    public TextFamilyBirthday(String userEmail, String familyBirthday, String targetDay) {
         this.userEmail = userEmail;
         this.familyBirthday = familyBirthday;
         this.targetDay = targetDay;

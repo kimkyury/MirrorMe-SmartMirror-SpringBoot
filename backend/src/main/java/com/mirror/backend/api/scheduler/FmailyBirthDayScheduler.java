@@ -10,16 +10,13 @@ import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -161,13 +158,13 @@ public class FmailyBirthDayScheduler {
                 .append("의 생일이네요. ")
                 .append(recommendPresent);
 
-        RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
+        TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
                 .familyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(redisFamilyBirthday);
+        redisFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 
     public void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
@@ -178,12 +175,12 @@ public class FmailyBirthDayScheduler {
                 .append("의 생일이네요. ")
                 .append(recommendPresent);
 
-        RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
+        TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
                 .familyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(redisFamilyBirthday);
+        redisFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 }

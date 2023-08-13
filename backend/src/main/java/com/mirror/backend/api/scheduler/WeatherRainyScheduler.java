@@ -1,45 +1,23 @@
 package com.mirror.backend.api.scheduler;
 
 
-import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.dto.ShortTermForecast;
-import com.mirror.backend.api.dto.UltraShortTermForecast;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
-import com.mirror.backend.api.service.CalendarService;
-import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.impl.WeatherServiceImpl;
-import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.mirror.backend.common.utils.ApiUtils.success;
 
 @Component
 @RequiredArgsConstructor
@@ -139,23 +117,23 @@ public class WeatherRainyScheduler {
 
     public void saveRedisIsRainy(boolean isRainy, String householdId){
 
-        RedisIsRainy redisIsRainy = null;
+        TextCautionRainy textCautionRainy = null;
 
         if (isRainy){
-            redisIsRainy = RedisIsRainy.builder()
+            textCautionRainy = TextCautionRainy.builder()
                     .householdId(householdId)
                     .isRainyCode("1")
                     .isRainyText("오늘은 비가 올텐데, 나가신다면 우산 가져가세요!")
                     .build();
         }else{
-            redisIsRainy = RedisIsRainy.builder()
+            textCautionRainy = TextCautionRainy.builder()
                     .householdId(String.valueOf(householdId))
                     .isRainyCode("0")
                     .isRainyText("오늘은 비가 안 와요!")
                     .build();
         }
 
-        redisIsRainyRepository.save(redisIsRainy);
+        redisIsRainyRepository.save(textCautionRainy);
     }
 
 
