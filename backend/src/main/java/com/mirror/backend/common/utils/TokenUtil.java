@@ -3,9 +3,9 @@ package com.mirror.backend.common.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
 import com.mirror.backend.api.info.GoogleOAuth;
-import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,13 +25,13 @@ import java.util.Base64;
 public class TokenUtil {
 
 
-    private RedisUserTokenRepository redisUserTokenRepository;
+    private GoogleOAuthTokenRepository googleOAuthTokenRepository;
     private UserRepository userRepository;
     private GoogleOAuth googleOAuth;
 
 
-    public TokenUtil(RedisUserTokenRepository redisUserTokenRepository, UserRepository userRepository, GoogleOAuth googleOAuth) {
-        this.redisUserTokenRepository = redisUserTokenRepository;
+    public TokenUtil(GoogleOAuthTokenRepository googleOAuthTokenRepository, UserRepository userRepository, GoogleOAuth googleOAuth) {
+        this.googleOAuthTokenRepository = googleOAuthTokenRepository;
         this.userRepository = userRepository;
         this.googleOAuth = googleOAuth;
     }
@@ -152,10 +152,10 @@ public class TokenUtil {
     }
 
     public  void saveTokensToRedis(String userEmail, String reIssueAccessToken, String refreshToken){
-        RedisUserToken reIssueToken = new RedisUserToken(userEmail,
+        GoogleOAuthToken reIssueToken = new GoogleOAuthToken(userEmail,
                 reIssueAccessToken,
                 refreshToken);
 
-        redisUserTokenRepository.save(reIssueToken);
+        googleOAuthTokenRepository.save(reIssueToken);
     }
 }

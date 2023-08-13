@@ -10,24 +10,20 @@ import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class FmailyBirthDayScheduler {
+public class TextFamilyBirthdayScheduler {
 
-    public final RedisUserTokenRepository redisUserTokenRepository;
-    public final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    public final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
+    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    public final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
     public final ConnectUserRepository connectUserRepository;
     public final UserRepository userRepository;
 
@@ -38,7 +34,7 @@ public class FmailyBirthDayScheduler {
     public final TokenUtil tokenUtil;
 
 //    @Scheduled(cron = "0 * * * * ?")   // 개발용, 매분 0초마다 실행
-    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정마다 실행
+    @Scheduled(cron = "0 1 0 * * ?") // 배포용, 매일 자정 1분 마다 실행
     public void fetchRedisData() {
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 
@@ -90,7 +86,7 @@ public class FmailyBirthDayScheduler {
 
     private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {
         // 1. User의 Token 찾아오기
-        RedisUserToken birthUserToken = redisUserTokenRepository.findById(todayBirthUser.getUserEmail()).get();
+        GoogleOAuthToken birthUserToken = googleOAuthTokenRepository.findById(todayBirthUser.getUserEmail()).get();
         String accessToken = birthUserToken.getAccessToken();
         String refreshToken = birthUserToken.getRefreshToken();
 
@@ -147,7 +143,7 @@ public class FmailyBirthDayScheduler {
         sb.append("다음과 같은 일정들이 있습니다. 이런 사람은 어떤 선물이 필요할까요?");
         sb.append(" { " + birthUserEventInFuture + " } ");
         sb.append("최대한 간략하게 한 가지 선물만 추천해주세요. 또한 이유도 설명해주세요. (대답이 한글 기준 20자가 넘지않도록) ");
-        sb.append("대답 형식은 다음과 같이 부탁드립니다. '{선물}을 준비해보시는게 어떠세요? {이유가 되는 상대의 일정}이 있거든요!");
+        sb.append("대답 형식은 다음과 같이 부탁드립니다. '(선물)을 준비해보시는게 어떠세요? (이유가 되는 상대의 일정)이 있거든요!");
         String answer = chatGptUtil.createMessage(sb.toString());
 
         return answer;
@@ -161,13 +157,13 @@ public class FmailyBirthDayScheduler {
                 .append("의 생일이네요. ")
                 .append(recommendPresent);
 
-        RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
+        TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
-                .familyBirthday(sb.toString())
+                .textFamilyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(redisFamilyBirthday);
+        textFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 
     public void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
@@ -178,12 +174,12 @@ public class FmailyBirthDayScheduler {
                 .append("의 생일이네요. ")
                 .append(recommendPresent);
 
-        RedisFamilyBirthday redisFamilyBirthday = RedisFamilyBirthday.builder()
+        TextFamilyBirthday textFamilyBirthday = TextFamilyBirthday.builder()
                 .userEmail(userEmail)
-                .familyBirthday(sb.toString())
+                .textFamilyBirthday(sb.toString())
                 .targetDay(EtcUtil.getTodayYYYYMMDD())
                 .build();
 
-        redisFamilyBirthdayRepository.save(redisFamilyBirthday);
+        textFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 }
