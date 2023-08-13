@@ -5,19 +5,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "connect_users")
 @NoArgsConstructor
-public class ConnectUser {
+public class ConnectUser  {
 
     @EmbeddedId
     private ConnectUserKey id;
-    private String connectUserAlias;
 
     @ManyToOne
     @MapsId("userId")  // ConnectUserKey의 userId 필드와 매핑
@@ -29,16 +31,21 @@ public class ConnectUser {
     @JoinColumn(name = "connectUserId")  // 실제 DB 테이블의 컬럼 이름
     private User connectUser;
 
+    private String connectUserAlias;
+
     @Builder
-    public ConnectUser(ConnectUserKey id, String connectUserAlias) {
+    public ConnectUser(ConnectUserKey id, User user, User connectUser, String connectUserAlias) {
         this.id = id;
+        this.user = user;
+        this.connectUser = connectUser;
         this.connectUserAlias = connectUserAlias;
     }
 
     @Override
     public String toString() {
         return "ConnectUser{" +
-                "id=" + id +
+                "userId=" + id.getUserId() +
+                ", connectUserId='" + id.getConnectUserId() + '\'' +
                 ", userAlias='" + connectUserAlias + '\'' +
                 '}';
     }

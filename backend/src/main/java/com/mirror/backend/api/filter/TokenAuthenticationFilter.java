@@ -2,10 +2,10 @@ package com.mirror.backend.api.filter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.info.GoogleOAuth;
-import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Component
 public class TokenAuthenticationFilter implements Filter {
 
-    private RedisUserTokenRepository redisUserTokenRepository;
+    private GoogleOAuthTokenRepository googleOAuthTokenRepository;
     private UserRepository userRepository;
     private GoogleOAuth googleOAuth;
 
@@ -41,7 +41,7 @@ public class TokenAuthenticationFilter implements Filter {
         ServletContext servletContext = filterConfig.getServletContext();
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 
-        redisUserTokenRepository = webApplicationContext.getBean(RedisUserTokenRepository.class);
+        googleOAuthTokenRepository = webApplicationContext.getBean(GoogleOAuthTokenRepository.class);
         googleOAuth = webApplicationContext.getBean(GoogleOAuth.class);
         userRepository = webApplicationContext.getBean(UserRepository.class);
     }
@@ -209,11 +209,11 @@ public class TokenAuthenticationFilter implements Filter {
     private void saveAccessTokenToRedis( String userEmail, String accessToken ,String refreshToken){
         String key =  userEmail;
 
-        RedisUserToken send = new RedisUserToken(key,
+        GoogleOAuthToken send = new GoogleOAuthToken(key,
                 accessToken,
                 refreshToken);
 
-        redisUserTokenRepository.save(send);
+        googleOAuthTokenRepository.save(send);
     }
 
 

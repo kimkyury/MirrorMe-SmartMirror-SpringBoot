@@ -164,43 +164,47 @@ function ModalBottons(props) {
       {/* SendMessage Modal */}
       {isSendMessageModalOpen && (
         <div className="send">
-          <div className="send-header">
-            <h2>
-              {isMessageSent
-                ? 'ㅇㅇ님께 영상 메세지를 전송하였습니다.'
-                : 'ㅇㅇ님께 보내는 영상메세지'}
-            </h2> {/* 메세지 수신자 수정 필요 */}
-            {readyTime === 0 && (
-              <div className='rec-icon'>
-                <div className="rec-circle"></div>
-                <p className="rec-text">REC</p>
+          {isMessageSent ? (
+            <div className="sendAlert">
+              <h2 className="sendAlertText">ㅇㅇ님께 영상 메세지를 전송하였습니다.</h2>
+            </div>
+          ) : (
+            <div>
+              <div className="send-header">
+                <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
+                {readyTime === 0 && (
+                  <div className='rec-icon'>
+                    <div className="rec-circle"></div>
+                    <p className="rec-text">REC</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="send-body">
-            {readyTime > 0 ? (
-              <div className="ready-times">
-                <div>
-                  <div className="loader"></div>
-                  <h2 className="ready">{readyTime}</h2>
-                </div>
-                <p>테두리 안에서 메세지를 녹화하세요</p>
+              <div className="send-body">
+                {readyTime > 0 ? (
+                  <div className="ready-times">
+                    <div>
+                      <div className="loader"></div>
+                      <h2 className="ready">{readyTime}</h2>
+                    </div>
+                    <p>테두리 안에서 메세지를 녹화하세요</p>
+                  </div>
+                ) : (
+                  <div>
+                    {/* <h2>남은 녹화시간</h2> */}
+                    <div className="h1-container">
+                      {/* <h1>{recordingTime}</h1> */}
+                    </div>
+                    <LinearProgress // Progress bar
+                      variant="determinate"
+                      value={((15 - recordingTime) / 15) * 100}
+                      style={{ backgroundColor: 'grey', borderRadius: '4px' }}
+                      color="warning" // 색상 수정 예정
+                    />
+                  </div>
+                )}
               </div>
-            ) : (
-              <div>
-                {/* <h2>남은 녹화시간</h2> */}
-                <div className="h1-container">
-                  {/* <h1>{recordingTime}</h1> */}
-                </div>
-                <LinearProgress // Progress bar
-                  variant="determinate"
-                  value={((15 - recordingTime) / 15) * 100}
-                  style={{ backgroundColor: 'grey', borderRadius: '4px' }}
-                  color="warning" // 색상 수정 예정
-                />
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </div>
