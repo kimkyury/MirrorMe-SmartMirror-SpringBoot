@@ -10,6 +10,8 @@ import Tasks from './Tasks';
 import Schedules from './Schedules';
 import Notice from './Notice';
 
+import '../css/Snackbars.css';
+
 function Snackbars(props) {
   const [openVideoMessageSnackbar, setOpenVideoMessageSnackbar] = useState(false);
   const [openWeatherSnackbar, setOpenWeatherSnackbar] = useState(false);
@@ -99,7 +101,7 @@ function Snackbars(props) {
       <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button>
       
       {/* Notice Snackbar */}
-      <div>
+      <div className="notice">
         <CSSTransition
           in={openNoticeSnackbar}
           timeout={300}
@@ -120,7 +122,7 @@ function Snackbars(props) {
         </CSSTransition>
       </div>
 
-      <div>
+      <div className="snackbar">
         {/* VideoMessage Snackbar */}
         <CSSTransition
           in={openVideoMessageSnackbar}
