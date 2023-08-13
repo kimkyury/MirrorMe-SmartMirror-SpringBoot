@@ -29,8 +29,8 @@ public class TextFirstMeetingScheduler {
     public final TokenUtil tokenUtil;
     public final OAuthService oAuthService;
 
-    @Scheduled(cron = "0 * * * * ?") // Develop
-//    @Scheduled(cron = "0 7 0 * * ?") // deploy
+//    @Scheduled(cron = "0 * * * * ?") // Develop
+    @Scheduled(cron = "0 7 0 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: First Text----------");
