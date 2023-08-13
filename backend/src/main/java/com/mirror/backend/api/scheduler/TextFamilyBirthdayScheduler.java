@@ -33,8 +33,8 @@ public class TextFamilyBirthdayScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // 개발용
-    @Scheduled(cron = "0 1 0 * * ?") // 배포용
+//    @Scheduled(cron = "0 * * * * ?")   // Develop
+    @Scheduled(cron = "0 3 0 * * ?") // deploy
     public void fetchRedisData() {
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 

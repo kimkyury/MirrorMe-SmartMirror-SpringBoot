@@ -31,8 +31,8 @@ public class TextCautionRainyScheduler {
     public final WeatherServiceImpl weatherService;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "40 * * * * ?")   // 개발용
-    @Scheduled(cron = "0 0 0/3 * * ?") // 배포용
+//    @Scheduled(cron = "40 * * * * ?")   // Develop
+    @Scheduled(cron = "0 0 0/3 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Warning RainyWeather ----------");
