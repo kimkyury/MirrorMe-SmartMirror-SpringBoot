@@ -1,16 +1,21 @@
-package com.mirror.backend.api.scheduler;
+package com.mirror.backend.api.scheduler.textScheduler;
 
 
 import com.mirror.backend.api.dto.Event;
-import com.mirror.backend.api.entity.*;
-import com.mirror.backend.api.repository.*;
+import com.mirror.backend.api.entity.ConnectUser;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
+import com.mirror.backend.api.entity.TextFamilyBirthday;
+import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.repository.ConnectUserRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
+import com.mirror.backend.api.repository.TextFamilyBirthdayRepository;
+import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.api.service.CalendarService;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -20,7 +25,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TextFamilyBirthdayScheduler {
+public class TextFamilyBirthdayTextScheduler implements TextSchedulerHandler {
 
     public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
     public final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
@@ -33,9 +38,15 @@ public class TextFamilyBirthdayScheduler {
     public final ChatGptUtil chatGptUtil;
     public final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // Develop
-    @Scheduled(cron = "0 3 0 * * ?") // deploy
-    public void fetchRedisData() {
+    private TextSchedulerHandler nextHandler;
+
+    @Override
+    public void setNextHandler(TextSchedulerHandler next){
+        this.nextHandler = next;
+    }
+
+    @Override
+    public void execute(){
         System.out.println("------------Scheduler: FamilyBirthDay Recommend Present----------");
 
         // Today + (1 ~ 7) later Birthday
@@ -46,8 +57,6 @@ public class TextFamilyBirthdayScheduler {
             List<User> birthdayUserList = userRepository.findByBirthday(birthday);
             upcomingBirthdayUserAllList.addAll(birthdayUserList);
         }
-
-        System.out.println(upcomingBirthdayUserAllList);
 
         for (User birthdayUser : upcomingBirthdayUserAllList) {
             String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(birthdayUser);
@@ -63,7 +72,6 @@ public class TextFamilyBirthdayScheduler {
 
         // Today Birthday
         List<User> todayBirthUserList = userRepository.findByBirthday(EtcUtil.getTodayMMDD());
-        System.out.println(todayBirthUserList);
         if (todayBirthUserList.size() != 0) {
             for (User todayBirthUser : todayBirthUserList) {
                 String birthdayUserAllUpcomingEvents = getBirthDayUserUpcomingEventsProcedure(todayBirthUser);
@@ -81,15 +89,10 @@ public class TextFamilyBirthdayScheduler {
     }
 
     private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {
-        // 1. User의 Token 찾아오기
+
         GoogleOAuthToken birthUserToken = googleOAuthTokenRepository.findById(todayBirthUser.getUserEmail()).get();
-        String accessToken = birthUserToken.getAccessToken();
-        String refreshToken = birthUserToken.getRefreshToken();
+        String accessToken = TextSchedulerHandler.getUserStringUseOAuthToken(birthUserToken, tokenUtil);
 
-        // 2. AccessToken 유효한지 확인하여 재발급받기
-        accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
-
-        // 3. User의 앞으로의 6개월 이내 이벤트 갖고오기
         String userAllUpcomingEvents = getUserAllUpcomingEventsWithinSixMonth(accessToken);
 
         return userAllUpcomingEvents;
@@ -109,7 +112,7 @@ public class TextFamilyBirthdayScheduler {
         return birthdays;
     }
 
-    public String getUserAllUpcomingEventsWithinSixMonth(String accessToken){
+    private String getUserAllUpcomingEventsWithinSixMonth(String accessToken){
 
         Event event = calendarService.getMyCalendar(accessToken, "primary");
 
@@ -136,7 +139,7 @@ public class TextFamilyBirthdayScheduler {
     }
 
     // 3. 해당 Calendar내역을 3줄 요약하도록 GPT한테 요청한다
-    public String  getRecommendPresentFromGPT(String birthUserEventInFuture){
+    private String  getRecommendPresentFromGPT(String birthUserEventInFuture){
 
         StringBuilder sb = new StringBuilder();
         sb.append("다음과 같은 일정들이 있습니다. 이런 사람은 어떤 선물이 필요할까요?");
@@ -148,7 +151,7 @@ public class TextFamilyBirthdayScheduler {
         return answer;
     }
 
-    public void saveRedisFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName){
+    private void saveRedisFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName){
 
         StringBuilder sb = new StringBuilder();
         sb.append("안녕하세요!, 오늘은 " )
@@ -165,7 +168,7 @@ public class TextFamilyBirthdayScheduler {
         textFamilyBirthdayRepository.save(textFamilyBirthday);
     }
 
-    public void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
+    private void saveRedisUpcomingFamilyBirthday(String recommendPresent, String userEmail, String birthDayUserName) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("안녕하세요!, 곧 " )

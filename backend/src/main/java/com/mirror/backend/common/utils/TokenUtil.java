@@ -7,6 +7,7 @@ import com.mirror.backend.api.entity.GoogleOAuthToken;
 import com.mirror.backend.api.info.GoogleOAuth;
 import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,19 +23,11 @@ import java.util.Base64;
 
 
 @Component
+@RequiredArgsConstructor
 public class TokenUtil {
 
-
-    private GoogleOAuthTokenRepository googleOAuthTokenRepository;
-    private UserRepository userRepository;
-    private GoogleOAuth googleOAuth;
-
-
-    public TokenUtil(GoogleOAuthTokenRepository googleOAuthTokenRepository, UserRepository userRepository, GoogleOAuth googleOAuth) {
-        this.googleOAuthTokenRepository = googleOAuthTokenRepository;
-        this.userRepository = userRepository;
-        this.googleOAuth = googleOAuth;
-    }
+    private final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    private final GoogleOAuth googleOAuth;
 
     public  String confirmAccessToken(String accessToken, String refreshToken)  {
 
@@ -43,12 +36,11 @@ public class TokenUtil {
         googleRequestURL.append("https://www.googleapis.com/oauth2/v1/tokeninfo")
                 .append("?access_token=").append(accessToken);
         ObjectMapper mapper = new ObjectMapper();
-        String userEmail = "";
 
         try{
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(googleRequestURL.toString(), String.class);
             try {
-                JsonNode returnNode = mapper.readTree(responseEntity.getBody());
+               mapper.readTree(responseEntity.getBody());
             }catch(IOException e){
                 e.fillInStackTrace();
             }
@@ -61,7 +53,7 @@ public class TokenUtil {
                 String reIssueAccessToken = tokens[0];
                 String idToken = tokens[1];
 
-                userEmail = getUserEmailFromIdToken(idToken);
+                String userEmail = getUserEmailFromIdToken(idToken);
                 saveTokensToRedis(userEmail, reIssueAccessToken, refreshToken);
                 return reIssueAccessToken;
             }
