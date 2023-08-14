@@ -12,11 +12,8 @@ import PresentCardList from './components/PresentCardList';
 import GestureHelp from './components/GestureHelp';
 import CommandHelp from './components/CommandHelp';
 
-<<<<<<< HEAD
 // const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
 const userEmail = '';
-=======
->>>>>>> f3fe6c6df106f6dee998f03efe712a7ad206fd13
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -155,14 +152,8 @@ function App() {
       <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js" integrity="sha384-Rn9HT+yy0cAmzD7h4p9BaaVG6g2PfE8ii+05BuYp9gRBy2Cjgr99WQQpkKd3m9L/" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/system@5.4.3/dist/mui.min.js" integrity="sha384-oFyjBA1gBAq3z2f3Q2ikzGq/KJQ2BlLJpLuH6lg6b4RtrR+vjp5b3HYJoLk6MBo2" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.3/dist/mui.min.js" integrity="sha384-3nQFj60gZkVx0nq0HP3zqv4mAP+q0/w7foV7mqHn6g+LrTADwG8zBks6XQfnwTo7" crossorigin="anonymous"></script>
-<<<<<<< HEAD
-      {userEmail ? (
-      <Logo/>
-        ) :(
-=======
       {!userEmail ? 
         <Logo/> :
->>>>>>> f3fe6c6df106f6dee998f03efe712a7ad206fd13
         <div>
           <div className="time">{formattedTimeWithAmPm}</div>
           <div className="btn-container">
