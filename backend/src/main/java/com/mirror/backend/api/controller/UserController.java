@@ -134,6 +134,7 @@ public class UserController {
 
         Long userId = (Long) request.getAttribute("user_id");
         List<ConnectUserDto.ConnectUserRes> connectUsers = userService.getConnectUsers(userId);
+        System.out.println(connectUsers);
 
         if ( connectUsers.size() == 0){
             success("해당 유저는 저장된 connectMember가 없습니다.");
