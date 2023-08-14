@@ -6,6 +6,7 @@ from rest_framework import status
 import json
 import os
 import numpy as np
+import requests
 import cv2
 
 from tensorflow.python.client import device_lib
@@ -26,9 +27,9 @@ model = models.load_model(model_path)
 @api_view(['POST'])
 def findEmotion(request):
     data = json.loads(request.body)
-    data = data['emotionList']
+    emotion_data = data['emotionList']
     emotion_list = [0,0,0,0,0]
-    for input_image in data:
+    for input_image in emotion_data:
         try:
             input_batch = np.expand_dims(np.array(input_image), axis=0)
             predictions = model.predict(input_batch)
@@ -50,5 +51,16 @@ def findEmotion(request):
         except:
             emotion_list[0] += 1
     print(emotion_list)
-        
+
+    data['emotionList'] = emotion_list
+
+    headers = {"Content-Type": "application/json"}
+
+    # 보내고자 하는 Data를 JSON 형식으로 변환
+    data = json.dumps(data)
+
+    # JSON 데이터를 포함하여 POST 요청을 보냄
+    print(data)
+    response = requests.post("http://i9e101.p.ssafy.io:8080/api/iot", headers=headers, data=data)
+    print(response)
     return Response({"result": "success"}, status=status.HTTP_200_OK)
