@@ -1,12 +1,12 @@
 package com.mirror.backend.api.service;
 
 
-import com.mirror.backend.api.dto.chatbotDtos.RequestChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseChatBotDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
-import com.mirror.backend.api.entity.RedisSummeryCalendar;
+import com.mirror.backend.api.dto.TextDto.RequestChatBotDto;
+import com.mirror.backend.api.dto.TextDto.ResponseChatBotDto;
+import com.mirror.backend.api.dto.TextDto.TextSummaryScheduleDto;
+import com.mirror.backend.api.entity.TextSummarySchedule;
 import com.mirror.backend.api.info.ChatGPT;
-import com.mirror.backend.api.repository.RedisSummeryCalendarRepository;
+import com.mirror.backend.api.repository.TextSummaryScheduleRepository;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -19,11 +19,11 @@ import java.util.*;
 @Service
 public class ChatBotService {
     private final ChatGPT chatGPT;
-    private final RedisSummeryCalendarRepository redisSummeryCalendarrepository;
+    private final TextSummaryScheduleRepository redisSummeryCalendarrepository;
     private OpenAiService openAiService;
 
     @Autowired
-    public ChatBotService(ChatGPT chatGPT, RedisSummeryCalendarRepository redisSummeryCalendarrepository) {
+    public ChatBotService(ChatGPT chatGPT, TextSummaryScheduleRepository redisSummeryCalendarrepository) {
         this.chatGPT = chatGPT;
         this.openAiService = chatGPT.openAiService();
         this.redisSummeryCalendarrepository = redisSummeryCalendarrepository;
@@ -56,13 +56,14 @@ public class ChatBotService {
         return response;
     }
 
-    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
-        RedisSummeryCalendar redisSummeryCalendar = redisSummeryCalendarrepository.findById(userEmail)
+    public TextSummaryScheduleDto getSummerySchedule(String userEmail) {
+        TextSummarySchedule textSummarySchedule = redisSummeryCalendarrepository.findById(userEmail)
                 .orElseThrow( () -> new NoSuchElementException());
 
-        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
+        TextSummaryScheduleDto dto = TextSummaryScheduleDto.builder()
+                .text(textSummarySchedule.getTextSummarySchedule())
                 .build();
+
         return dto;
     }
 }
