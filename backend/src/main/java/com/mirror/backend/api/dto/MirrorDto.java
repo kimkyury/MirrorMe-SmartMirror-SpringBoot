@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class MirrorDto {
 
     @Getter
@@ -13,7 +15,9 @@ public class MirrorDto {
     @ToString
     public static class MirrorReq{
 
+        @NotNull
         private String mirrorId;
+        @NotNull
         private Long mirrorPlaceCode;
     }
 
