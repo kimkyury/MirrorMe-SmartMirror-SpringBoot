@@ -76,7 +76,7 @@ function Snackbars(props) {
   };
 
   const handleWeatherButtonClick = () => {
-<<<<<<< HEAD
+
     setOpenWeatherSnackbar(true)
   }
 
@@ -84,13 +84,6 @@ function Snackbars(props) {
   //   setOpenNoticeSnackbar(true);
   //   setShowWeekWeather(true);
   // };
-=======
-    // setOpenNoticeSnackbar(true);
-    // console.log('open notice snackbar')
-    setOpenWeatherSnackbar(true);
-  };
-
->>>>>>> f3fe6c6df106f6dee998f03efe712a7ad206fd13
 
 
   return (
