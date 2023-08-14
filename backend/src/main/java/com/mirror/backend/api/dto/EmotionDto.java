@@ -14,13 +14,13 @@ public class EmotionDto {
     @Getter
     public static class EmotionReq {
         @NotNull
-        private String emotionDate;
+        private String emotionDate; // 날짜
         @NotNull
         private Long userId;
         @NotNull
-        private List<Integer> emotionList;
+        private List<Integer> emotionList; // [ , , , ]
         @NotNull
-        private int emotionCode;
+        private int emotionCode; //
     }
 
     @Getter
