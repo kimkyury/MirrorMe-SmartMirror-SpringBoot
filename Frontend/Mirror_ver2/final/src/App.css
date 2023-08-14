@@ -1,5 +1,7 @@
 body {
-  margin: 24px;
+  justify-content: end !important;
+  align-items: baseline !important;
+  margin: 24px !important;
   padding: 0;
   background-color: black;
   overflow: hidden;
