@@ -12,21 +12,17 @@ function PresentCardList(props) {
   const presentImage = props.image;
   return (
     <div className="present-card-list">
-      <Card sx={{ maxWidth: 345, backgroundColor: 'blue' }}>
+      <Card sx={{ maxWidth: 345, backgroundColor: '#333333' }}>
         <CardActionArea>
           <CardMedia
             component="img"
             height="140"
-            image={`${presentImage}`}
-            alt={`${presentName}`}
+            image={presentImage}
+            alt={presentName}
           />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5" component="div" style={{ color: 'white' }}>
                 {presentName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-                Lizards are a widespread group of squamate reptiles, with over 6,000
-                species, ranging across all continents except Antarctica
             </Typography>
           </CardContent>
         </CardActionArea>

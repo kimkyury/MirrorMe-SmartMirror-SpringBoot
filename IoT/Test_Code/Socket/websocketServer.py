@@ -10,13 +10,15 @@ data = {
     "youtube": json.dumps({
         "order": "YOUTUBE",
         "query": {
-            "key": "wGg6ww8Lx5w"
+            "key": "UPJALGZbx2I"
         }
     }),
 
     "message_send_start": json.dumps({
         "order": "MESSAGESENDSTART",
-        "query": None
+        "query": {
+            "receiver": "아빠"
+        }
     }),
 
     "message_send_end": json.dumps({
@@ -86,6 +88,7 @@ async def handle_user_input():
 async def handle_client_input(session_id):
     try:
         while True:
+            print("연결됨")
             # 해당 세션 아이디의 데이터 대기
             client_input = await client[session_id].recv()
             # 클라이언트의 입력 처리
@@ -94,6 +97,11 @@ async def handle_client_input(session_id):
     except websockets.exceptions.ConnectionClosedOK:
         print(f"\r{session_id} 클라이언트의 요청으로 연결 종료", end="\nEnter something: ")
         del client[session_id]
+
+    except websockets.exceptions.ConnectionClosedError:
+        print(f"\r{session_id} 예상치 못하게 연결 종료", end="\nEnter something: ")
+        del client[session_id]
+
 
 
 # 클라이언트 접속이 되면 호출된다.

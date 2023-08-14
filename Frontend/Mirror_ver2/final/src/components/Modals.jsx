@@ -18,6 +18,8 @@ function ModalBottons(props) {
   // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT", "EXIT"
   const youtubeKey = props.youtubeKey;
 
+  const messageReceiver = props.messageReceiver;
+
   useEffect(() => {
     if (commandMessage === "YOUTUBE") {
       setIsYoutubeModalOpen(true);
@@ -78,23 +80,24 @@ function ModalBottons(props) {
     if (isMessageSent) {
       const closeTimeout = setTimeout(() => {
         setIsSendMessageModalOpen(false); // 일정 시간 후 모달창 닫기
+        setRecordingTime(15);
+        setReadyTime(3);
       }, 3000); // 3초 후에 모달창 닫기
-
       return () => clearTimeout(closeTimeout);
     }
   }, [isMessageSent]);
 
-  const toggleQRModal = () => {
-    if (!isSendMessageModalOpen) {
-      setIsQRModalOpen(prevState => !prevState);
-      setIsMessageModalOpen(false);
-      setIsYoutubeModalOpen(false);
-    }
-  };
+  // const toggleQRModal = () => {
+  //   if (!isSendMessageModalOpen) {
+  //     setIsQRModalOpen(prevState => !prevState);
+  //     setIsMessageModalOpen(false);
+  //     setIsYoutubeModalOpen(false);
+  //   }
+  // };
 
   const toggleMessageModal = () => {
     if (!isSendMessageModalOpen) {
-      setIsQRModalOpen(false);
+      // setIsQRModalOpen(false);
       setIsMessageModalOpen(prevState => !prevState);
       setIsYoutubeModalOpen(false);
     }
@@ -102,14 +105,14 @@ function ModalBottons(props) {
 
   const toggleYoutubeModal = () => {
     if (!isSendMessageModalOpen) {
-      setIsQRModalOpen(false);
+      // setIsQRModalOpen(false);
       setIsMessageModalOpen(false);
       setIsYoutubeModalOpen(prevState => !prevState);
     }
   };
 
   const toggleSendMessageModal = () => {
-    setIsQRModalOpen(false);
+    // setIsQRModalOpen(false);
     setIsMessageModalOpen(false);
     setIsYoutubeModalOpen(false);
     setIsSendMessageModalOpen(prevState => !prevState);
@@ -121,19 +124,19 @@ function ModalBottons(props) {
 
   return (
     <div>
-      <Button className="btn" onClick={toggleQRModal}>QR</Button>
+      {/* <Button className="btn" onClick={toggleQRModal}>QR</Button> */}
       <Button className="btn" onClick={toggleMessageModal}>메세지</Button>
       <Button className="btn" onClick={toggleYoutubeModal}>유튜브</Button>
       <Button className="btn" onClick={toggleSendMessageModal}>영상보내기</Button>
 
       {/* QR Modal */}
-      {isQRModalOpen && (
-        <div className="modal">
+      {/* {isQRModalOpen && (
+        <div className="modal"> */}
           {/* Add QR modal content here */}
-          <h2>QR 모달</h2>
+          {/* <h2>QR 모달</h2>
           <p>QR 코드를 여기에 표시합니다.</p>
         </div>
-      )}
+      )} */}
 
       {/* Message Modal */}
       {isMessageModalOpen && (
@@ -148,7 +151,6 @@ function ModalBottons(props) {
       {isYoutubeModalOpen && (
         <div className="modal">
           {/* Add Youtube modal content here */}
-          <h2>유튜브 모달</h2>
           <iframe
             width="800"
             height="400"
@@ -171,7 +173,7 @@ function ModalBottons(props) {
           ) : (
             <div>
               <div className="send-header">
-                <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
+                <h2>{messageReceiver}님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
                 {readyTime === 0 && (
                   <div className='rec-icon'>
                     <div className="rec-circle"></div>
