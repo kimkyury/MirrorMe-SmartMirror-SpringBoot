@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { Button, Snackbar } from '@mui/material';
+import axios from 'axios';
 
 import './App.css';
 
@@ -11,6 +12,8 @@ import PresentCardList from './components/PresentCardList';
 import GestureHelp from './components/GestureHelp';
 import CommandHelp from './components/CommandHelp';
 
+// const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
+const userEmail = '';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -68,14 +71,21 @@ function App() {
   const [snackbarsCommandMessage, setSnackbarsCommandMessage] = useState('');
   const [tts, setTts] = useState('');
   const [ttsType, setTtsType] = useState('');
+
+  // 이메일 및 토큰
   const [userEmail, setUserEmail] = useState('');
+  const [userAccessToken, getUserAccessToken] = useState('');
+  const [userRefreshToken, getUserRefreshToken] = useState('');
 
   const [modalsCommandMessage, setModalsCommandMessage] = useState('');
   const [youtubeKey, setYoutubeKey] = useState('');
 
+  const [messageReceiver, setMessageReceiver] = useState('');
+
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:9998");
     setWebSocket(socket);
+    
 
     socket.onopen = () => {
       setMessageTextArea(prev => prev + "Server connect...\n");
@@ -99,6 +109,8 @@ function App() {
         setUserEmail(data.query.email);
       } else if (data.order === 'YOUTUBE') {  // 유튜브
         setYoutubeKey(data.query.key);
+      } else if (data.order === 'MESSAGESENDSTART') {  // 유튜브
+        setMessageReceiver(data.query.receiver);
       }
     };
 
@@ -108,6 +120,28 @@ function App() {
       socket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (userEmail) {
+      const fetchData = async () => {
+        try {
+          // 스케줄 데이터 가져오기
+          const tokenResponse = await axios.get("/oauth/tokens", {
+            params: { userEmail: userEmail },
+          });
+          const response = tokenResponse.data.response;
+            getUserAccessToken(response.accessToken);
+            getUserRefreshToken(response.refreshToken);
+
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+
+      };
+
+      fetchData();
+    }
+  }, [userEmail]);
 
   const sendMessage = () => {
     if (webSocket && webSocket.readyState === WebSocket.OPEN) {
@@ -131,12 +165,15 @@ function App() {
             <Modals
               commandMessage={modalsCommandMessage}
               youtubeKey={youtubeKey}
+              messageReceiver={messageReceiver}
             />
             <Snackbars
               commandMessage={snackbarsCommandMessage}
               tts={tts}
               ttsType={ttsType}
               userEmail={userEmail}
+              userAccessToken={userAccessToken}
+              userRefreshToken={userRefreshToken}
             />
           </div>
           <button onClick={toggleVisibility}>
@@ -155,7 +192,7 @@ function App() {
             </CSSTransition>
           </div>
           <div>
-            <CommandHelp />
+            {/* <CommandHelp /> */}
             <GestureHelp />
           </div>
           <form className="socket">
