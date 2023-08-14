@@ -133,6 +133,7 @@ function WeekWeather(props) {
     })
   }, []);
 
+  const skyImages ={1: '/weather/008.png', 2: '/weather/009.png', 3: '/weather/010.png', 4: '/weather/011.png', 5: '/weather/012.png', 6: '/weather/013.png', 7: '/weather/014.png', '맑음': '/weather/008.png', '구름많음': '/weather/009.png', '흐림': '/weather/010.png', '흐리고 비': '/weather/011.png', '눈 비': '/weather/012.png', '눈': '/weather/013.png', '소나기': '/weather/014.png'};
 
   return (
     <div>
@@ -142,6 +143,7 @@ function WeekWeather(props) {
           {/* 제목행 필요할 경우 주석 활용 */}
           <TableHead>
             <TableRow>
+              <TableCell>아이콘</TableCell>
               <TableCell>요일</TableCell>
               <TableCell>최고기온</TableCell>
               <TableCell>최저기온</TableCell>
@@ -159,6 +161,13 @@ function WeekWeather(props) {
             ) : (
               weekInfo.map((day, index) => (
                 <TableRow key={index}>
+                  <TableCell>
+                    <img
+                      src={skyImages[index === 0 ? firstDayInfo.sky : (index === 1 && secondDayInfo.sky) ? secondDayInfo.sky : midrainInfo[`wf${index + 1}Am`]]}
+                      alt="weather-icon"
+                      style={{ maxWidth: '100px', height: 'auto' }}
+                    />
+                  </TableCell>
                   <TableCell>{day}</TableCell>
                   <TableCell>
                       {/* <img src='/weather/temMax.png' alt="temMax" width="10%" /> */}
