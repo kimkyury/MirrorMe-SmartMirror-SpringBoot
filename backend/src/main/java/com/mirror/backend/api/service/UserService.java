@@ -146,10 +146,7 @@ public class UserService {
         }
 
         for(User targetUser : userInSameHouseholdList){
-            ConnectUserKey connectUserKey = ConnectUserKey.builder()
-                    .userId(userId)
-                    .connectUserId(targetUser.getUserId())
-                    .build();
+            ConnectUserKey connectUserKey = new ConnectUserKey(userId, targetUser.getUserId());
 
             ConnectUser connectUser = ConnectUser.builder()
                     .id(connectUserKey)
@@ -162,11 +159,23 @@ public class UserService {
         return Result.SUCCESS;
     }
 
-    public List<ConnectUser> getConnectUsers(Long userId) {
+    public List<ConnectUserDto.ConnectUserRes> getConnectUsers(Long userId) {
 
-        List<ConnectUser> connectUsers = connectUserRepository.findByIdUserId(userId);
+        List<ConnectUser> connectUserList = connectUserRepository.findByIdUserId(userId);
+        System.out.println(connectUserList);
 
-        return connectUsers;
+        List<ConnectUserDto.ConnectUserRes> connectUserResList = new ArrayList<>();
+        for(ConnectUser connectUser : connectUserList){
+            ConnectUserDto.ConnectUserRes connectUserRes = ConnectUserDto.ConnectUserRes.builder()
+                    .connectUserId(connectUser.getConnectUser().getUserId())
+                    .connectUserName(connectUser.getConnectUser().getUserName())
+                    .connectUserAlias(connectUser.getConnectUserAlias())
+                    .build();
+
+            connectUserResList.add(connectUserRes);
+        }
+
+        return connectUserResList;
     }
 
     public int updateConnectUserAlias(Long userId, ConnectUserDto.ConnectUserReq connectUserReq) {

@@ -1,14 +1,15 @@
 package com.mirror.backend.api.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mirror.backend.api.dto.MidtermForecast;
-import com.mirror.backend.api.dto.MidtermWeatherForecast;
-import com.mirror.backend.api.dto.ShortTermForecast;
-import com.mirror.backend.api.dto.UltraShortTermForecast;
+import com.mirror.backend.api.dto.*;
+import com.mirror.backend.api.entity.Household;
+import com.mirror.backend.api.repository.HouseholdRepository;
 import com.mirror.backend.api.service.WeatherService;
+import com.mirror.backend.common.exception.NotFoundException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -20,6 +21,10 @@ import java.util.List;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
+
+    @Autowired
+    private HouseholdRepository householdRepository;
+
     @Override
     public JSONArray getWeatherInfo(StringBuilder urlBuilder) throws Exception {
         System.out.println("urlBuilder = " + urlBuilder);
@@ -151,5 +156,16 @@ public class WeatherServiceImpl implements WeatherService {
         ObjectMapper objectMapper = new ObjectMapper();
         MidtermWeatherForecast midtermWeatherForecast = objectMapper.readValue(jsonArray.get(0).toString(), MidtermWeatherForecast.class);
         return midtermWeatherForecast;
+    }
+
+    @Override
+    public HouseholdDto.HouseHoldLocationRes getUserLocation(Long householdId) {
+        Household household = householdRepository.findByHouseholdId(householdId)
+                .orElseThrow(() -> new NotFoundException("not found house location"));
+        HouseholdDto.HouseHoldLocationRes houseHoldRes = HouseholdDto.HouseHoldLocationRes.builder()
+                .gridNy(household.getGridNy())
+                .gridNx(household.getGridNx())
+                .build();
+        return houseHoldRes;
     }
 }

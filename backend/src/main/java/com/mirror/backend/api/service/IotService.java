@@ -2,10 +2,8 @@ package com.mirror.backend.api.service;
 
 
 import com.mirror.backend.api.dto.Alias;
+import com.mirror.backend.api.dto.TextDto.*;
 import com.mirror.backend.api.dto.UserDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFamilyBirthdayScheduleDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseFirstMirrorTextDto;
-import com.mirror.backend.api.dto.chatbotDtos.ResponseSummaryScheduleDto;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.utils.IotEncryption;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +23,12 @@ public class IotService {
     private final MirrorRepository mirrorRepository;
     private final UserRepository userRepository;
     private final ConnectUserRepository connectUserRepository;
-    private final RedisSummeryCalendarRepository redisSummeryCalendarRepository;
-    private final RedisFirstMirrorTextRepository redisFirstMirrorTextRepository;
-    private final RedisFamilyBirthdayRepository redisFamilyBirthdayRepository;
+    private final TextSummaryScheduleRepository textSummaryScheduleRepository;
+    private final TextFirstMeetingRepository textFirstMeetingRepository;
+    private final TextFamilyBirthdayRepository textFamilyBirthdayRepository;
+    private final TextCautionRainyRepository textCautionRainyRepository;
+    private final TextVideoViewRepository textVideoViewRepository;
+    private final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
 
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
@@ -35,9 +37,9 @@ public class IotService {
     public Long findMirrorGroupId(String encryptedCode){
 
         System.out.println("원본: " + encryptedCode);
-
-//       TODO: Delete Encoding, Decoding Test Annotation
-
+//
+////       TODO: Delete Encoding, Decoding Test Annotation
+//
 //        String encode= iotEncryption.encryptionText(encryptedCode);
 //        System.out.println("암호화: " + encode);
 //        String decode= iotEncryption.decryptionText(encode);
@@ -106,49 +108,88 @@ public class IotService {
     }
 
 
-    public ResponseSummaryScheduleDto getSummerySchedule(String userEmail) {
+    public TextSummaryScheduleDto getSummerySchedule(String userEmail) {
 
-        RedisSummeryCalendar redisSummeryCalendar = redisSummeryCalendarRepository.findById(userEmail)
-                .orElseThrow( () -> new NoSuchElementException());
+        Optional<TextSummarySchedule> textSummaryScheduleOptional = textSummaryScheduleRepository.findById(userEmail);
+        if ( textSummaryScheduleOptional.isEmpty()) return null;
 
-        ResponseSummaryScheduleDto dto = ResponseSummaryScheduleDto.builder()
-                .summeryCalendarText(redisSummeryCalendar.getSummeryCalendar())
+        TextSummaryScheduleDto dto = TextSummaryScheduleDto.builder()
+                .text(textSummaryScheduleOptional.get().getTextSummarySchedule())
                 .build();
 
         return dto;
     }
 
-    public ResponseFamilyBirthdayScheduleDto getBirthdayUserText(String userEmail) {
+    public TextFamilyBirthdayDto getBirthdayUserText(String userEmail) {
 
-        RedisFamilyBirthday redisFamilyBirthday = redisFamilyBirthdayRepository.findById(userEmail)
-                .orElseThrow( () -> new NoSuchElementException("생성된 생일관련 TEXT가 없습니다. "));
+        Optional<TextFamilyBirthday> textFamilyBirthdayOptional = textFamilyBirthdayRepository.findById(userEmail);
+        if( textFamilyBirthdayOptional.isEmpty()) return null;
 
-        ResponseFamilyBirthdayScheduleDto dto = ResponseFamilyBirthdayScheduleDto.builder()
-                .familyBirthdayText(redisFamilyBirthday.getFamilyBirthday())
+        TextFamilyBirthdayDto dto = TextFamilyBirthdayDto.builder()
+                .text(textFamilyBirthdayOptional.get().getTextFamilyBirthday())
                 .build();
 
         return dto;
     }
 
-    public ResponseFirstMirrorTextDto getFirstMirrorTextDto(String userEmail){
+    public TextVideoViewDto getTextVideoViewText(String userEmail) {
 
-        RedisMirrorFirstText redisMirrorFirstText = redisFirstMirrorTextRepository
+        Optional<TextVideoView> textVideoViewOptional = textVideoViewRepository.findById(userEmail);
+        if (textVideoViewOptional.isEmpty()) return null;
+
+        TextVideoViewDto dto = TextVideoViewDto.builder()
+                .text(textVideoViewOptional.get().getTextVideoView())
+                .build();
+
+        return dto;
+    }
+
+    public TextEmotionBasedContactRecommendationDto getTextEmotionBasedContactRecommendationText(String userEmail) {
+
+        Optional<TextEmotionBasedContactRecommendation> textEmotionBasedContactRecommendationOptional
+                = textEmotionBasedContactRecommendationRepository.findById(userEmail);
+        if ( textEmotionBasedContactRecommendationOptional.isEmpty()) return null;
+
+        TextEmotionBasedContactRecommendationDto dto = TextEmotionBasedContactRecommendationDto.builder()
+                .text(textEmotionBasedContactRecommendationOptional.get()
+                .getTextEmotionBasedContactRecommendation())
+                .build();
+
+        return dto;
+    }
+
+    public TextFirstMeetingDto getFirstMirrorTextDto(String userEmail){
+
+        TextFirstMeeting textFirstMeeting = textFirstMeetingRepository
                 .findById(userEmail).orElseThrow(
                         () -> new NoSuchElementException("해당 유저는 최조Text를 갖고 있지 않습니다. ")
                 );
 
         // 이미 사용된 Text일 경우
-        if ( redisMirrorFirstText.getIsUsed().equals("1") )
+        if ( textFirstMeeting.getIsUsed().equals("1") )
             return null;
 
-        redisMirrorFirstText.setIsUsed("1");
-        redisFirstMirrorTextRepository.save(redisMirrorFirstText);
+        textFirstMeeting.setIsUsed("1");
+        textFirstMeetingRepository.save(textFirstMeeting);
 
-        ResponseFirstMirrorTextDto firstMirrorTextDto = ResponseFirstMirrorTextDto.builder()
-                .textCode(redisMirrorFirstText.getTextCode())
-                .textContent(redisMirrorFirstText.getTextContent())
+        TextFirstMeetingDto firstMirrorTextDto = TextFirstMeetingDto.builder()
+                .textCode(textFirstMeeting.getTextCode())
+                .textContent(textFirstMeeting.getTextContent())
                 .build();
 
         return firstMirrorTextDto;
+    }
+
+    public TextCautionRainyDto getCautionRainyText(String userEmail) {
+
+        Long householdId = userRepository.findByUserEmail(userEmail).get().getHousehold().getHouseholdId();
+        TextCautionRainy textCautionRainy = textCautionRainyRepository.findById(String.valueOf(householdId)).get();
+
+        TextCautionRainyDto textCautionRainyDto = TextCautionRainyDto.builder()
+                .text(textCautionRainy.getTextCautionRainy())
+                .build();
+
+        return textCautionRainyDto;
+
     }
 }
