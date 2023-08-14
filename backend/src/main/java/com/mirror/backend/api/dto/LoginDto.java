@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class LoginDto {
 
     @Getter
@@ -12,7 +14,10 @@ public class LoginDto {
     @ToString
     public static class LoginReq{
 
+        @NotNull
          private String userEmail;
+
+        @NotNull
          private String password;
     }
 

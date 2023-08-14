@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class HouseholdDto {
 
     @Getter
@@ -13,6 +15,7 @@ public class HouseholdDto {
     @ToString
     public static class HouseholdReq{
 
+        @NotNull
         private String householdName;
     }
 
