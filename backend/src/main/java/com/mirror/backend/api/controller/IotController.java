@@ -113,7 +113,6 @@ public class IotController {
     @PostMapping
     @Operation(summary = "오늘 감정 저장", description = "iot와 통신하여 오늘의 감정을 저장합니다.")
     public ApiUtils.ApiResult<Long> postEmotion(@RequestBody @Valid EmotionDto.EmotionReq emotionReq) {
-
         return ApiUtils.success(emotionService.saveEmotion(emotionReq));
     }
 }
