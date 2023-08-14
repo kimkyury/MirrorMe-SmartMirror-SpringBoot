@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +39,9 @@ public class UserDto {
     @ToString
     public static class UserInitInfoReq{
 
+        @NotNull
         private String userName;
+        @NotNull
         private List<Long> interestCodes;
     }
 
@@ -47,7 +50,9 @@ public class UserDto {
     @ToString
     public static class UserSavePasswordReq{
 
+        @NotNull
         private String userEmail;
+        @NotNull
         private String password;
     }
 
@@ -76,6 +81,7 @@ public class UserDto {
     @ToString
     public static class IotUsersReq{
 
+        @NotNull
         private String mirrorId;
     }
 
@@ -97,8 +103,6 @@ public class UserDto {
             this.aliases = aliases;
         }
     }
-
-
 
     @Getter
     public static class HouseHoldDto {

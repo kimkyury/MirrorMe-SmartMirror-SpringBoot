@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -47,8 +48,7 @@ public class OAuthController {
 
     @PostMapping("/login/password")
     @Operation(summary = "password 저장", description = "Google 로그인 유저의 비밀번호를 설정합니다. ")
-    public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
-                                             @RequestBody UserDto.UserSavePasswordReq userSavePasswordReq) {
+    public ApiUtils.ApiResult<String> signUp(@Valid @RequestBody UserDto.UserSavePasswordReq userSavePasswordReq) {
 
         // 해당 이메일을 가진 유저의 정보 업데이트하기
         int result = oAuthService.saveUserPassword(userSavePasswordReq);
@@ -60,7 +60,7 @@ public class OAuthController {
 
     @PostMapping("/login/tokens")
     @Operation(summary= "Refresh/Access Token 요청", description = "로그인을 통해 유저확인 후 해당 유저의 Access/Refresh토큰을 반환합니다. ")
-    public ApiUtils.ApiResult<LoginDto.LoginRes> signUp(@RequestBody LoginDto.LoginReq loginReq) {
+    public ApiUtils.ApiResult<LoginDto.LoginRes> signUp(@Valid @RequestBody LoginDto.LoginReq loginReq) {
 
         LoginDto.LoginRes loginRes = oAuthService.confirmLogin(loginReq);
         if ( loginRes == null)
@@ -73,10 +73,7 @@ public class OAuthController {
     @GetMapping("/tokens")
     @Operation(summary= "(in Mirror) Refresh/Access Token 요청", description = "Mirror에서 특정 유저를 조회하기 위한 토큰입니다. ")
     public ApiUtils.ApiResult<TokensDto.TokensRes> getTokens(
-            @RequestParam(name = "userEmail", required = false) String userEmail)  {
-
-        userEmail = userEmail.replace("%40", "@");
-        System.out.println("Email:" +userEmail);
+             @RequestParam(name = "userEmail") String userEmail)  {
 
         TokensDto.TokensRes tokenDto = oAuthService.getTokensFromUserEmail(userEmail);
 
