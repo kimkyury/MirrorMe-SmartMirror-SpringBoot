@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class InterestDto {
 
     @Getter
@@ -13,6 +15,7 @@ public class InterestDto {
     @ToString
     public static class InterestReq{
 
+        @NotNull
         Long interestCode;
     }
 
