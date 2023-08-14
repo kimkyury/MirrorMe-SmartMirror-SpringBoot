@@ -11,6 +11,7 @@ import Modals from './components/Modals';
 import PresentCardList from './components/PresentCardList';
 import GestureHelp from './components/GestureHelp';
 import CommandHelp from './components/CommandHelp';
+import VoiceAnimation from './components/VoiceAnimation';
 
 // const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
 const userEmail = '';
@@ -81,6 +82,7 @@ function App() {
   const [youtubeKey, setYoutubeKey] = useState('');
 
   const [messageReceiver, setMessageReceiver] = useState('');
+  const [mirrorSaying, setMirrorSaying] = useState(false);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:9998");
@@ -103,6 +105,7 @@ function App() {
       setMessageTextArea(prev => prev + "Receive From Server => " + snackbarsCommandMessage + "\n");
       if (data.order === 'TTS') {  // TTS
         setTts(data.query.content);
+        setMirrorSaying(true);
         setTtsType(data.query.type);
         setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
       } else if (data.order === 'USERINFO') { // userEmail 받아오기
@@ -213,6 +216,7 @@ function App() {
             value={messageTextArea}
             readOnly
           ></textarea>
+          {mirrorSaying && <VoiceAnimation />}
         </div>
       }
     </div>
