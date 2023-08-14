@@ -26,6 +26,7 @@ public class SignUpService {
 
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
+    private final InterestCommonCodeRepository interestCommonCodeRepository;
     private final HouseholdRepository householdRepository;
     private final MirrorRepository mirrorRepository;
     private final ConnectUserRepository connectUserRepository;
@@ -48,13 +49,15 @@ public class SignUpService {
 
         // Save User's Init Interests
         for(int i =0; i<interestCodes.size(); i++){
-            InterestKey interestKey = new InterestKey();
-            interestKey.setUserId(userId);
-            interestKey.setInterestCode(interestCodes.get(i));
+            InterestKey interestId = new InterestKey(userId, interestCodes.get(i));
+            InterestCommonCode interestCommonCode = interestCommonCodeRepository.findById(interestCodes.get(i)).orElse(null);
 
-            Interest interest = new Interest();
-            interest.setId(interestKey);
-            interest.setIsUsed(1);
+            Interest interest = Interest.builder()
+                    .id(interestId)
+                    .interestCode(interestCommonCode)
+                    .user(user.get())
+                    .isUsed(1)
+                    .build();
 
             interestRepository.save(interest);
         }
@@ -80,12 +83,16 @@ public class SignUpService {
     public HouseholdDto.HouseholdPostRes createHousehold(Long userId, HouseholdDto.HouseholdReq householdReq) {
 
         User user = userRepository.findByUserId(userId).get();
+
+        // TODO: 이미 해당 user가 household를 만든 적이 있다면 안 됨.
+
         Household newHousehold = Household.builder()
                 .householdName(householdReq.getHouseholdName())
                 .createUser(user)
                 .build();
         householdRepository.save(newHousehold);
 
+        // Household는 한 사람당 하나만 가능.
         Household saveHousehold = householdRepository.findByCreateUserUserId(userId).get();
         HouseholdDto.HouseholdPostRes householdPostRes = HouseholdDto.HouseholdPostRes.builder()
                 .createUserName(user.getUserName())
@@ -113,50 +120,44 @@ public class SignUpService {
         return houseHoldGetRes;
     }
 
-    public int registerHousehold(Long userId, Long householdId) {
+    public int registerHousehold(Long signUpUserId, Long householdId) {
 
-        Optional<User> user = userRepository.findByUserId(userId);
+        Optional<User> signUpUserOptional = userRepository.findByUserId(signUpUserId);
         Household household = householdRepository.findById(householdId).get();
 
-        // 사용자에게 household 지정
-        user.ifPresent(selectUser -> {
+        signUpUserOptional.ifPresent(selectUser -> {
             selectUser.setHousehold(household);
             userRepository.save(selectUser);
         });
 
-        // 해당 집에 이미 사람이 존재하는지 확인
         List<User> usersInSameHousehold = userRepository.findByHouseholdHouseholdId(householdId);
 
-        // 존재하는 사람들은 ConnectUser로 추가
-        // 마찬가지로, 이미 존재했던 사람들도 해당 사람들이 뜨도록 쌍방으로 추
         if(usersInSameHousehold.size() != 0){
 
-            for(User targetUser : usersInSameHousehold){
+            for(User originalUser : usersInSameHousehold){
 
-                // 가입자 기
-                ConnectUserKey connectUserKey1 = ConnectUserKey.builder()
-                        .userId(userId)
-                        .connectUserId(targetUser.getUserId())
-                        .build();
+                if ( originalUser.equals(signUpUserOptional.get())) continue;
 
-                ConnectUser connectUser = ConnectUser.builder()
-                        .id(connectUserKey1)
-                        .connectUserAlias(targetUser.getUserName())  // 해당 친인척의 실제이름을 기본값으로 함
+                // 가입자 기준
+                ConnectUserKey connectUserOfSignUpUserKey = new ConnectUserKey(signUpUserId, originalUser.getUserId());
+                ConnectUser connectUserOfSignUpUser = ConnectUser.builder()
+                        .id(connectUserOfSignUpUserKey)
+                        .user(signUpUserOptional.get())
+                        .connectUser(originalUser)
+                        .connectUserAlias(originalUser.getUserName())  // 해당 친인척의 실제이름을 기본값으로 함
                         .build();
 
                 // 기존 사용자 기준
-                ConnectUserKey connectUserKey2 = ConnectUserKey.builder()
-                        .userId(targetUser.getUserId())
-                        .connectUserId(userId)
+                ConnectUserKey connectUserKeyOfOriginalUserKey = new ConnectUserKey(originalUser.getUserId(), signUpUserId);
+                ConnectUser connectUserOfOriginalUser = ConnectUser.builder()
+                        .id(connectUserKeyOfOriginalUserKey)
+                        .user(originalUser)
+                        .connectUser(signUpUserOptional.get())
+                        .connectUserAlias(signUpUserOptional.get().getUserName())  // 가입자의 실제이름을 기본값으로 함
                         .build();
 
-                ConnectUser connectUser2 = ConnectUser.builder()
-                        .id(connectUserKey2)
-                        .connectUserAlias(user.get().getUserName())  // 가입자의 실제이름을 기본값으로
-                        .build();
-
-                connectUserRepository.save(connectUser);
-                connectUserRepository.save(connectUser2);
+                connectUserRepository.save(connectUserOfSignUpUser);
+                connectUserRepository.save(connectUserOfOriginalUser);
             }
         }
 

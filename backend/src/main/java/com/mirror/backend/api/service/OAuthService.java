@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.backend.api.dto.*;
-import com.mirror.backend.api.entity.RedisUserToken;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
 import com.mirror.backend.api.entity.User;
 import com.mirror.backend.api.info.GoogleOAuth;
-import com.mirror.backend.api.repository.RedisUserTokenRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
 import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.common.utils.Constants.Result;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,7 +32,7 @@ import java.util.Optional;
 public class OAuthService {
 
     private final GoogleOAuth googleOAuth;
-    private final RedisUserTokenRepository redisUserTokenRepository;
+    private final GoogleOAuthTokenRepository googleOAuthTokenRepository;
     private final UserService userService;
     private final UserRepository userRepository;
 
@@ -80,11 +79,11 @@ public class OAuthService {
     public void saveUserTokenToRedis(String userEmail){
         String key = userEmail;
 
-        RedisUserToken send = new RedisUserToken(key,
+        GoogleOAuthToken send = new GoogleOAuthToken(key,
                 googleOAuthResponseDto.getAccessToken(),
                 googleOAuthResponseDto.getRefreshToken());
 
-        redisUserTokenRepository.save(send);
+        googleOAuthTokenRepository.save(send);
     }
 
     public String getUserEmailFromIdToken(){
@@ -152,13 +151,13 @@ public class OAuthService {
 
     public TokensDto.TokensRes getTokensFromUserEmail(String userEmail) {
 
-        RedisUserToken redisUserToken = redisUserTokenRepository.findById(userEmail).orElseThrow(
+        GoogleOAuthToken googleOAuthToken = googleOAuthTokenRepository.findById(userEmail).orElseThrow(
                 () -> new NoSuchElementException("해당 Email은 존재하지 않습니다.")
         );
 
         TokensDto.TokensRes tokensRes = TokensDto.TokensRes.builder()
-                .accessToken(redisUserToken.getAccessToken())
-                .refreshToken(redisUserToken.getRefreshToken())
+                .accessToken(googleOAuthToken.getAccessToken())
+                .refreshToken(googleOAuthToken.getRefreshToken())
                 .build();
 
         return tokensRes;
@@ -223,13 +222,13 @@ public class OAuthService {
         else
             isInitLoginUser = 0;
 
-        RedisUserToken redisUserToken = redisUserTokenRepository.findById(inputUserEmail)
+        GoogleOAuthToken googleOAuthToken = googleOAuthTokenRepository.findById(inputUserEmail)
                 .orElseThrow( () -> new NoSuchElementException());
 
         LoginDto.LoginRes loginRes = LoginDto.LoginRes.builder()
                 .isInitLoginUser(isInitLoginUser)
-                .accessToken(redisUserToken.getAccessToken())
-                .refreshToken(redisUserToken.getRefreshToken())
+                .accessToken(googleOAuthToken.getAccessToken())
+                .refreshToken(googleOAuthToken.getRefreshToken())
                 .build();
 
         return loginRes;
