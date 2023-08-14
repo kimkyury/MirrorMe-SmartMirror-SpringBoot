@@ -18,6 +18,8 @@ function ModalBottons(props) {
   // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT", "EXIT"
   const youtubeKey = props.youtubeKey;
 
+  const messageReceiver = props.messageReceiver;
+
   useEffect(() => {
     if (commandMessage === "YOUTUBE") {
       setIsYoutubeModalOpen(true);
@@ -171,7 +173,7 @@ function ModalBottons(props) {
           ) : (
             <div>
               <div className="send-header">
-                <h2>ㅇㅇ님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
+                <h2>{messageReceiver}님께 보내는 영상메세지</h2> {/* 메세지 수신자 수정 필요 */}
                 {readyTime === 0 && (
                   <div className='rec-icon'>
                     <div className="rec-circle"></div>
