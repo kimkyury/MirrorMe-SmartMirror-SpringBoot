@@ -15,11 +15,10 @@ function Tasks(props) {
       try {
         // 스케줄 데이터 가져오기
         const tasksResponse = await axios.get("/tasks", {
-          headers: { access_token: `${accessToken}` },
+          headers: { access_token: accessToken },
           withCredentials: true,
         });
         const response = tasksResponse.data.response;
-        console.log(response[0]);
         setTasks(response[0].items);
 
         // // 스케줄 카운트 가져오기
