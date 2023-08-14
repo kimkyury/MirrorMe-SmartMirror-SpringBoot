@@ -10,7 +10,9 @@ import threading
 import websockets
 import asyncio
 import os
-
+import json
+import requests
+from datetime import datetime
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -22,6 +24,13 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
 # 모델 로드 (입력 이미지 크기에 맞게 수정)
 model = models.load_model('./Models/best_black_model.h5')
+
+my_name = '1'
+my_email = 'ssafy@ssafy.com'
+do = ''
+recv = ''
+websocket = None
+stop_gesture = False
 
 target_size = (256, 256)
 
@@ -148,7 +157,7 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-            [True, True, False, False, (0,0), "V"],
+            [True, True, False, False, (0,0), "Video"],
             # [True, False, False, True, (0,0), "A"],
             [False, False, False, False, (0,0), "exit"]]
     
@@ -157,6 +166,8 @@ def getgesture():
 
     last_x = 0.5
     count = 0
+
+    emotion_list = [0,0,0,0,0]
 
     while not stop_gesture:
         result.popleft()
@@ -176,10 +187,10 @@ def getgesture():
 
             # 각 클래스의 임계값
             thresholds = {
-                1: 0.5,  # happy
-                2: 0.5,  # neutral
-                3: 0.5,  # sad
-                4: 0.5   # angry
+                1: 0.8,  # happy
+                2: 0.8,  # neutral
+                3: 0.8,  # sad
+                4: 0.55   # angry
             }
 
             # 최대 값이 해당 클래스의 임계값보다 크거나 같으면 해당 감정으로 예측
@@ -191,6 +202,7 @@ def getgesture():
                     4: "angry"
                 }
                 predicted_emotion = emotion_classes[predicted_class]
+                emotion_list[predicted_class] += 1
             else:
                 predicted_emotion = "nothing"
 
@@ -252,7 +264,26 @@ def getgesture():
             pass
         else:
             return ret
+    
+    try:
+        now = datetime.now()
+        formatted_date_time = now.strftime('%Y-%m-%d-%H-%M-%S')
 
+        params = {
+            "emotionDate": str(formatted_date_time),
+            "userId": my_name,
+            "emotionList" : emotion_list
+        }
+        headers = {"Content-Type": "application/json"}
+
+        # 보내고자 하는 Data를 JSON 형식으로 변환
+        data = json.dumps(params)
+
+        # JSON 데이터를 포함하여 POST 요청을 보냄
+        response = requests.post("http://i9e101.p.ssafy.io:8080/api/iot", headers=headers, data=data)
+    except:
+        print('error')
+    
 
 def get_gesture():
     loop = asyncio.new_event_loop()
@@ -271,6 +302,15 @@ def get_gesture():
                 video_recoding.recordingVideo(my_name, "1")
 
 if __name__ == "__main__":
+    # Web socket connect
+
+    ges = threading.Thread(target=get_gesture)
+    ges.start()
+    
+    asyncio.run(connect())
+
+    print('끝')
+
     # print("start...")
     # try:
     #     get_user_face.getUserFaceImage()
@@ -281,17 +321,3 @@ if __name__ == "__main__":
     # print("find user")
     # my_name = find_user.getUserName()
     # print("user :", my_name)
-
-    my_name = '1'
-    do = ''
-    recv = ''
-    websocket = None
-    stop_gesture = False
-    # Web socket connect
-
-    ges = threading.Thread(target=get_gesture)
-    ges.start()
-    
-    asyncio.run(connect())
-
-    print('이상해')
