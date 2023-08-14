@@ -168,7 +168,7 @@ function ModalBottons(props) {
         <div className="send">
           {isMessageSent ? (
             <div className="sendAlert">
-              <h2 className="sendAlertText">ㅇㅇ님께 영상 메세지를 전송하였습니다.</h2>
+              <h2 className="sendAlertText">{messageReceiver}님께 영상 메세지를 전송하였습니다.</h2>
             </div>
           ) : (
             <div>
@@ -200,7 +200,6 @@ function ModalBottons(props) {
                       variant="determinate"
                       value={((15 - recordingTime) / 15) * 100}
                       style={{ backgroundColor: 'grey', borderRadius: '4px' }}
-                      color="warning" // 색상 수정 예정
                     />
                   </div>
                 )}
