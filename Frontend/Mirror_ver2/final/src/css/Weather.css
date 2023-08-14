@@ -42,3 +42,10 @@
   text-align: center;
   color: white;
 }
+
+.table-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  /* 이미지 수정 필요 */
+}
