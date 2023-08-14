@@ -21,27 +21,15 @@ function Snackbars(props) {
   const [openNoticeSnackbar, setOpenNoticeSnackbar] = useState(false);
   const ref = useRef(null)
 
-  // const [userAccessToken, getUserAccessToken] = useState('');
-  // const [userRefreshToken, getUserRefreshToken] = useState('');
-
+  
   const commandMessage = props.commandMessage;
   // 목록 : "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT","EXIT", "TTS"
   const tts = props.tts;
   const ttsType = props.ttsType;
   const userEmail = props.userEmail;
-
-  // axios.get('oauth/tokens', {
-  //   params: { userEmail: userEmail },
-  // })
-  // .then((res) => { // 유저의 accessToken 및 refreshToken 저장
-  //   const response = res.data.response;
-  //   getUserAccessToken(response.accessToken);
-  //   getUserRefreshToken(response.refreshToken);
-  // })
-  // .catch((error) => {
-  //   console.log(error);
-  // });
-
+  
+  const userAccessToken = props.userAccessToken;
+  const userRefreshToken = props.userRefreshToken;
 
   const handleSnackbarClose = () => {
     setOpenNoticeSnackbar(false);
@@ -60,7 +48,7 @@ function Snackbars(props) {
     } else if (commandMessage === "WEATHER") {
       setOpenNoticeSnackbar(true);
       setOpenWeatherSnackbar(true);
-    } else if (commandMessage === "RIGHT") {
+    } else if (commandMessage === "EXIT") {
       handleSnackbarClose();
     }
   }, [commandMessage]);
@@ -101,7 +89,7 @@ function Snackbars(props) {
       <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button>
       
       {/* Notice Snackbar */}
-      <div className="notice">
+      {/* <div className="notice">
         <CSSTransition
           in={openNoticeSnackbar}
           timeout={300}
@@ -120,7 +108,7 @@ function Snackbars(props) {
             style={{ marginTop: '200px' }}
           />
         </CSSTransition>
-      </div>
+      </div> */}
 
       <div className="snackbar">
         {/* VideoMessage Snackbar */}
@@ -178,8 +166,8 @@ function Snackbars(props) {
             onClose={handleSnackbarClose}
             message=
             {<Tasks 
-              // userAccessToken={userAccessToken}
-              // userRefreshToken={userRefreshToken}
+              userAccessToken={userAccessToken}
+              userRefreshToken={userRefreshToken}
             />}
             style={{ marginTop: '200px' }}
           />
@@ -199,8 +187,8 @@ function Snackbars(props) {
             onClose={handleSnackbarClose}
             message=
               {<Schedules 
-                // userAccessToken={userAccessToken}
-                // userRefreshToken={userRefreshToken}
+                userAccessToken={userAccessToken}
+                userRefreshToken={userRefreshToken}
               />}
             style={{ marginTop: '200px' }}
           />
