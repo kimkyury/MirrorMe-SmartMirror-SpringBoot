@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
@@ -78,16 +79,14 @@ public class UserController {
     @PostMapping("/interests")
     @Operation(summary = "관심사 정보를 생성/수정 합니다. ", description = "관심사 정보를 생성하거나, 기존에 이미 유저가 등록한 관심사라면 ON/OFF 합니다." )
     public ApiUtils.ApiResult<String> postMyInterest(HttpServletRequest request,
-                                                     @RequestBody InterestDto.InterestReq interestReq){
+                                                     @Valid @RequestBody InterestDto.InterestReq interestReq){
 
         int INTEREST_OFF = 0;
         int INTEREST_ON = 1;
         int INTEREST_CREATED = 2;
 
-        // 이메일 찾기
-        String userEmail = (String) request.getAttribute("user_email");
         Long userId = (Long) request.getAttribute("user_id");
-        int result  = userService.updateInterest(userEmail, userId, interestReq);
+        int result  = userService.updateInterest( userId, interestReq);
 
         if (result == INTEREST_CREATED)
             return success("CREATE: Interest의 정보를 생성하였습니다. ");
@@ -144,7 +143,8 @@ public class UserController {
 
     @PutMapping("/friends")
     @Operation(summary = "자신의 친인척 별명을 수정합니다.", description = "수정하기" )
-    public ApiUtils.ApiResult<String> updateConnectUserAlias(HttpServletRequest request, @RequestBody ConnectUserDto.ConnectUserReq connectUserReq) {
+    public ApiUtils.ApiResult<String> updateConnectUserAlias(HttpServletRequest request,
+                                                             @Valid @RequestBody ConnectUserDto.ConnectUserReq connectUserReq) {
 
         Long userId = (Long) request.getAttribute("user_id");
         int result = userService.updateConnectUserAlias(userId, connectUserReq);

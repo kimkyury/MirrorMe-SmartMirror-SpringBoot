@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class HouseholdDto {
 
     @Getter
@@ -13,6 +15,7 @@ public class HouseholdDto {
     @ToString
     public static class HouseholdReq{
 
+        @NotNull
         private String householdName;
     }
 
@@ -48,6 +51,18 @@ public class HouseholdDto {
             this.householdId = householdId;
             this.createUserName = createUserName;
             this.createUserEmail = createUserEmail;
+        }
+    }
+
+    @Getter
+    public static class HouseHoldLocationRes {
+        private int gridNx;
+        private int gridNy;
+
+        @Builder
+        public HouseHoldLocationRes(int gridNx, int gridNy) {
+            this.gridNx = gridNx;
+            this.gridNy = gridNy;
         }
     }
 }

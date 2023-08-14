@@ -4,6 +4,7 @@ import { CircularProgress, Button } from '@mui/material';
 
 import '../css/Weather.css';
 import WeekWeather from './WeekWeather';
+const houseHoldId = 1;
 
 function TodayWeather(props) {
   const [weatherInfo, setWeatherInfo] = useState({});
@@ -35,7 +36,7 @@ function TodayWeather(props) {
     let today = `${year}${month}${currentTime.getDate()}`;
 
     axios.get('weather/short', { // 최고, 최저 기온, 하늘 상태
-        params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo },
+        params: { baseDate: baseDate, baseTime: baseTime, numOfRows: numOfRows, pageNo: pageNo, houseHoldId: houseHoldId },
       })
       .then((res) => { // 오늘 날짜의 필요 정보 저장
         const todayWeather = res.data.response.filter((data) => data.fcstDate === today);
@@ -88,7 +89,7 @@ function TodayWeather(props) {
     }
 
     axios.get('weather/ultra', { // 실시간 기온, 습도
-        params: { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo },
+        params: { baseTime: ultrabasetime, numOfRows: numOfRows, pageNo: pageNo, houseHoldId: houseHoldId },
       })
       .then((res) => {
         setUltraInfo(res.data.response);
@@ -144,7 +145,7 @@ function TodayWeather(props) {
                 <img src={todaySky} alt="weather icon" width="100%"/>
               </div>
               <div className="weather-info">
-                <h3>{ultraInfo.t1H}℃</h3>
+                <h2>{ultraInfo.t1H}℃</h2>
                 <h3 className="temperture">
                   {weatherInfo.tmx}℃ / {weatherInfo.tmn}℃
                 </h3>
