@@ -16,14 +16,14 @@ function Schedules(props) {
       try {
         // 스케줄 데이터 가져오기
         const scheduleResponse = await axios.get("/schedule/today", {
-          headers: { access_token: `${userAccessToken}` },
+          headers: { access_token: userAccessToken },
           withCredentials: true,
         });
         setSchedules(scheduleResponse.data.response);
 
         // 스케줄 카운트 가져오기
         const countResponse = await axios.get("/schedule/today/count", {
-          headers: { access_token : `${userAccessToken}` },
+          headers: { access_token : userAccessToken },
           withCredentials: true,
         });
         setSchedulesCount(countResponse.data.response);
