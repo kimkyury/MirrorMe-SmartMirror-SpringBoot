@@ -3,13 +3,11 @@ import PresentCard from './PresentCard';
 
 function PresentCardList(props) {
   const [presentList, setPresentList] = useState([
-    { name: 'Perfume', image: '' },
-    { name: 'Necklace', image: '' },
-    { name: 'Chicken', image: '' },
-    { name: 'IcecreamCake', image: '' },
-    { name: 'Money', image: '' },
-    { name: 'Keyboard', image: '' },
-    { name: 'Bag', image: '' },
+    { name: 'Perfume', image: '/present/perfume.jpg' },
+    { name: 'IcecreamCake', image: '/present/icecreamcake.png' },
+    { name: 'Money', image: '/present/money.jpg' },
+    { name: 'Keyboard', image: '/present/keyboard.jpg' },
+    { name: 'Bag', image: '/present/bag.jpg' },
   ]);
 
   const [randomPresentList, setRandomPresentList] = useState([]);
