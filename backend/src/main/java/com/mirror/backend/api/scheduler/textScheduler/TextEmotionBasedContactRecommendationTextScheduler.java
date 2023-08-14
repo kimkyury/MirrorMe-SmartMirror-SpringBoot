@@ -1,23 +1,20 @@
-package com.mirror.backend.api.scheduler;
+package com.mirror.backend.api.scheduler.textScheduler;
 
 
-import com.mirror.backend.api.dto.EmotionDto;
 import com.mirror.backend.api.dto.UserDto;
 import com.mirror.backend.api.entity.ConnectUser;
 import com.mirror.backend.api.entity.GoogleOAuthToken;
 import com.mirror.backend.api.entity.TextEmotionBasedContactRecommendation;
 import com.mirror.backend.api.entity.User;
-import com.mirror.backend.api.info.GoogleOAuth;
-import com.mirror.backend.api.repository.*;
-import com.mirror.backend.api.service.EmotionService;
+import com.mirror.backend.api.repository.ConnectUserRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
+import com.mirror.backend.api.repository.TextEmotionBasedContactRecommendationRepository;
+import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.impl.EmotionServiceImpl;
-import com.mirror.backend.api.service.impl.VideoServiceImpl;
-import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
@@ -25,23 +22,27 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TextEmotionBasedContactRecommendationScheduler {
+public class TextEmotionBasedContactRecommendationTextScheduler implements TextSchedulerHandler {
 
-    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
-    public final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
-    public final UserRepository userRepository;
-    public final ConnectUserRepository connectUserRepository;
+    private final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    private final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
+    private final UserRepository userRepository;
+    private final ConnectUserRepository connectUserRepository;
 
-    public final OAuthService oAuthService;
-    public final EmotionServiceImpl emotionService;
+    private final OAuthService oAuthService;
+    private final EmotionServiceImpl emotionService;
 
-    public final ChatGptUtil chatGptUtil;
-    public final TokenUtil tokenUtil;
+    private final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // Develop
-    @Scheduled(cron = "0 2 0 * * ?") // deploy
-    public void fetchRedisData() {
+    private TextSchedulerHandler nextHandler;
 
+    @Override
+    public void setNextHandler(TextSchedulerHandler next){
+        this.nextHandler = next;
+    }
+
+    @Override
+    public void execute(){
         System.out.println("------------Scheduler: EmotionBased Contact Recommendation ----------");
 
         Iterable<GoogleOAuthToken> googleOAuthToken = googleOAuthTokenRepository.findAll();
@@ -49,15 +50,13 @@ public class TextEmotionBasedContactRecommendationScheduler {
 
         while (iterator.hasNext()) {
 
-            String userEmail = getUserEmailUseGoogleOAuthToken(iterator);
+            String userEmail = TextSchedulerHandler.getUserStringUseOAuthToken(iterator.next(), tokenUtil);
             User user = userRepository.findByUserEmail(userEmail).get();
-            Long userId = user.getUserId();
-            List<UserDto> angryResList =  emotionService.familyAngryList(userId);
+            List<UserDto> angryResList =  emotionService.familyAngryList(user.getUserId());
 
             for(UserDto angryUser : angryResList){
-
                 ConnectUser connectUserInfo = connectUserRepository.findByIdUserIdAndIdConnectUserId(
-                        userId, angryUser.getUserId()).get();
+                        user.getUserId(), angryUser.getUserId()).get();
                 String angryUserAlias = connectUserInfo.getConnectUserAlias();
 
                 String text = getTextEmotionBasedContactRecommendation(user.getUserName(), angryUserAlias);
@@ -68,18 +67,7 @@ public class TextEmotionBasedContactRecommendationScheduler {
         System.out.println("------------ Finish Scheduler ----------");
     }
 
-    public String  getUserEmailUseGoogleOAuthToken(Iterator<GoogleOAuthToken> iterator){
-
-        GoogleOAuthToken userTokenInfo = iterator.next();
-        String accessToken = userTokenInfo.getAccessToken();
-        String refreshToken = userTokenInfo.getRefreshToken();
-        accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken);
-        String userEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
-
-        return userEmail;
-    }
-
-    public String getTextEmotionBasedContactRecommendation(String userName, String angryUserAlias){
+    private String getTextEmotionBasedContactRecommendation(String userName, String angryUserAlias){
 
         StringBuilder sb = new StringBuilder();
         sb.append(userName).append("님, ")
@@ -89,7 +77,7 @@ public class TextEmotionBasedContactRecommendationScheduler {
         return sb.toString();
     }
 
-    public  void saveTextEmotionBasedContactRecommendationToRedis(String userEmail, String text){
+    private  void saveTextEmotionBasedContactRecommendationToRedis(String userEmail, String text){
 
         TextEmotionBasedContactRecommendation textEmotionBasedContactRecommendation = TextEmotionBasedContactRecommendation.builder()
                 .userEmail(userEmail)
