@@ -10,7 +10,7 @@ data = {
     "youtube": json.dumps({
         "order": "YOUTUBE",
         "query": {
-            "key": "wGg6ww8Lx5w"
+            "key": "UPJALGZbx2I"
         }
     }),
 
@@ -37,7 +37,7 @@ data = {
     "user_info": json.dumps({
         "order": "USERINFO",
         "query": {
-            "email": "kkrt7777@gmail.com"
+            "email": "test2@gmail.com"
         }
     }),
 

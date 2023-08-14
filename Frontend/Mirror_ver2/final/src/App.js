@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { Button, Snackbar } from '@mui/material';
+import axios from 'axios';
 
 import './App.css';
 
@@ -8,9 +9,14 @@ import Logo from './components/Logo';
 import Snackbars from './components/SnackBars';
 import Modals from './components/Modals';
 import PresentCardList from './components/PresentCardList';
+import GestureHelp from './components/GestureHelp';
+import CommandHelp from './components/CommandHelp';
 
+<<<<<<< HEAD
 // const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
 const userEmail = '';
+=======
+>>>>>>> f3fe6c6df106f6dee998f03efe712a7ad206fd13
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -37,6 +43,20 @@ function App() {
     setIsVisible(prevState => !prevState);
   };
 
+  // 출현 후 특정 시간 이후에 사라짐
+  useEffect (() => {
+    if (isVisible) {
+      const timeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 7000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [isVisible])
+
+  // 스낵바
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleButtonClick = () => {
@@ -54,7 +74,11 @@ function App() {
   const [snackbarsCommandMessage, setSnackbarsCommandMessage] = useState('');
   const [tts, setTts] = useState('');
   const [ttsType, setTtsType] = useState('');
+
+  // 이메일 및 토큰
   const [userEmail, setUserEmail] = useState('');
+  const [userAccessToken, getUserAccessToken] = useState('');
+  const [userRefreshToken, getUserRefreshToken] = useState('');
 
   const [modalsCommandMessage, setModalsCommandMessage] = useState('');
   const [youtubeKey, setYoutubeKey] = useState('');
@@ -77,23 +101,45 @@ function App() {
       setSnackbarsCommandMessage(data.order);
       setModalsCommandMessage(data.order);
       setMessageTextArea(prev => prev + "Receive From Server => " + snackbarsCommandMessage + "\n");
-      if (data.order === 'TTS') {
+      if (data.order === 'TTS') {  // TTS
         setTts(data.query.content);
         setTtsType(data.query.type);
-        console.log(data.query.email);
-        setUserEmail(data.query.email)
         setMessageTextArea(prev => prev + "Receive From Server => " + tts + "\n");
-      // } else if (data.order === 'USERINFO') { // userEmail 받아오기
-      //   setUserEmail(data.query.email);
-      } else if (data.order === 'YOUTUBE') {
+      } else if (data.order === 'USERINFO') { // userEmail 받아오기
+        setUserEmail(data.query.email);
+      } else if (data.order === 'YOUTUBE') {  // 유튜브
         setYoutubeKey(data.query.key);
       }
     };
+
+    console.log(userEmail);
 
     return () => {
       socket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (userEmail) {
+      const fetchData = async () => {
+        try {
+          // 스케줄 데이터 가져오기
+          const tokenResponse = await axios.get("/oauth/tokens", {
+            params: { userEmail: userEmail },
+          });
+          const response = tokenResponse.data.response;
+            getUserAccessToken(response.accessToken);
+            getUserRefreshToken(response.refreshToken);
+
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+
+      };
+
+      fetchData();
+    }
+  }, [userEmail]);
 
   const sendMessage = () => {
     if (webSocket && webSocket.readyState === WebSocket.OPEN) {
@@ -109,9 +155,14 @@ function App() {
       <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js" integrity="sha384-Rn9HT+yy0cAmzD7h4p9BaaVG6g2PfE8ii+05BuYp9gRBy2Cjgr99WQQpkKd3m9L/" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/system@5.4.3/dist/mui.min.js" integrity="sha384-oFyjBA1gBAq3z2f3Q2ikzGq/KJQ2BlLJpLuH6lg6b4RtrR+vjp5b3HYJoLk6MBo2" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/material@5.4.3/dist/mui.min.js" integrity="sha384-3nQFj60gZkVx0nq0HP3zqv4mAP+q0/w7foV7mqHn6g+LrTADwG8zBks6XQfnwTo7" crossorigin="anonymous"></script>
+<<<<<<< HEAD
       {userEmail ? (
       <Logo/>
         ) :(
+=======
+      {!userEmail ? 
+        <Logo/> :
+>>>>>>> f3fe6c6df106f6dee998f03efe712a7ad206fd13
         <div>
           <div className="time">{formattedTimeWithAmPm}</div>
           <div className="btn-container">
@@ -124,6 +175,8 @@ function App() {
               tts={tts}
               ttsType={ttsType}
               userEmail={userEmail}
+              userAccessToken={userAccessToken}
+              userRefreshToken={userRefreshToken}
             />
           </div>
           <button onClick={toggleVisibility}>
@@ -140,6 +193,10 @@ function App() {
                 <PresentCardList />
               </div>
             </CSSTransition>
+          </div>
+          <div>
+            <CommandHelp />
+            <GestureHelp />
           </div>
           <form className="socket">
             <input
@@ -160,7 +217,7 @@ function App() {
             readOnly
           ></textarea>
         </div>
-        )}
+      }
     </div>
   );
 }
