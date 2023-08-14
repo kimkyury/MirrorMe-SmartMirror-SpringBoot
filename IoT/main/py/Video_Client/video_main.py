@@ -19,7 +19,7 @@ mp_face_mesh = mp.solutions.face_mesh
 face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-my_name = '1'
+my_name = 11
 my_email = 'ssafy@ssafy.com'
 do = ''
 recv = ''
@@ -197,7 +197,7 @@ def getgesture():
 
     # try:
     now = datetime.now()
-    formatted_date_time = now.strftime('%Y-%m-%d-%H-%M-%S')
+    formatted_date_time = now.strftime('%Y%m%d')
 
     params = {
         "emotionDate": str(formatted_date_time),
