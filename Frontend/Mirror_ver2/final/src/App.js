@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { Button, Snackbar } from '@mui/material';
+import axios from 'axios';
 
 import './App.css';
 
@@ -68,7 +69,11 @@ function App() {
   const [snackbarsCommandMessage, setSnackbarsCommandMessage] = useState('');
   const [tts, setTts] = useState('');
   const [ttsType, setTtsType] = useState('');
+
+  // 이메일 및 토큰
   const [userEmail, setUserEmail] = useState('');
+  const [userAccessToken, getUserAccessToken] = useState('');
+  const [userRefreshToken, getUserRefreshToken] = useState('');
 
   const [modalsCommandMessage, setModalsCommandMessage] = useState('');
   const [youtubeKey, setYoutubeKey] = useState('');
@@ -109,6 +114,28 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (userEmail) {
+      const fetchData = async () => {
+        try {
+          // 스케줄 데이터 가져오기
+          const tokenResponse = await axios.get("/oauth/tokens", {
+            params: { userEmail: userEmail },
+          });
+          const response = tokenResponse.data.response;
+            getUserAccessToken(response.accessToken);
+            getUserRefreshToken(response.refreshToken);
+
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+
+      };
+
+      fetchData();
+    }
+  }, [userEmail]);
+
   const sendMessage = () => {
     if (webSocket && webSocket.readyState === WebSocket.OPEN) {
       setMessageTextArea(prev => prev + "Send to Server => " + message + "\n");
@@ -137,6 +164,8 @@ function App() {
               tts={tts}
               ttsType={ttsType}
               userEmail={userEmail}
+              userAccessToken={userAccessToken}
+              userRefreshToken={userRefreshToken}
             />
           </div>
           <button onClick={toggleVisibility}>
