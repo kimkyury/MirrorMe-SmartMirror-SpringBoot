@@ -5,13 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 public class ConnectUserDto {
 
     @Getter
     @Setter
     @ToString
     public static class ConnectUserReq{
+
+        @NotNull
         private Long connectUserId;
+        @NotNull
         private String ConnectUserAlias;
     }
 

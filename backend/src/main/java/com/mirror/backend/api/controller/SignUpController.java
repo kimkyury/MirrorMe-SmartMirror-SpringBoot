@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import static com.mirror.backend.common.utils.ApiUtils.fail;
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -30,7 +31,7 @@ public class SignUpController {
     @PostMapping("/profile")
     @Operation(summary = "Profile(userName, Interests) 생성", description = "가입 유저의 실제이름, 관심사 정보를 생성합니다. ")
     public ApiUtils.ApiResult<String> signUp(HttpServletRequest request,
-                                             @RequestBody UserDto.UserInitInfoReq userInitInfoReq) {
+                                             @Valid @RequestBody UserDto.UserInitInfoReq userInitInfoReq) {
 
         String userEmail = (String) request.getAttribute("user_email");
         Long userId = (Long)request.getAttribute("user_id");
@@ -62,7 +63,7 @@ public class SignUpController {
     @PostMapping("/households")
     @Operation(summary = "새로운 가정 생성", description = "사용자가 새로운 가정을 생성합니다. ")
     public ApiUtils.ApiResult<HouseholdDto.HouseholdPostRes> createHousehold(HttpServletRequest request,
-                                                                            @RequestBody HouseholdDto.HouseholdReq householdReq) {
+                                                                           @Valid @RequestBody HouseholdDto.HouseholdReq householdReq) {
         Long userId = (Long) request.getAttribute("user_id");
 
         HouseholdDto.HouseholdPostRes householdPostRes = signUpService.createHousehold(userId, householdReq);
@@ -74,7 +75,7 @@ public class SignUpController {
     @GetMapping("/households")
     @Operation(summary = "기존의 가정 검색", description = "사용자가 기존에 있는 가정을, 생성자 Email로 검색합니다. ")
     public ApiUtils.ApiResult<HouseholdDto.HouseHoldGetRes> searchHousehold(HttpServletRequest request,
-                                                                            @RequestParam String createUserEmail) {
+                                                                             @RequestParam String createUserEmail) {
 
         HouseholdDto.HouseHoldGetRes result = signUpService.searchHousehold(createUserEmail);
         if ( result == null)
@@ -86,7 +87,7 @@ public class SignUpController {
     @PostMapping("/household")
     @Operation(summary = "사용자의 가정 등록", description = "사용자가 새로운 가정을 등록하며, 자동으로 기존 사용자와의 관계를 업데이트합니다. ")
     public ApiUtils.ApiResult<String> registerHousehold(HttpServletRequest request,
-                                                        @RequestParam(name="householdId", required = true) Long householdId) {
+                                                         @RequestParam(name="householdId") Long householdId) {
 
         Long userId = (Long) request.getAttribute("user_id");
         signUpService.registerHousehold(userId,householdId );
@@ -98,7 +99,7 @@ public class SignUpController {
     @PostMapping("/mirror")
     @Operation(summary = "사용자의 미러 등록", description = "사용자가 새로운 미러를 본인의 가정으로 등록합니다")
     public ApiUtils.ApiResult<String> registerMirror(HttpServletRequest request,
-                                                        @RequestBody MirrorDto.MirrorReq mirrorReq) {
+                                                      @RequestBody MirrorDto.MirrorReq mirrorReq) {
 
         Long userId = (Long) request.getAttribute("user_id");
 

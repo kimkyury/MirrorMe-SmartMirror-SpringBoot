@@ -1,4 +1,4 @@
-package com.mirror.backend.api.scheduler;
+package com.mirror.backend.api.scheduler.textScheduler;
 
 
 import com.mirror.backend.api.dto.ShortTermForecast;
@@ -32,7 +32,7 @@ public class TextCautionRainyScheduler {
     public final TokenUtil tokenUtil;
 
 //    @Scheduled(cron = "40 * * * * ?")   // Develop
-    @Scheduled(cron = "0 0 0/3 * * ?") // deploy
+    @Scheduled(cron = "0 10 0/3 * * ?") // deploy
     public void fetchRedisData() {
 
         System.out.println("------------Scheduler: Warning RainyWeather ----------");
