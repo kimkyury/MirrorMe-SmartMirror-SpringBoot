@@ -162,7 +162,7 @@ public class UserService {
     public List<ConnectUserDto.ConnectUserRes> getConnectUsers(Long userId) {
 
         List<ConnectUser> connectUserList = connectUserRepository.findByIdUserId(userId);
-
+        System.out.println(connectUserList);
 
         List<ConnectUserDto.ConnectUserRes> connectUserResList = new ArrayList<>();
         for(ConnectUser connectUser : connectUserList){
