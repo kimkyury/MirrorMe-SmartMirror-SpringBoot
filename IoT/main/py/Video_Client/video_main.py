@@ -1,5 +1,3 @@
-from tensorflow.keras import models
-from statistics import mode
 from Message import audio_recoding, video_recoding
 from collections import deque
 import numpy as np
@@ -9,7 +7,6 @@ import math
 import threading
 import websockets
 import asyncio
-import os
 import json
 import requests
 from datetime import datetime
@@ -22,10 +19,7 @@ mp_face_mesh = mp.solutions.face_mesh
 face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-# 모델 로드 (입력 이미지 크기에 맞게 수정)
-model = models.load_model('./Models/best_black_model.h5')
-
-my_name = '1'
+my_name = 11
 my_email = 'ssafy@ssafy.com'
 do = ''
 recv = ''
@@ -99,40 +93,6 @@ def preprocess_image(image):
                     x_max = max(x_max, x)
                     y_max = max(y_max, y)
 
-            # 이미지에 출력하고 그 위에 얼굴 그물망 경계점을 그립니다.
-            # if not results.multi_face_landmarks:
-            #     return 0
-
-            # blank_image = np.zeros((height, width, 3), dtype=np.uint8)
-
-            # annotated_image = image.copy()
-            # face_landmarks = results.multi_face_landmarks[0]
-
-            # face_landmarks = results.multi_face_landmarks[0]
-            # mp_drawing.draw_landmarks(
-            #     image=blank_image,
-            #     landmark_list=face_landmarks,
-            #     connections=mp_face_mesh.FACEMESH_TESSELATION,
-            #     landmark_drawing_spec=None,
-            #     connection_drawing_spec=mp_drawing_styles
-            #     .get_default_face_mesh_tesselation_style())
-            # mp_drawing.draw_landmarks(
-            #     image=blank_image,
-            #     landmark_list=face_landmarks,
-            #     connections=mp_face_mesh.FACEMESH_CONTOURS,
-            #     landmark_drawing_spec=None,
-            #     connection_drawing_spec=mp_drawing_styles
-            #     .get_default_face_mesh_contours_style())
-            # mp_drawing.draw_landmarks(
-            #     image=blank_image,
-            #     landmark_list=face_landmarks,
-            #     connections=mp_face_mesh.FACEMESH_IRISES,
-            #     landmark_drawing_spec=None,
-            #     connection_drawing_spec=mp_drawing_styles
-            #     .get_default_face_mesh_iris_connections_style())
-            # # 얼굴 부분만 추출
-            # face_only = blank_image[y_min:y_max, x_min:x_max]
-
             face_only = cv2.cvtColor(rgb_image[y_min:y_max, x_min:x_max], cv2.COLOR_BGR2GRAY)
             # face_only = cv2.cvtColor(face_only, cv2.COLOR_BGR2GRAY)
             
@@ -167,8 +127,8 @@ def getgesture():
     last_x = 0.5
     count = 0
 
-    emotion_list = [0,0,0,0,0]
-
+    emotion_list = []
+    
     while not stop_gesture:
         result.popleft()
 
@@ -176,38 +136,11 @@ def getgesture():
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         sf, input_image = preprocess_image(imgRGB)
+
         if sf:
-            # 모델에 이미지 적용
-            input_batch = np.expand_dims(input_image, axis=0)
-            predictions = model.predict(input_batch)
-
-            # 예측 결과에서의 최대 값과 해당 클래스 인덱스
-            max_prediction = np.max(predictions)
-            predicted_class = np.argmax(predictions[0])
-
-            # 각 클래스의 임계값
-            thresholds = {
-                1: 0.8,  # happy
-                2: 0.8,  # neutral
-                3: 0.8,  # sad
-                4: 0.55   # angry
-            }
-
-            # 최대 값이 해당 클래스의 임계값보다 크거나 같으면 해당 감정으로 예측
-            if max_prediction >= thresholds[predicted_class]:
-                emotion_classes = {
-                    1: "happy",
-                    2: "neutral",
-                    3: "sad",
-                    4: "angry"
-                }
-                predicted_emotion = emotion_classes[predicted_class]
-                emotion_list[predicted_class] += 1
-            else:
-                predicted_emotion = "nothing"
-
-            print("예측된 감정:", predicted_emotion)
-
+            emotion_list.append(input_image.tolist())
+            if len(emotion_list) > 29:break
+           
         # gesture recognition
         results = my_hands.process(imgRGB)
         if results.multi_hand_landmarks:
@@ -244,11 +177,6 @@ def getgesture():
                 if (flag == True):
                     result.append(gesture[i][5])
                     break
-
-
-
-        cv2.imshow("camera",img)
-        cv2.waitKey(1)
         
         if len(result) < 10:
             result.append(None)
@@ -265,24 +193,26 @@ def getgesture():
         else:
             return ret
     
-    try:
-        now = datetime.now()
-        formatted_date_time = now.strftime('%Y-%m-%d-%H-%M-%S')
+    cap.release()
 
-        params = {
-            "emotionDate": str(formatted_date_time),
-            "userId": my_name,
-            "emotionList" : emotion_list
-        }
-        headers = {"Content-Type": "application/json"}
+    # try:
+    now = datetime.now()
+    formatted_date_time = now.strftime('%Y%m%d')
 
-        # 보내고자 하는 Data를 JSON 형식으로 변환
-        data = json.dumps(params)
+    params = {
+        "emotionDate": str(formatted_date_time),
+        "userId": my_name,
+        "emotionList" : emotion_list
+    }
+    headers = {"Content-Type": "application/json"}
 
-        # JSON 데이터를 포함하여 POST 요청을 보냄
-        response = requests.post("http://i9e101.p.ssafy.io:8080/api/iot", headers=headers, data=data)
-    except:
-        print('error')
+    # 보내고자 하는 Data를 JSON 형식으로 변환
+    data = json.dumps(params)
+
+    # JSON 데이터를 포함하여 POST 요청을 보냄
+    response = requests.post("http://127.0.0.1:8000/emotion/findemotion/", headers=headers, data=data)
+    # except:
+    #     print('error')
     
 
 def get_gesture():
