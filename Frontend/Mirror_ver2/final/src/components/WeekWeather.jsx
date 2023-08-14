@@ -105,9 +105,8 @@ function WeekWeather(props) {
     });
 
     // 중기 날씨 정보 저장
-    // ################  baseDate 보내게 해달라고 백엔드 요청  ####################
     axios.get("weather/mid", {
-      params: { numOfRows: numOfRows, pageNo: pageNo },
+      params: { baseDate: baseDate, numOfRows: numOfRows, pageNo: pageNo },
     }).then((res) => {
       setMidTemperInfo(res.data.response);
     }).catch((error) => {
@@ -120,14 +119,23 @@ function WeekWeather(props) {
       {/* 주간 날씨 테이블 */}
       <TableContainer className='weather-table'>
         <Table>
-          {/* 제목행 필요할 경우 주석 활용 */}
-          {/* <TableHead>
+          <TableHead>
             <TableRow>
-              <TableCell>요일</TableCell>
-              <TableCell>최고기온</TableCell>
-              <TableCell>최저기온</TableCell>
+              <TableCell></TableCell>
+              <TableCell>
+                <div className="table-title">
+                  <img src='/weather/temMax.png' alt="temMax" width="10%" />
+                  <p>최고온도</p>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="table-title">
+                  <img src='/weather/temMin.png' alt="temMin" width="10%" />
+                  <p>최저온도</p>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHead> */}
+          </TableHead>
           <TableBody>
             {/* 아이콘 추가를 위한 작업 필요 */}
             {isLoading ? (
@@ -141,11 +149,9 @@ function WeekWeather(props) {
                 <TableRow key={index}>
                   <TableCell>{day}</TableCell>
                   <TableCell>
-                      {/* <img src='/weather/temMax.png' alt="temMax" width="10%" /> */}
                       {index === 0 ? firstDayInfo.tmx : index === 1 && secondDayInfo.tmx ? secondDayInfo.tmx : midtemperInfo[`taMax${index + 1}`]}℃
                   </TableCell>
                   <TableCell>
-                      {/* <img src='/weather/temMin.png' alt="temMin" width="10%" /> */}
                       {index === 0 ? firstDayInfo.tmn : index === 1 && secondDayInfo.tmn ? secondDayInfo.tmn : midtemperInfo[`taMin${index + 1}`]}℃
                   </TableCell>
                 </TableRow>

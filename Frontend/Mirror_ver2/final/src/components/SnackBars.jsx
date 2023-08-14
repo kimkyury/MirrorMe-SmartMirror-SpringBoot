@@ -87,8 +87,12 @@ function Snackbars(props) {
     setOpenSchedulesSnackbar(true);
   };
 
+  const handleWeatherButtonClick = () => {
+    setOpenWeatherSnackbar(true)
+  }
+
   // const handleWeekWeatherClick = () => {
-  //   setopenNoticeSnackbar(true);
+  //   setOpenNoticeSnackbar(true);
   //   setShowWeekWeather(true);
   // };
 
@@ -96,7 +100,7 @@ function Snackbars(props) {
   return (
     <div>
       {/* <Button onClick={handleVideoMessageButtonClick} variant="contained" color="inherit">메세지</Button> */}
-      {/* <Button onClick={handleWeatherButtonClick} variant="contained" color="inherit">날씨</Button> */}
+      <Button onClick={handleWeatherButtonClick} variant="contained" color="inherit">날씨</Button>
       <Button onClick={handleTasks} variant="contained" color="inherit">할일</Button>
       <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button>
       
