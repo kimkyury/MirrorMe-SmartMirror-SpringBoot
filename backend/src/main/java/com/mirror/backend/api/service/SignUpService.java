@@ -120,46 +120,44 @@ public class SignUpService {
         return houseHoldGetRes;
     }
 
-    public int registerHousehold(Long userId, Long householdId) {
+    public int registerHousehold(Long signUpUserId, Long householdId) {
 
-        Optional<User> user = userRepository.findByUserId(userId);
+        Optional<User> signUpUserOptional = userRepository.findByUserId(signUpUserId);
         Household household = householdRepository.findById(householdId).get();
 
-        // 사용자에게 household 지정
-        user.ifPresent(selectUser -> {
+        signUpUserOptional.ifPresent(selectUser -> {
             selectUser.setHousehold(household);
             userRepository.save(selectUser);
         });
 
-        // 해당 집에 이미 사람이 존재하는지 확인
         List<User> usersInSameHousehold = userRepository.findByHouseholdHouseholdId(householdId);
 
-        // 존재하는 사람들은 ConnectUser로 추가
-        // 마찬가지로, 이미 존재했던 사람들도 해당 사람들이 뜨도록 쌍방으로 추
         if(usersInSameHousehold.size() != 0){
 
             for(User originalUser : usersInSameHousehold){
 
+                if ( originalUser.equals(signUpUserOptional.get())) continue;
+
                 // 가입자 기준
-                ConnectUserKey connectUserKey1 = new ConnectUserKey(userId, originalUser.getUserId());
-                ConnectUser connectUser = ConnectUser.builder()
-                        .id(connectUserKey1)
-                        .user(originalUser)
-                        .connectUser(user.get())
+                ConnectUserKey connectUserOfSignUpUserKey = new ConnectUserKey(signUpUserId, originalUser.getUserId());
+                ConnectUser connectUserOfSignUpUser = ConnectUser.builder()
+                        .id(connectUserOfSignUpUserKey)
+                        .user(signUpUserOptional.get())
+                        .connectUser(originalUser)
                         .connectUserAlias(originalUser.getUserName())  // 해당 친인척의 실제이름을 기본값으로 함
                         .build();
 
                 // 기존 사용자 기준
-                ConnectUserKey connectUserKey2 = new ConnectUserKey(originalUser.getUserId(), userId);
-                ConnectUser connectUser2 = ConnectUser.builder()
-                        .id(connectUserKey2)
-                        .user(user.get())
-                        .connectUser(originalUser)
-                        .connectUserAlias(user.get().getUserName())  // 가입자의 실제이름을 기본값으로
+                ConnectUserKey connectUserKeyOfOriginalUserKey = new ConnectUserKey(originalUser.getUserId(), signUpUserId);
+                ConnectUser connectUserOfOriginalUser = ConnectUser.builder()
+                        .id(connectUserKeyOfOriginalUserKey)
+                        .user(originalUser)
+                        .connectUser(signUpUserOptional.get())
+                        .connectUserAlias(signUpUserOptional.get().getUserName())  // 가입자의 실제이름을 기본값으로 함
                         .build();
 
-                connectUserRepository.save(connectUser);
-                connectUserRepository.save(connectUser2);
+                connectUserRepository.save(connectUserOfSignUpUser);
+                connectUserRepository.save(connectUserOfOriginalUser);
             }
         }
 
