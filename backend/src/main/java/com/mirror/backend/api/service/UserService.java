@@ -91,7 +91,7 @@ public class UserService {
         return responseInterestDtoList;
     }
 
-    public int updateInterest(String userEmail, Long userId, InterestDto.InterestReq interestReq) {
+    public int updateInterest( Long userId, InterestDto.InterestReq interestReq) {
 
         int INTEREST_CREATED = 2;
         int INTEREST_OFF = 0;
@@ -103,11 +103,17 @@ public class UserService {
         // 애초에 조회할 수 없는 애라면, userId와 code를 복합키로하여 생성한다
         if (interestOptional.isEmpty()){
             InterestKey interestKey = new InterestKey( userId, interestCode);
+            InterestCommonCode interestCommonCode = interestCommonCodeRepository.findById(interestCode).get();
+
             Interest interest = Interest.builder()
                     .id(interestKey)
+                    .interestCode(interestCommonCode)
+                    .user(userRepository.findByUserId(userId).get())
                     .isUsed(1)
                     .build();
+
             interestRepository.save(interest);
+
             return INTEREST_CREATED;
         }
 
@@ -134,6 +140,7 @@ public class UserService {
             e.getMessage();
             return Result.FAIL;
         }
+
         return Result.SUCCESS;
     }
 
