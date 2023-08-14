@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class TextVideoViewDto implements Serializable {
 
     private final String textCode = "0401";
+    private String targetDay;
     private String text;
 
     @Builder
