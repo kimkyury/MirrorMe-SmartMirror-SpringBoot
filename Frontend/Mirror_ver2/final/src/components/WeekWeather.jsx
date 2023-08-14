@@ -142,13 +142,13 @@ function WeekWeather(props) {
         <Table>
           {/* 제목행 필요할 경우 주석 활용 */}
           <TableHead>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>아이콘</TableCell>
               <TableCell>요일</TableCell>
               <TableCell>최고기온</TableCell>
               <TableCell>최저기온</TableCell>
               <TableCell>강수확률</TableCell>
-            </TableRow>
+            </TableRow> */}
           </TableHead>
           <TableBody>
             {/* 아이콘 추가를 위한 작업 필요 */}
