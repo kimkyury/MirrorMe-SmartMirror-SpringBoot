@@ -1,43 +1,48 @@
-package com.mirror.backend.api.scheduler;
+package com.mirror.backend.api.scheduler.textScheduler;
 
 
-import com.mirror.backend.api.dto.Event;
 import com.mirror.backend.api.dto.MessageDto;
-import com.mirror.backend.api.entity.*;
-import com.mirror.backend.api.repository.*;
-import com.mirror.backend.api.service.CalendarService;
+import com.mirror.backend.api.entity.ConnectUser;
+import com.mirror.backend.api.entity.GoogleOAuthToken;
+import com.mirror.backend.api.entity.TextVideoView;
+import com.mirror.backend.api.entity.User;
+import com.mirror.backend.api.repository.ConnectUserRepository;
+import com.mirror.backend.api.repository.GoogleOAuthTokenRepository;
+import com.mirror.backend.api.repository.TextVideoViewRepository;
+import com.mirror.backend.api.repository.UserRepository;
 import com.mirror.backend.api.service.OAuthService;
 import com.mirror.backend.api.service.impl.VideoServiceImpl;
-import com.mirror.backend.common.utils.ChatGptUtil;
 import com.mirror.backend.common.utils.EtcUtil;
 import com.mirror.backend.common.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TextVideoViewScheduler {
+public class TextVideoViewTextScheduler implements TextSchedulerHandler {
 
-    public final GoogleOAuthTokenRepository googleOAuthTokenRepository;
-    public final TextVideoViewRepository textVideoViewRepository;
-    public final UserRepository userRepository;
-    public final ConnectUserRepository connectUserRepository;
+    private final GoogleOAuthTokenRepository googleOAuthTokenRepository;
+    private final TextVideoViewRepository textVideoViewRepository;
+    private final UserRepository userRepository;
+    private final ConnectUserRepository connectUserRepository;
 
-    public final OAuthService oAuthService;
-    public final VideoServiceImpl videoService;
+    private final OAuthService oAuthService;
+    private final VideoServiceImpl videoService;
 
-    public final ChatGptUtil chatGptUtil;
-    public final TokenUtil tokenUtil;
+    private final TokenUtil tokenUtil;
 
-//    @Scheduled(cron = "0 * * * * ?")   // develop
-    @Scheduled(cron = "0 5 0 * * ?") // deploy
-    public void fetchRedisData() {
+    private TextSchedulerHandler nextHandler;
+
+    @Override
+    public void setNextHandler(TextSchedulerHandler next){
+        this.nextHandler = next;
+    }
+
+    @Override
+    public void execute(){
 
         System.out.println("------------Scheduler: Video View Calendar----------");
 
@@ -45,12 +50,8 @@ public class TextVideoViewScheduler {
         Iterator<GoogleOAuthToken> iterator = googleOAuthToken.iterator();
 
         while (iterator.hasNext()) {
-            GoogleOAuthToken userTokenInfo = iterator.next();
 
-            String accessToken = userTokenInfo.getAccessToken();
-            String refreshToken = userTokenInfo.getRefreshToken();
-
-            accessToken = tokenUtil.confirmAccessToken(accessToken, refreshToken); // AccessToken Check & ReIssue
+            String accessToken = TextSchedulerHandler.getUserStringUseOAuthToken(iterator.next(), tokenUtil);
             String receiveUserEmail = oAuthService.getUserEmailFromAccessToken(accessToken);
             List<MessageDto.ResponseMessageDetail>  responseMessageDetailList = videoService.unReadMessageList(receiveUserEmail);
 
@@ -74,7 +75,6 @@ public class TextVideoViewScheduler {
 
         System.out.println("------------ Finish Scheduler ----------");
     }
-
 
     public String getTextVideoView(String receiveUserName, String sendUserName){
 
