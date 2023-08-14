@@ -12,8 +12,6 @@ import PresentCardList from './components/PresentCardList';
 import GestureHelp from './components/GestureHelp';
 import CommandHelp from './components/CommandHelp';
 
-// const userEmail = 'test2@gmail.com'; // 사용자 이메일 추후 수정
-const userEmail = '';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -80,12 +78,9 @@ function App() {
   const [modalsCommandMessage, setModalsCommandMessage] = useState('');
   const [youtubeKey, setYoutubeKey] = useState('');
 
-  const [messageReceiver, setMessageReceiver] = useState('');
-
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:9998");
     setWebSocket(socket);
-    
 
     socket.onopen = () => {
       setMessageTextArea(prev => prev + "Server connect...\n");
@@ -109,8 +104,6 @@ function App() {
         setUserEmail(data.query.email);
       } else if (data.order === 'YOUTUBE') {  // 유튜브
         setYoutubeKey(data.query.key);
-      } else if (data.order === 'MESSAGESENDSTART') {  // 유튜브
-        setMessageReceiver(data.query.receiver);
       }
     };
 
@@ -165,7 +158,6 @@ function App() {
             <Modals
               commandMessage={modalsCommandMessage}
               youtubeKey={youtubeKey}
-              messageReceiver={messageReceiver}
             />
             <Snackbars
               commandMessage={snackbarsCommandMessage}
@@ -192,7 +184,7 @@ function App() {
             </CSSTransition>
           </div>
           <div>
-            {/* <CommandHelp /> */}
+            <CommandHelp />
             <GestureHelp />
           </div>
           <form className="socket">
