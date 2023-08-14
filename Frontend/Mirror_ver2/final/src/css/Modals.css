@@ -21,8 +21,15 @@
   left: 420px;
   width: 800px;
   height: 500px;
-  border: 5px solid red;
   transform: translate(-50%, -50%);
+
+  /* 테두리 스타일 */
+  border-width: 5px;
+  border-style: solid;
+
+  /* 그라데이션 적용 */
+  border-image: linear-gradient(to right, #7A71DF, #3BA5C8);
+  border-image-slice: 1; /* 테두리 영역에 그라데이션 적용 */
 }
 
 /* 영상 송신 - ready */
@@ -119,6 +126,12 @@
   align-items: center;
   height: 100%;
   margin-top: -50px;
+}
+
+.linear-progress {
+  background-color: grey;
+  /* 그라데이션 설정 */
+  background-image: linear-gradient(to right, #7A71DF, #3BA5C8);
 }
 
 @keyframes spin {
