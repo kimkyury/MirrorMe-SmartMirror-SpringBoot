@@ -16,4 +16,15 @@ public class MidtermWeatherForecast {
     private int rnSt6Pm; // 6일 후 오후 강수 확률
     private int rnSt7Am; // 7일 후 오전 강수 확률
     private int rnSt7Pm; // 7일 후 오후 강수 확률
+
+    private String wf3Am; // 3일 후 오전 날씨예보
+    private String wf3Pm; // 3일 후 오후 날씨예보
+    private String wf4Am; // 4일 후 오전 날씨예보
+    private String wf4Pm; // 4일 후 오후 날씨예보
+    private String wf5Am; // 5일 후 오전 날씨예보
+    private String wf5Pm; // 5일 후 오후 날씨예보
+    private String wf6Am; // 6일 후 오전 날씨예보
+    private String wf6Pm; // 6일 후 오후 날씨예보
+    private String wf7Am; // 7일 후 오전 날씨예보
+    private String wf7Pm; // 7일 후 오후 날씨예보
 }
