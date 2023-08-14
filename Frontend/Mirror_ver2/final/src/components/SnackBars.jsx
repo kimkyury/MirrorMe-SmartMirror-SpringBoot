@@ -88,9 +88,11 @@ function Snackbars(props) {
   };
 
   const handleWeatherButtonClick = () => {
-    setOpenNoticeSnackbar(true);
+    // setOpenNoticeSnackbar(true);
+    // console.log('open notice snackbar')
     setOpenWeatherSnackbar(true);
   };
+
 
 
   return (
