@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     List<Emotion> findAllByEmotionDateBetweenAndUserId(LocalDate start, LocalDate end, Long userId);
-    Optional<Emotion> findAllByEmotionDateAndUserId(LocalDate emotionDate, Long userId);
+    List<Emotion> findAllByEmotionDate(LocalDate date);
+    Optional<Emotion> findByEmotionDateAndUserId(LocalDate emotionDate, Long userId);
 }

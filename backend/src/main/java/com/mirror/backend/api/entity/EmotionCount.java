@@ -23,4 +23,8 @@ public class EmotionCount {
         this.emotionKey = emotionKey;
         this.emotionCount = emotionCount;
     }
+
+    public void update(int emotionCount) {
+        this.emotionCount = emotionCount;
+    }
 }
