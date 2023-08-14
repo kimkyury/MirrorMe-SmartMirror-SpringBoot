@@ -26,14 +26,14 @@ def save_image_as_png(image, output_filename):
 # 테스트용 코드
 if __name__ == '__main__':
     URL = "http://i9e101.p.ssafy.io:8080/api/iot/users"
-    RSA_N = 119
-    RSA_E = 43
+    RSA_N = 20453
+    RSA_E = 20053
 
     # 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
     # 모두 소문자로 구성해줄 것
     temp = encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
     params = {
-        "mirrorId": "SxdePkscFV4HJzRLE18eXF5mJ2w=",
+        "mirrorId": temp,
     }
     print(params)
     headers = {"Content-Type": "application/json"}
@@ -46,15 +46,13 @@ if __name__ == '__main__':
 
     # 송신 결과 확인
     rdata = response.json()
-    user_info_list = rdata['body']['usersInSameHousehold']
+    user_info_list = rdata['response']
 
     for user in user_info_list:
         if user["profileImage"] != None:
             img_out = decode_base64_image(user["profileImage"])
             save_image_as_png(img_out,f'./Video_client/Recognition/Image/{user["userName"]}.png')
         user.pop("profileImage",None)
-
-    print(user_info_list)
 
     # Create a JSON file
     info_json = json.dumps(user_info_list)
