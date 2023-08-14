@@ -1,24 +1,29 @@
-from Utils.datasets import get_labels
-from Utils.inference import detect_faces
-from Utils.inference import draw_text
-from Utils.inference import draw_bounding_box
-from Utils.inference import apply_offsets
-from Utils.inference import load_detection_model
-from Utils.preprocessor import preprocess_input
-from keras.models import load_model
+from tensorflow.keras import models
 from statistics import mode
-import numpy as np
-
-from Recognition import find_user, get_user_face
 from Message import audio_recoding, video_recoding
 from collections import deque
+import numpy as np
 import cv2
 import mediapipe as mp
 import math
 import threading
 import websockets
 import asyncio
+import os
 
+
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
+mp_face_mesh = mp.solutions.face_mesh
+
+# 검출 모델 미리 로딩
+face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
+
+# 모델 로드 (입력 이미지 크기에 맞게 수정)
+model = models.load_model('./Models/best_black_model.h5')
+
+target_size = (256, 256)
 
 #################################################################
 #################################################################
@@ -57,6 +62,82 @@ def dist(x1,y1,x2,y2):
         return math.sqrt(math.pow(x1 - x2, 2)) + math.sqrt(math.pow(y1 - y2, 2))
 
 
+# 이미지 로드 및 전처리
+def preprocess_image(image):
+    try:
+        drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+        with mp_face_mesh.FaceMesh(
+                static_image_mode=True,
+                max_num_faces=1,
+                refine_landmarks=True,
+                min_detection_confidence=0.5) as face_mesh:
+
+            # 작업 전에 BGR 이미지를 RGB로 변환합니다.
+            rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            # 얼굴 검출
+            results = face_mesh.process(rgb_image)
+
+            if results.multi_face_landmarks:
+                face_landmarks = results.multi_face_landmarks[0]  # 첫 번째 얼굴 사용
+                height, width, _ = image.shape
+                x_min, y_min, x_max, y_max = width, height, 0, 0
+
+                for landmark in face_landmarks.landmark:
+                    x, y = int(landmark.x * width), int(landmark.y * height)
+                    x_min = min(x_min, x)
+                    y_min = min(y_min, y)
+                    x_max = max(x_max, x)
+                    y_max = max(y_max, y)
+
+            # 이미지에 출력하고 그 위에 얼굴 그물망 경계점을 그립니다.
+            # if not results.multi_face_landmarks:
+            #     return 0
+
+            # blank_image = np.zeros((height, width, 3), dtype=np.uint8)
+
+            # annotated_image = image.copy()
+            # face_landmarks = results.multi_face_landmarks[0]
+
+            # face_landmarks = results.multi_face_landmarks[0]
+            # mp_drawing.draw_landmarks(
+            #     image=blank_image,
+            #     landmark_list=face_landmarks,
+            #     connections=mp_face_mesh.FACEMESH_TESSELATION,
+            #     landmark_drawing_spec=None,
+            #     connection_drawing_spec=mp_drawing_styles
+            #     .get_default_face_mesh_tesselation_style())
+            # mp_drawing.draw_landmarks(
+            #     image=blank_image,
+            #     landmark_list=face_landmarks,
+            #     connections=mp_face_mesh.FACEMESH_CONTOURS,
+            #     landmark_drawing_spec=None,
+            #     connection_drawing_spec=mp_drawing_styles
+            #     .get_default_face_mesh_contours_style())
+            # mp_drawing.draw_landmarks(
+            #     image=blank_image,
+            #     landmark_list=face_landmarks,
+            #     connections=mp_face_mesh.FACEMESH_IRISES,
+            #     landmark_drawing_spec=None,
+            #     connection_drawing_spec=mp_drawing_styles
+            #     .get_default_face_mesh_iris_connections_style())
+            # # 얼굴 부분만 추출
+            # face_only = blank_image[y_min:y_max, x_min:x_max]
+
+            face_only = cv2.cvtColor(rgb_image[y_min:y_max, x_min:x_max], cv2.COLOR_BGR2GRAY)
+            # face_only = cv2.cvtColor(face_only, cv2.COLOR_BGR2GRAY)
+            
+            face_only = cv2.resize(face_only, target_size, interpolation=cv2.INTER_LINEAR)
+            face_only = np.expand_dims(face_only, axis=-1)  # 이미지에 채널 차원 추가 (1 채널)
+
+            # cv2.imshow('img',face_only)
+            # cv2.waitKey(0)
+
+            return True, face_only
+    except :
+        return False, None
+
+
 def getgesture():
     global stop_gesture
     cap = cv2.VideoCapture(0)
@@ -64,80 +145,56 @@ def getgesture():
     mpHands = mp.solutions.hands
     my_hands = mpHands.Hands()
 
-    # loading face models
-    face_cascade = cv2.CascadeClassifier('./Models/haarcascade_frontalface_default.xml')
-    emotion_classifier = load_model('./models/emotion_model.hdf5')
-    emotion_offsets = (20, 40)
-
-    # starting lists for calculating modes
-    emotion_window = []
-    frame_window = 10
-
-    # getting input model shapes for inference
-    emotion_target_size = emotion_classifier.input_shape[1:3]
-
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-            [True, True, False, False, (0,0), "V"]]
+            [True, True, False, False, (0,0), "V"],
             # [True, False, False, True, (0,0), "A"],
-            # [False, False, False, False, (0,0), "EXIT"]]
+            [False, False, False, False, (0,0), "exit"]]
     
     result = deque([None for _ in range(26)])
     distance = deque(['remain' for _ in range(3)])
 
     last_x = 0.5
+    count = 0
 
     while not stop_gesture:
         result.popleft()
 
         success, img = cap.read()
-        imgRGB = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        # emotion recognition
-        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        emotion_labels = get_labels('fer2013')
+        sf, input_image = preprocess_image(imgRGB)
+        if sf:
+            # 모델에 이미지 적용
+            input_batch = np.expand_dims(input_image, axis=0)
+            predictions = model.predict(input_batch)
 
-        faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5,
-		                                      minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
+            # 예측 결과에서의 최대 값과 해당 클래스 인덱스
+            max_prediction = np.max(predictions)
+            predicted_class = np.argmax(predictions[0])
 
-        for face_coordinates in faces:
-            x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
-            gray_face = gray_image[y1:y2, x1:x2]
-            try:
-                gray_face = cv2.resize(gray_face, (emotion_target_size))
-            except:
-                continue
+            # 각 클래스의 임계값
+            thresholds = {
+                1: 0.5,  # happy
+                2: 0.5,  # neutral
+                3: 0.5,  # sad
+                4: 0.5   # angry
+            }
 
-            gray_face = preprocess_input(gray_face, True)
-            gray_face = np.expand_dims(gray_face, 0)
-            gray_face = np.expand_dims(gray_face, -1)
-            emotion_prediction = emotion_classifier.predict(gray_face)
-            emotion_probability = np.max(emotion_prediction)
-            emotion_label_arg = np.argmax(emotion_prediction)
-            emotion_text = emotion_labels[emotion_label_arg]
-            emotion_window.append(emotion_text)
-
-            if len(emotion_window) > frame_window:
-                emotion_window.pop(0)
-            try:
-                emotion_mode = mode(emotion_window)
-            except:
-                continue
-
-            if emotion_text == 'angry':
-                color = emotion_probability * np.asarray((255, 0, 0))
-            elif emotion_text == 'sad':
-                color = emotion_probability * np.asarray((0, 0, 255))
-            elif emotion_text == 'happy':
-                color = emotion_probability * np.asarray((255, 255, 0))
-            elif emotion_text == 'surprise':
-                color = emotion_probability * np.asarray((0, 255, 255))
+            # 최대 값이 해당 클래스의 임계값보다 크거나 같으면 해당 감정으로 예측
+            if max_prediction >= thresholds[predicted_class]:
+                emotion_classes = {
+                    1: "happy",
+                    2: "neutral",
+                    3: "sad",
+                    4: "angry"
+                }
+                predicted_emotion = emotion_classes[predicted_class]
             else:
-                color = emotion_probability * np.asarray((0, 255, 0))
-            print(emotion_text)
-            color = color.astype(int)
-            color = color.tolist()
+                predicted_emotion = "nothing"
+
+            print("예측된 감정:", predicted_emotion)
 
         # gesture recognition
         results = my_hands.process(imgRGB)

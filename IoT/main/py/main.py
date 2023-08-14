@@ -28,8 +28,8 @@ from get_user_info import encryption, decryption, decode_base64_image, save_imag
 # 장치 고유 시리얼 넘버
 DEVICE_SERIAL_CODE = '6rBZ68bBiJ46ntHGBfJP'
 URL_USER_DATA = "http://i9e101.p.ssafy.io:8080/api/iot/users"
-RSA_N = 119
-RSA_E = 43
+RSA_N = 20453
+RSA_E = 20053
 
 
 # 서버팀에 보내고자 하는 것을 key - value 형식으로 작성. 작성한 것을 temp라는 변수에 대입
@@ -38,7 +38,7 @@ RSA_E = 43
 print("서버에 유저 데이터 요청")
 temp = encryption("6rBZ68bBiJ46ntHGBfJP",RSA_N,RSA_E)
 params = {
-    "mirrorId": "SxdePkscFV4HJzRLE18eXF5mJ2w=",
+    "mirrorId": temp,
 }
 headers = {"Content-Type": "application/json"}
 
@@ -50,7 +50,7 @@ response = requests.post(URL_USER_DATA, headers=headers, data=data)
 
 # 송신 결과 확인
 rdata = response.json()
-user_info_list = rdata['body']['usersInSameHousehold']
+user_info_list = rdata['response']
 
 for user in user_info_list:
     if user["profileImage"] != None:
