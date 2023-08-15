@@ -20,6 +20,9 @@ function ModalBottons(props) {
 
   const userEmail = props.userEmail;
   const messageReceiver = props.messageReceiver;
+  const userAccessToken = props.userAccessToken;
+  const userRefreshToken = props.userRefreshToken;
+
 
   useEffect(() => {
     if (commandMessage === "YOUTUBE") {
@@ -133,9 +136,11 @@ function ModalBottons(props) {
   return (
     <div>
       {/* <Button className="btn" onClick={toggleQRModal}>QR</Button> */}
-      <Button className="btn" onClick={toggleMessageModal}>메세지</Button>
-      <Button className="btn" onClick={toggleYoutubeModal}>유튜브</Button>
-      <Button className="btn" onClick={toggleSendMessageModal}>영상보내기</Button>
+      <div style={{ display: 'none' }}>
+        <Button className="btn" onClick={toggleMessageModal}>메세지</Button>
+        <Button className="btn" onClick={toggleYoutubeModal}>유튜브</Button>
+        <Button className="btn" onClick={toggleSendMessageModal}>영상보내기</Button>
+      </div>
 
       {/* QR Modal */}
       {/* {isQRModalOpen && (
@@ -154,6 +159,8 @@ function ModalBottons(props) {
           <VideoMessage 
             userEmail={userEmail}
             commandMessage={commandMessage}
+            userAccessToken={userAccessToken}
+            userRefreshToken={userRefreshToken}
           />
         </div>
       )}
