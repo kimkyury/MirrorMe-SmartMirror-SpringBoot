@@ -19,7 +19,6 @@ import random
 import json
 
 import requests
-
 ###############################################################################################
 ###############################################################################################
 # 서버에서 유저 데이터 받아오기
@@ -55,7 +54,9 @@ user_info_list = rdata['response']
 for user in user_info_list:
     if user["profileImage"] != None:
         img_out = decode_base64_image(user["profileImage"])
-        save_image_as_png(img_out,f'./Video_client/Recognition/Image/{user["userEmail"]}.png')
+        save_image_as_png(img_out, f'/home/ssafy/바탕화면/temp/S09P12E101/IoT/main/py/Video_Client/Recognition/Image/{user["userName"]}.png')
+        # save_image_as_png(img_out, f'./Video_client/Recognition/Image/{user["userName"]}.png')
+
     user.pop("profileImage",None)
 
 get_user_face.getUserFaceImage()
@@ -111,8 +112,9 @@ async def accept(websocket, path):
     # 세션 코드 발급
     if role != "react":
         await websocket.send(session_id)
-    else:
-        await appear()
+    # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
+    # else:
+    #     await appear()
 
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
@@ -209,9 +211,8 @@ async def messageSend(*arg):
         }
     }
     # 리엑트가 접속 했을 때만 전송
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
-
+    await websocketSend('react', json.dumps(send_data))
+    
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
         global user_email
@@ -230,27 +231,23 @@ async def messageSend(*arg):
         del user_data
 
     # audio와 video측에 알려서 연결을 끊고 녹화를 시작하도록함
-    if client_role.get('audio'):
-        await client[client_role["audio"]].send("audio_end")
+    await websocketSend('audio', 'audio_end')
+
     tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.") 
-    if client_role.get('video'):
-        # global user_email
-        send_data = {
-            "order" : "video_start",
-            "query" : {
-                "send_user" : user_email,
-                "target_user" : target
-            }
+    send_data = {
+        "order" : "video_start",
+        "query" : {
+            "target_user" : target
         }
-        await client[client_role["video"]].send(json.dumps(send_data))
+    }
+    await websocketSend('video', json.dumps(send_data))
 
 async def messageEnd(*arg):
     global STATUS
     if STATUS != MESSAGE_CAP:
         return
 
-    if client_role.get('audio'):
-        await client[client_role["audio"]].send("audio_restart")
+    await websocketSend('audio', "audio_restart")
 
     # 메세지 녹화 종료를 리엑트로 알림
     send_data = {
@@ -258,10 +255,8 @@ async def messageEnd(*arg):
         "query" :None
     }
 
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
 
-    # 이후 저장된 영상데이터를 백엔드 측으로 보내 줘야 됨
     STATUS = WAITTING
 
 # 메세지 확인하기
@@ -276,8 +271,7 @@ async def messageShow(*arg):
         "query" : None
     }
 
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
 
     STATUS = MESSAGE_SHOW
     tts("메세지를 보여드릴게요")
@@ -336,8 +330,8 @@ async def weather(*arg):
         "order" : "WEATHER",
         "query" : None
     }
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
+
 
     tts("오늘의 날씨 입니다.")
 
@@ -392,22 +386,24 @@ async def appear(*arg):
         pass
     
     print("find user")
-    global user_email
-    user_email = find_user.getUserName()
-    print("user :", user_email)
-
-    user_email = "shw2ny@gmail.com"
+    global user_email, user_name
+    user_name = find_user.getUserName()
+    print("user :", user_name)
 
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
         for user in user_data:
-            if user["userEmail"] == user_email:
-                global user_name
-                user_name = user["userName"]
+            if user["userEmail"] == user_name:
+                user_id = user["userId"]
+                user_email = user["userEmail"]
                 break
 
         del user_data
 
+    # 인식된 사람에게 해줄 말을 정보 비동기로 받아오기
+    task = asyncio.create_task(callSpeech(user_email))
+
+    ## 리엑트로 유저정보 보내기
     send_data = {
         "order" : "USERINFO",
         "query" : {
@@ -415,31 +411,61 @@ async def appear(*arg):
         }
     }
 
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
+
+    # 비디오로 유저정보 보내기
+    send_data = {
+        "order" : "userInfo",
+        "query" : {
+            "userId" : user_id,
+            "email" : user_email
+        }
+    }
+    
+    await websocketSend('video', json.dumps(send_data))
 
 
-    task = asyncio.create_task(callSpeech(user_email))
-
-    # tts(user_name + "님 안녕하세요!")
-
+    # 사람에게 해줄말을 받아올 때까지 대기
     speech = await task
 
-
-
+    # 해줄말이 있다면 내용 리엑트로 전달하고, tts시키기
     if speech:
-        if client_role.get("react", False):
-            await client[client_role["react"]].send(json.dumps(speech))
+        send_data = {
+            "order" : "TTS",
+            "query" : speech
+        }
+        await websocketSend('react', json.dumps(send_data))
         tts(speech["content"])
-        if client_role.get("react", False):
-            await client[client_role["react"]].send(json.dumps({
-                                                    "order" : "TTS_end",
-                                                    "query" : None
-                                                    }))
+        send_data = {
+                        "order" : "TTS_end",
+                        "query" : None
+                    }
+        await websocketSend('react', json.dumps(send_data))
 
+    # 해줄말이 없다면 그냥 인사만
     else :
-        print(f"{user_name}님 안녕하세요")
+        send_data = {
+            "order" : "TTS",
+            "query" : {
+                "content" : "TTS",
+                "query" : {
+                    "content" : f"{user_name}님 안녕하세요",
+                    "type" : "hello"
+                }
 
+            }
+        }
+        await websocketSend('react', json.dumps(send_data))
+
+        tts(f"{user_name}님 안녕하세요")
+
+        send_data = {
+                "order" : "TTS_end",
+                "query" : None
+            }
+        await websocketSend('react', json.dumps(send_data))
+
+    # 드디어 대기모드
     STATUS = WAITTING
 
 async def callSpeech(user_email):
@@ -465,25 +491,49 @@ async def callSpeech(user_email):
 
 async def disappear(*arg):
     global STATUS
-    if STATUS != WAITTING:
+    if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
         # os.system("xset dpms force off")
         print("screen_off")
         # 스피커와 카메라로 사용 종료 보내기
-        if client_role.get('audio'):
-            await client[client_role["audio"]].send("audio_end")
-        if client_role.get('video'):
-            await client[client_role["video"]].send("video_end")
+        await websocketSend('audio', 'audio_end')
+        send_data = {
+            "order" : "logout",
+            "query" : None
+        }
+        await websocketSend('video', json.dumps(send_data))
+
 
 
         STATUS = SCREEN_OFF
 
 async def left(*arg):
-    pass
+    send_data = {
+        "order" : "LEFT",
+        "query" : None
+    }
+
+    await websocketSend('react', json.dumps(send_data))
 
 async def right(*arg):
-    pass
+    send_data = {
+        "order" : "RIGHT",
+        "query" : None
+    }
 
+    await websocketSend('react', json.dumps(send_data))
+
+async def mainUI(*arg):
+    send_data = {
+        "order" : "EXIT",
+        "query" : None
+    }
+
+    await websocketSend('react', json.dumps(send_data))
+
+async def websocketSend(target, data):
+    if client_role.get(target):
+        await client[client_role[target]].send(data)
 
 order_fun = {"CALL" : call,
             "MESSAGESEND" : messageSend,
@@ -497,6 +547,7 @@ order_fun = {"CALL" : call,
             "end_video": messageEnd,
             "appear!": appear,
             "disappear!": disappear,
+            "exit" : mainUI
             }
 
 
