@@ -16,7 +16,7 @@ class _MessageState extends State<Message> {
   void initState() {
     super.initState();
     // 비디오 URL 설정
-    String videoUrl = "http://i9e101.p.ssafy.io:8080/video/message?videoId=10"; // 실제 URL로 변경해야 함
+    String videoUrl = "http://i9e101.p.ssafy.io:8080/api/iot/message?videoId=10"; // 실제 URL로 변경해야 함
 
     // 비디오 데이터 다운로드 후 비디오 재생
     _initializeVideoPlayer(videoUrl);
