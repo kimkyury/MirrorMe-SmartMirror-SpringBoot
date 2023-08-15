@@ -21,12 +21,11 @@ mp_face_mesh = mp.solutions.face_mesh
 face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-my_name = 5
-my_email = 'woneee99@gmail.com'
-do = ''
+cur_user = -1
+cur_email = 'woneee99@gmail.com'
+send_message_to_server = ''
 recv = ''
 websocket = None
-stop_gesture = True
 lock = threading.Lock()
 
 
@@ -36,7 +35,7 @@ target_size = (256, 256)
 #################################################################
 # 웹소켓 연결하는 코루틴
 async def connect():
-    global recv, do, websocket, stop_gesture
+    global recv, send_message_to_server, websocket, cur_user, cur_email
     # 웹 소켓에 접속을 합니다.
     try:
         async with websockets.connect("ws://localhost:9998") as ws:
@@ -48,29 +47,25 @@ async def connect():
                 print("신호 대기")
                 recv = await ws.recv()
 
-# <<<<<<< HEAD
+                # 받은 신호에 따른 처리
                 recv = json.loads(recv)
-                if recv.get('order', None) == 'video_start':
-                    with lock:
-                        stop_gesture = 1
+                if recv.get('order', None) == 'userInfo':
+                    cur_user = int(recv['query']['userId'])
+                    cur_email = recv['query']['userEmail']
+                    print('login')
 
-                if recv == 'Recording Audio':
-                    audio_recoding.recordingAudio(my_name, "1")
-                    do = ''
-                if recv == 'Yo':
-                    pass
-# =======
-#                 if recv == 'audio_message_start':
-#                     audio_recoding.recordingAudio(my_name, "1")
-#                     do = None
-#                 if recv == 'video_message_start':
-#                     stop_gesture = 0
-#                     video_recoding.recordingVideo(my_name, "1")
-#                     stop_gesture = 1
-#                     do = None
-# >>>>>>> develop
-                if recv == 'EXIT':
-                    do = None
+                elif recv.get('order', None) == 'logout':
+                    cur_user = -1
+                    cur_email = ''
+                    print('logout')
+
+                elif recv.get('order', None) == 'video_start':
+                    video_recoding.recordingVideo(cur_email, recv['query']['target_user'])
+                    send_message_to_server = 'recoding_end'
+
+                elif recv.get('order', None) == 'audio_start':
+                    audio_recoding.recordingAudio(cur_email, recv['query']['target_user'])
+                    send_message_to_server = 'recoding_end'
 
     except websockets.exceptions.ConnectionClosed:
         print("error")
@@ -125,24 +120,7 @@ def preprocess_image(image):
 
 
 def getgesture():
-    global stop_gesture
-# <<<<<<< HEAD
-    with lock:
-        if stop_gesture == 1:
-            video_recoding.recordingVideo(recv['query']['send_user'],recv['query']['target_user'])
-            with lock:
-                stop_gesture = 0
-            
-            do = 'end_video'
-
-            return
-
-
-# =======
-#     if stop_gesture:
-#         time.sleep(15.5)
-# >>>>>>> develop
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     mpHands = mp.solutions.hands
     my_hands = mpHands.Hands()
@@ -150,12 +128,7 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-# <<<<<<< HEAD
             [True, True, False, False, (0,0), "V"],
-# =======
-#             [True, True, False, False, (0,0), "video_message_start"],
-# >>>>>>> develop
-            [True, False, False, True, (0,0), "A"],
             [False, False, False, False, (0,0), "exit"]]
     
     result = deque([None for _ in range(26)])
@@ -167,10 +140,6 @@ def getgesture():
     emotion_list = []
     
     while True:
-        with lock:
-            if stop_gesture:
-                break
-
         result.popleft()
 
         success, img = cap.read()
@@ -178,9 +147,9 @@ def getgesture():
 
         sf, input_image = preprocess_image(imgRGB)
         # print(len(emotion_list))
-        if sf:
+        if sf and cur_user != -1:
             emotion_list.append(input_image.tolist())
-            if len(emotion_list) > 9:break
+            if len(emotion_list) > 29:break
            
         # gesture recognition
         results = my_hands.process(imgRGB)
@@ -236,72 +205,47 @@ def getgesture():
     
     cap.release()
 
-    # try:
-    now = datetime.now()
-    formatted_date_time = now.strftime('%Y%m%d')
+    try:
+        now = datetime.now()
+        formatted_date_time = now.strftime('%Y%m%d')
 
-    params = {
-        "emotionDate": str(formatted_date_time),
-        "userId": my_name,
-        "emotionList" : emotion_list
-    }
-    headers = {"Content-Type": "application/json"}
+        params = {
+            "emotionDate": str(formatted_date_time),
+            "userId": cur_user,
+            "emotionList" : emotion_list
+        }
+        headers = {"Content-Type": "application/json"}
 
-    # 보내고자 하는 Data를 JSON 형식으로 변환
-    data = json.dumps(params)
+        # 보내고자 하는 Data를 JSON 형식으로 변환
+        data = json.dumps(params)
 
-    # JSON 데이터를 포함하여 POST 요청을 보냄
-    response = requests.post("https://f89c-210-217-108-123.ngrok-free.app/emotion/findemotion/", headers=headers, data=data)
-    # except:
-    #     print('error')
+        # JSON 데이터를 포함하여 POST 요청을 보냄
+        response = requests.post("https://f89c-210-217-108-123.ngrok-free.app/emotion/findemotion/", headers=headers, data=data)
+    except:
+        print('send emotion error')
     
 
 def get_gesture():
     loop = asyncio.new_event_loop()
 
     while True:
-        global websocket, do, stop_gesture
+        global websocket, send_message_to_server
         # GESTURE
-        if stop_gesture:continue
-        do = getgesture()
+        send_message_to_server = getgesture()
 
-        if do != None and websocket != None:
-            loop.run_until_complete(websocket.send(do))
+        if send_message_to_server != None and websocket != None:
+            loop.run_until_complete(websocket.send(send_message_to_server))
+            print(send_message_to_server)
+            send_message_to_server = None
 
-            print(do)
-
-# <<<<<<< HEAD
-            # 여기는 주석처리 되어있네요 일단 그대로 두겠습니다.
-            # if do == 'V':
-            #     stop_gesture = 1
-            #     video_recoding.recordingVideo(my_name, "1")
-            #     stop_gesture = 0
-# =======
-#             if do == 'video_message_start':
-#                 video_recoding.recordingVideo(my_name, "1")
-            
-#             do = None
-# >>>>>>> develop
+            # if send_message_to_server == 'V':
+            #     video_recoding.recordingVideo(cur_user, "1")
 
 if __name__ == "__main__":
-    # Web socket connect
-
-    video_recoding.recordingVideo(my_name, "1")
-
     ges = threading.Thread(target=get_gesture)
     ges.start()
     
+    # Web socket connect
     asyncio.run(connect())
 
-    print('끝')
-
-    # print("start...")
-    # try:
-    #     get_user_face.getUserFaceImage()
-    #     print("make face image finished")
-    # except:
-    #     pass
-    
-    # print("find user")
-    # my_name = find_user.getUserName()
-    # print("user :", my_name)
+    print('server closed')
