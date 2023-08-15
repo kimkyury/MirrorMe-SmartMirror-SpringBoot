@@ -5,4 +5,6 @@ captured_audio.pcm
 a.out/
 python-docs-samples/
 venv/
-
+To_Be_Sent/
+*.mp4
+*.wav

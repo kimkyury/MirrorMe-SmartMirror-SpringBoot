@@ -108,7 +108,7 @@ order_keyword = { "검색" : YOUTUBE, "찾아" : YOUTUBE, "찾아줘" : YOUTUBE,
         "오늘" : NEWS | WEATHER, "알려줘" : NEWS | WEATHER,
 }
 
-family = {"아빠" : 0, "엄마" : 1, "아버지" : 0, "어머니" : 1, "누나" : 2}
+family = {"울딸" : 0, "아빠" : 1}
 """https://www.youtube.com/results?search_query=싸피"""
 
 def expect_youtube(response):
