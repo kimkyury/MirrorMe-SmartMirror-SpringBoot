@@ -7,6 +7,7 @@ import math
 import threading
 import websockets
 import asyncio
+import time
 import json
 import requests
 from datetime import datetime
@@ -20,12 +21,14 @@ mp_face_mesh = mp.solutions.face_mesh
 face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-my_name = 11
-my_email = 'ssafy@ssafy.com'
+my_name = 5
+my_email = 'woneee99@gmail.com'
 do = ''
 recv = ''
 websocket = None
-stop_gesture = False
+stop_gesture = True
+lock = threading.Lock()
+
 
 target_size = (256, 256)
 
@@ -33,7 +36,7 @@ target_size = (256, 256)
 #################################################################
 # 웹소켓 연결하는 코루틴
 async def connect():
-    global recv, do, websocket
+    global recv, do, websocket, stop_gesture
     # 웹 소켓에 접속을 합니다.
     try:
         async with websockets.connect("ws://localhost:9998") as ws:
@@ -45,14 +48,27 @@ async def connect():
                 print("신호 대기")
                 recv = await ws.recv()
 
-                if recv == 'audio_message_start':
+# <<<<<<< HEAD
+                recv = json.loads(recv)
+                if recv.get('order', None) == 'video_start':
+                    with lock:
+                        stop_gesture = 1
+
+                if recv == 'Recording Audio':
                     audio_recoding.recordingAudio(my_name, "1")
-                    do = None
-                if recv == 'video_message_start':
-                    stop_gesture = 0
-                    video_recoding.recordingVideo(my_name, "1")
-                    stop_gesture = 1
-                    do = None
+                    do = ''
+                if recv == 'Yo':
+                    pass
+# =======
+#                 if recv == 'audio_message_start':
+#                     audio_recoding.recordingAudio(my_name, "1")
+#                     do = None
+#                 if recv == 'video_message_start':
+#                     stop_gesture = 0
+#                     video_recoding.recordingVideo(my_name, "1")
+#                     stop_gesture = 1
+#                     do = None
+# >>>>>>> develop
                 if recv == 'EXIT':
                     do = None
 
@@ -110,8 +126,22 @@ def preprocess_image(image):
 
 def getgesture():
     global stop_gesture
-    if stop_gesture:
-        time.sleep(15.5)
+# <<<<<<< HEAD
+    with lock:
+        if stop_gesture == 1:
+            video_recoding.recordingVideo(recv['query']['send_user'],recv['query']['target_user'])
+            with lock:
+                stop_gesture = 0
+            
+            do = 'end_video'
+
+            return
+
+
+# =======
+#     if stop_gesture:
+#         time.sleep(15.5)
+# >>>>>>> develop
     cap = cv2.VideoCapture(0)
 
     mpHands = mp.solutions.hands
@@ -120,8 +150,12 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-            [True, True, False, False, (0,0), "video_message_start"],
-            # [True, False, False, True, (0,0), "A"],
+# <<<<<<< HEAD
+            [True, True, False, False, (0,0), "V"],
+# =======
+#             [True, True, False, False, (0,0), "video_message_start"],
+# >>>>>>> develop
+            [True, False, False, True, (0,0), "A"],
             [False, False, False, False, (0,0), "exit"]]
     
     result = deque([None for _ in range(26)])
@@ -132,17 +166,21 @@ def getgesture():
 
     emotion_list = []
     
-    while not stop_gesture:
+    while True:
+        with lock:
+            if stop_gesture:
+                break
+
         result.popleft()
 
         success, img = cap.read()
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         sf, input_image = preprocess_image(imgRGB)
-
+        # print(len(emotion_list))
         if sf:
             emotion_list.append(input_image.tolist())
-            if len(emotion_list) > 29:break
+            if len(emotion_list) > 9:break
            
         # gesture recognition
         results = my_hands.process(imgRGB)
@@ -181,7 +219,7 @@ def getgesture():
                     result.append(gesture[i][5])
                     break
         
-        if len(result) < 10:
+        if len(result) < 29:
             result.append(None)
 
         ret = max(set(result), key=result.count)
@@ -213,7 +251,7 @@ def getgesture():
     data = json.dumps(params)
 
     # JSON 데이터를 포함하여 POST 요청을 보냄
-    response = requests.post("http://127.0.0.1:8000/emotion/findemotion/", headers=headers, data=data)
+    response = requests.post("https://f89c-210-217-108-123.ngrok-free.app/emotion/findemotion/", headers=headers, data=data)
     # except:
     #     print('error')
     
@@ -232,10 +270,18 @@ def get_gesture():
 
             print(do)
 
-            if do == 'video_message_start':
-                video_recoding.recordingVideo(my_name, "1")
+# <<<<<<< HEAD
+            # 여기는 주석처리 되어있네요 일단 그대로 두겠습니다.
+            # if do == 'V':
+            #     stop_gesture = 1
+            #     video_recoding.recordingVideo(my_name, "1")
+            #     stop_gesture = 0
+# =======
+#             if do == 'video_message_start':
+#                 video_recoding.recordingVideo(my_name, "1")
             
-            do = None
+#             do = None
+# >>>>>>> develop
 
 if __name__ == "__main__":
     # Web socket connect
