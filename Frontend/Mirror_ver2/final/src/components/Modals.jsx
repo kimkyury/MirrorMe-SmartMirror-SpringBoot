@@ -15,9 +15,10 @@ function ModalBottons(props) {
   const [isMessageSent, setIsMessageSent] = useState(false);
 
   const commandMessage = props.commandMessage;
-  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "LEFT", "RIGHT", "EXIT"
+  // 목록 : "YOUTUBE", "MESSAGESENDSTART", "MESSAGESENDEND", "MESSAGESHOW", "LEFT", "RIGHT", "EXIT"
   const youtubeKey = props.youtubeKey;
 
+  const userEmail = props.userEmail;
   const messageReceiver = props.messageReceiver;
 
   useEffect(() => {
@@ -25,11 +26,18 @@ function ModalBottons(props) {
       setIsYoutubeModalOpen(true);
     } else if (commandMessage === "MESSAGESENDSTART") {
       setIsSendMessageModalOpen(true);
-    } else if (commandMessage === "RIGHT") {
-      setIsYoutubeModalOpen(false);
+    } else if (commandMessage === "MESSAGESHOW") {
+      setIsMessageModalOpen(true);
     }
+    
     if (isSendMessageModalOpen && commandMessage === "MESSAGESENDEND") {
       setIsSendMessageModalOpen(false);
+    }
+    if (isMessageModalOpen && commandMessage === "EXIT") {
+      setIsMessageModalOpen(false);
+    }
+    if (isYoutubeModalOpen && commandMessage === "EXIT") {
+      setIsYoutubeModalOpen(false);
     }
   }, [commandMessage]);
 
@@ -143,7 +151,9 @@ function ModalBottons(props) {
         <div className="modal">
           {/* Add Message modal content here */}
           {/* <h2>메세지 모달</h2> */}
-          <VideoMessage />
+          <VideoMessage 
+            userEmail={userEmail}
+          />
         </div>
       )}
 
