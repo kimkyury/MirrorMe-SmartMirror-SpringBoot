@@ -39,10 +39,6 @@ public class VideoServiceImpl implements VideoService {
         }
         return 0;
     }
-    public String getStringFromHash(String hashKey, String innerKey) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        return hashOperations.get(hashKey, innerKey);
-    }
 
     // 영상 메시지 전체 조회
     @Override
@@ -52,16 +48,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     // 영상 메시지 한 개 조회
-    @Override
-    public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
-        VideoMessage videoMessage = videoRepository.findByVideoId(videoId)
-                .orElseThrow(() -> new NotFoundException("Not Found Video"));
-        videoMessage.update('Y');
-        videoRepository.save(videoMessage);
 
-        String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
-        return new FileInputStream(videoUrl);
-    }
 
     @Override
     public List<MessageDto.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month) {

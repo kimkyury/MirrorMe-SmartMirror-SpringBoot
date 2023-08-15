@@ -6,11 +6,15 @@ import com.mirror.backend.api.dto.TextDto.*;
 import com.mirror.backend.api.dto.UserDto;
 import com.mirror.backend.api.entity.*;
 import com.mirror.backend.api.repository.*;
+import com.mirror.backend.common.exception.NotFoundException;
 import com.mirror.backend.common.utils.IotEncryption;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,10 +33,10 @@ public class IotService {
     private final TextCautionRainyRepository textCautionRainyRepository;
     private final TextVideoViewRepository textVideoViewRepository;
     private final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
+    private final VideoRepository videoRepository;
 
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
-
 
     public Long findMirrorGroupId(String encryptedCode){
 
@@ -54,6 +58,22 @@ public class IotService {
 
         return mirror.getMirrorGroupId();
     }
+
+    public FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException {
+        VideoMessage videoMessage = videoRepository.findByVideoId(videoId)
+                .orElseThrow(() -> new NotFoundException("Not Found Video"));
+        videoMessage.update('Y');
+        videoRepository.save(videoMessage);
+
+        String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
+        return new FileInputStream(videoUrl);
+    }
+
+    public String getStringFromHash(String hashKey, String innerKey) {
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        return hashOperations.get(hashKey, innerKey);
+    }
+
 
     public List<UserDto.IotUsersRes> findUsersInfo(String encryptedCode) {
 
