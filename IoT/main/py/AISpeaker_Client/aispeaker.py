@@ -30,7 +30,6 @@ async def connect():
 
                 if recv == "audio_end":
                     event.clear()
-                    print("종료되라 제발")
                     with lock:
                         global end_check
                         end_check = True
