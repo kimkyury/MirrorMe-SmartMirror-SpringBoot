@@ -111,8 +111,11 @@ function App() {
         setYoutubeKey(data.query.key);
       } else if (data.order === 'MESSAGESENDSTART') {  // 메세지 전송
         setMessageReceiver(data.query.receiver);
+      } else if (data.order === 'TTS') { // 거울 말 시작한다
+        setMirrorSaying(true);
+      } else if (data.order === 'TTS_end') { // 거울 말 끝낸다
+        setMirrorSaying(false);
       }
-
     };
 
     console.log(userEmail);
