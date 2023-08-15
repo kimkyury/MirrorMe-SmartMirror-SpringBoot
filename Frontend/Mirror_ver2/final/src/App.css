@@ -5,13 +5,11 @@ body {
   padding: 0;
   background-color: black;
   overflow: hidden;
+  font-family: "NanumSquare";
 }
 
 .App {
-  text-align: center;
-  color: #ffffff;
-  border: 5px solid #ffffff;
-  margin: 10px;
+  font-family: "NanumSquare";
 }
 
 .bordered {
@@ -175,4 +173,17 @@ h4 {
   transform: translateX(-100%);
   opacity: 0;
   transition: transform 500ms, opacity 500ms;
+}
+
+/* voice animation */
+.voice-animation {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* 나눔스퀘어 폰트 */
+@font-face {
+  font-family: "NanumSquare";
+  src: url("./fonts/NanumSquareRoundB.ttf") format("truetype");
 }
