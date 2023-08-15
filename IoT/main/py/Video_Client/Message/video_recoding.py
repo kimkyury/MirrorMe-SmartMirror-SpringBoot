@@ -20,7 +20,8 @@ def recording(duration, output_path_video, output_path_audio):
 
     # Video recording settings
     cap = cv2.VideoCapture(0)
-    fourcc = cv2.VideoWriter_fourcc(*'H264')  # Change the codec to H.264
+    fourcc = cv2.VideoWriter_fourcc(*'Xvid')  # Change the codec to H.264
+
     fps = 22.0
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
