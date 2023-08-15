@@ -23,17 +23,15 @@ function Snackbars(props) {
 
   
   const commandMessage = props.commandMessage;
-  // 목록 : "MESSAGESHOW", "WEATHER", "LEFT", "RIGHT","EXIT", "TTS"
+  // 목록 : "WEATHER", "LEFT", "RIGHT","EXIT", "TTS"
   const tts = props.tts;
   const ttsType = props.ttsType;
-  const userEmail = props.userEmail;
   
   const userAccessToken = props.userAccessToken;
   const userRefreshToken = props.userRefreshToken;
 
   const handleSnackbarClose = () => {
     setOpenNoticeSnackbar(false);
-    setOpenVideoMessageSnackbar(false);
     setOpenWeatherSnackbar(false);
     setOpenSchedulesSnackbar(false);
     setOpenTasksSnackbar(false);
@@ -42,14 +40,20 @@ function Snackbars(props) {
 
 
   useEffect(() => {
-    if (commandMessage === "MESSAGESHOW") {
-      setOpenNoticeSnackbar(true);
-      setOpenVideoMessageSnackbar(true);
-    } else if (commandMessage === "WEATHER") {
-      setOpenNoticeSnackbar(true);
+    if (commandMessage === "WEATHER") {
       setOpenWeatherSnackbar(true);
     } else if (commandMessage === "EXIT") {
       handleSnackbarClose();
+    }
+
+    // 날씨화면이 나와있는 상태에서 주간날씨 화면 보여주기
+    if (openWeatherSnackbar) {
+      if (!showWeekWeather && commandMessage === "LEFT") {
+        setShowWeekWeather(true);
+      }
+      if (showWeekWeather && commandMessage === "RIGHT") {
+        setShowWeekWeather(false);
+      }
     }
   }, [commandMessage]);
 
@@ -117,7 +121,7 @@ function Snackbars(props) {
 
       <div className="snackbar">
         {/* VideoMessage Snackbar */}
-        <CSSTransition
+        {/* <CSSTransition
           in={openVideoMessageSnackbar}
           timeout={300}
           classNames="slide"
@@ -134,7 +138,7 @@ function Snackbars(props) {
                       />}
             style={{ marginTop: '200px' }}
           />
-        </CSSTransition>
+        </CSSTransition> */}
 
         {/* Weather Snackbar */}
         <CSSTransition
@@ -150,7 +154,9 @@ function Snackbars(props) {
             onClose={handleSnackbarClose}
             message={
               <div>
-                <TodayWeather />
+                <TodayWeather
+                  showWeekWeather={showWeekWeather}
+                />
               </div>
             }
             style={{ marginTop: '200px' }}
