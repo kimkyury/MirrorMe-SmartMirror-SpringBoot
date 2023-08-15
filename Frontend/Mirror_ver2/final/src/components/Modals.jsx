@@ -153,6 +153,7 @@ function ModalBottons(props) {
           {/* <h2>메세지 모달</h2> */}
           <VideoMessage 
             userEmail={userEmail}
+            commandMessage={commandMessage}
           />
         </div>
       )}
