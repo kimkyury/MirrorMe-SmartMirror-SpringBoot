@@ -7,7 +7,13 @@ import VideoMessagePlus from './VideoMessagePlus';
 function VideoMessage(props) {
   const [messageList, setMessageList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+
+  const [messageKey, setMessageKey] = useState(Date.now());
+
   const userEmail = props.userEmail;
+  const commandMessage = props.commandMessage;
 
   useEffect(() => {
     const fetchMessageList = async () => {
@@ -15,7 +21,6 @@ function VideoMessage(props) {
         const res = await axios.get('video', {
           params: { userEmail: userEmail },
         });
-        console.log(res.data.response)
         setMessageList(res.data.response);
         setIsLoading(false);
       } catch (error) {
@@ -24,14 +29,19 @@ function VideoMessage(props) {
       }
     };
     fetchMessageList();
-  }, []);
+  }, [userEmail]);
 
-  let messageType = '';
-  if (messageList.length > 0) {
-    if (messageList[0].type === 'v') {
-      messageType = '영상';
-    } else if (messageList[0].type === 'a') {
-      messageType = '음성';
+  function handlePrevMessage() {
+    if (currentMessageIndex > 0) {
+      setCurrentMessageIndex(currentMessageIndex - 1);
+      setMessageKey(Date.now()); // 키를 업데이트하여 다시 렌더링되도록 함
+    }
+  }
+
+  function handleNextMessage() {
+    if (currentMessageIndex < messageList.length - 1) {
+      setCurrentMessageIndex(currentMessageIndex + 1);
+      setMessageKey(Date.now()); // 키를 업데이트하여 다시 렌더링되도록 함
     }
   }
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
@@ -50,11 +60,27 @@ function VideoMessage(props) {
         messageList.length > 0 ? (
           <div>
             <p>총 {messageList.length}개의 메세지</p>
-            <p>{messageList[0].sendUserEmail}님의 {messageType}메세지</p>
             <Button className="btn" onClick={toggleMessageModal}>자세히 보기</Button>
             {isMessageModalOpen && (
               <div className="modal">
-                <VideoMessagePlus />
+                <div className="message-navigation">
+                  <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>
+                    이전 메세지
+                  </button>
+                  <button
+                    onClick={handleNextMessage}
+                    disabled={currentMessageIndex === messageList.length - 1}
+                  >
+                    다음 메세지
+                  </button>
+                </div>
+                <div>
+                  <p>
+                    {messageList[currentMessageIndex].sendUserEmail}님의{' '}
+                    {messageList[currentMessageIndex].type === 'v' ? '영상' : '음성'}메세지
+                  </p>
+                  <VideoMessagePlus key={messageKey} videoId={messageList[currentMessageIndex].videoId} /> {/* Add key prop */}
+                </div>
               </div>
             )}
           </div>
