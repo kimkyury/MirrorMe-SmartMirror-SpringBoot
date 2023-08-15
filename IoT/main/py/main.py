@@ -120,7 +120,7 @@ YOUTUBE = 101
 MESSAGE_CAP = 102
 MESSAGE_SHOW = 103
 
-STATUS = WAITTING
+STATUS = SCREEN_OFF
 
 
 # 명령이 쌓이게 되는 큐
@@ -200,11 +200,20 @@ async def messageSend(*arg):
     if client_role.get("react", False):
         await client[client_role["react"]].send(json.dumps(send_data))
 
-    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.")
-    STATUS = MESSAGE_CAP
-    # 메세지 녹화 동기로 실행
+    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.") 
     # audio와 video측에 알려서 연결을 끊고 녹화를 시작하도록함
-    # 그 다음 종료시 다시 audio와 video측에서 다시 연결
+    if client_role.get('audio'):
+        await client[client_role["audio"]].send("audio_end")
+    if client_role.get('video'):
+        await client[client_role["video"]].send("video_end")
+
+        # video측에서 메세지 녹화 및 백단으로 데이터 전송
+        end_call = await client[client_role["video"]].recv()
+
+        if end_call == "" and client_role['audio']:
+            await client[client_role["audio"]].send("audio_restart")
+
+
 
     # 메세지 녹화 종료를 리엑트로 알림
     send_data = {
@@ -359,7 +368,7 @@ async def appear(*arg):
 
     task = asyncio.create_task(user_email)
 
-    tts(user_name + "님 안녕하세요!")
+    # tts(user_name + "님 안녕하세요!")
 
     speech = await task
 
@@ -396,9 +405,12 @@ async def disappear(*arg):
     if STATUS != WAITTING:
         # 이건 리눅스에서만 기능한다.
         # os.system("xset dpms force off")
+        print("screen_off")
         # 스피커와 카메라로 사용 종료 보내기
-
-
+        if client_role.get('audio'):
+            await client[client_role["audio"]].send("audio_end")
+        if client_role.get('video'):
+            await client[client_role["video"]].send("video_end")
 
 
         STATUS = SCREEN_OFF
