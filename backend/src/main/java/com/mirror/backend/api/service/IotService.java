@@ -9,6 +9,7 @@ import com.mirror.backend.api.repository.*;
 import com.mirror.backend.common.exception.NotFoundException;
 import com.mirror.backend.common.utils.IotEncryption;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,11 @@ public class IotService {
     private final TextEmotionBasedContactRecommendationRepository textEmotionBasedContactRecommendationRepository;
     private final VideoRepository videoRepository;
 
+    private final VideoService videoService;
     private final RedisTemplate redisTemplate;
     private final IotEncryption iotEncryption;
+
+
 
     public Long findMirrorGroupId(String encryptedCode){
 
@@ -65,13 +69,8 @@ public class IotService {
         videoMessage.update('Y');
         videoRepository.save(videoMessage);
 
-        String videoUrl = getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
+        String videoUrl = videoService.getStringFromHash(videoMessage.getSendUserEmail(), videoId +"");
         return new FileInputStream(videoUrl);
-    }
-
-    public String getStringFromHash(String hashKey, String innerKey) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        return hashOperations.get(hashKey, innerKey);
     }
 
 

@@ -47,8 +47,10 @@ public class VideoServiceImpl implements VideoService {
         return videoMessageList;
     }
 
-    // 영상 메시지 한 개 조회
-
+    public String getStringFromHash(String hashKey, String innerKey) {
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        return hashOperations.get(hashKey, innerKey);
+    }
 
     @Override
     public List<MessageDto.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month) {
