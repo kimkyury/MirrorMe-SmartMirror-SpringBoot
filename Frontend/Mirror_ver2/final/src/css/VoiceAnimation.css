@@ -32,14 +32,6 @@
       transform: scaleY(1.2);
     }
   }
-  body{
-    display: flex;
-    justify-content: center;
-    background: black;
-    margin: 0;padding: 0;
-    align-items: center;
-    height: 100vh;
-  }
   
   .boxContainer{
     display: flex;

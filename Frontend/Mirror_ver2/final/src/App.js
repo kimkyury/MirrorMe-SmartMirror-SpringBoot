@@ -109,7 +109,10 @@ function App() {
         setUserEmail(data.query.email);
       } else if (data.order === 'YOUTUBE') {  // 유튜브
         setYoutubeKey(data.query.key);
+      } else if (data.order === 'MESSAGESENDSTART') {  // 메세지 전송
+        setMessageReceiver(data.query.receiver);
       }
+
     };
 
     console.log(userEmail);
@@ -150,7 +153,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="App">
       <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js" integrity="sha384-7hS1HB/8C1l1g6XTaKP2HvbQg/2jBzXB2X0J/+Uz3Pkb3q1/4H0z2cVBMzqGtJ3" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js" integrity="sha384-Rn9HT+yy0cAmzD7h4p9BaaVG6g2PfE8ii+05BuYp9gRBy2Cjgr99WQQpkKd3m9L/" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mui/system@5.4.3/dist/mui.min.js" integrity="sha384-oFyjBA1gBAq3z2f3Q2ikzGq/KJQ2BlLJpLuH6lg6b4RtrR+vjp5b3HYJoLk6MBo2" crossorigin="anonymous"></script>
@@ -163,12 +166,13 @@ function App() {
             <Modals
               commandMessage={modalsCommandMessage}
               youtubeKey={youtubeKey}
+              userEmail={userEmail}
+              messageReceiver={messageReceiver}
             />
             <Snackbars
               commandMessage={snackbarsCommandMessage}
               tts={tts}
               ttsType={ttsType}
-              userEmail={userEmail}
               userAccessToken={userAccessToken}
               userRefreshToken={userRefreshToken}
             />
@@ -189,8 +193,8 @@ function App() {
             </CSSTransition>
           </div>
           <div>
-            <CommandHelp />
-            <GestureHelp />
+            {/* <CommandHelp /> */}
+            {/* <GestureHelp /> */}
           </div>
           <form className="socket">
             <input
@@ -210,7 +214,9 @@ function App() {
             value={messageTextArea}
             readOnly
           ></textarea>
-          {mirrorSaying && <VoiceAnimation />}
+          <div className="voice-animation">
+            {mirrorSaying && <VoiceAnimation />}
+          </div>
         </div>
       }
     </div>
