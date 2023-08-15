@@ -10,6 +10,7 @@ import asyncio
 import json
 import requests
 from datetime import datetime
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -44,16 +45,16 @@ async def connect():
                 print("신호 대기")
                 recv = await ws.recv()
 
-                if recv == 'Recording Audio':
+                if recv == 'audio_message_start':
                     audio_recoding.recordingAudio(my_name, "1")
-                    do = ''
-                if recv == 'Yo':
-                    pass
-                if recv == 'V':
+                    do = None
+                if recv == 'video_message_start':
+                    stop_gesture = 0
                     video_recoding.recordingVideo(my_name, "1")
-                    do = ''
+                    stop_gesture = 1
+                    do = None
                 if recv == 'EXIT':
-                    exit(0)
+                    do = None
 
     except websockets.exceptions.ConnectionClosed:
         print("error")
@@ -109,6 +110,8 @@ def preprocess_image(image):
 
 def getgesture():
     global stop_gesture
+    if stop_gesture:
+        time.sleep(15.5)
     cap = cv2.VideoCapture(0)
 
     mpHands = mp.solutions.hands
@@ -117,7 +120,7 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
-            [True, True, False, False, (0,0), "Video"],
+            [True, True, False, False, (0,0), "video_message_start"],
             # [True, False, False, True, (0,0), "A"],
             [False, False, False, False, (0,0), "exit"]]
     
@@ -226,13 +229,18 @@ def get_gesture():
 
         if do != None and websocket != None:
             loop.run_until_complete(websocket.send(do))
+
             print(do)
 
-            if do == 'V':
+            if do == 'video_message_start':
                 video_recoding.recordingVideo(my_name, "1")
+            
+            do = None
 
 if __name__ == "__main__":
     # Web socket connect
+
+    video_recoding.recordingVideo(my_name, "1")
 
     ges = threading.Thread(target=get_gesture)
     ges.start()
