@@ -38,6 +38,7 @@ public class IotService {
 
     private final VideoService videoService;
     private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, String> redisTemplateString;
     private final IotEncryption iotEncryption;
 
 
@@ -76,6 +77,17 @@ public class IotService {
 
     public List<UserDto.IotUsersRes> findUsersInfo(String encryptedCode) {
 
+//        System.out.println("원본: " + encryptedCode);
+//
+////       TODO: Delete Encoding, Decoding Test Annotation
+//
+//        String encode= iotEncryption.encryptionText(encryptedCode);
+//        System.out.println("암호화: " + encode);
+//        String decode= iotEncryption.decryptionText(encode);
+//        System.out.println("복호화: " + decode);
+//        encryptedCode = encode;
+
+
         Long mirrorGroupId = findMirrorGroupId(encryptedCode);
         List<User> usersInSameHouse = userRepository.findByHouseholdHouseholdId(mirrorGroupId);
         List<UserDto.IotUsersRes> iotUsersResList = new ArrayList<>();
@@ -93,13 +105,14 @@ public class IotService {
 
             iotUsersResList.add(userDto);
         }
+        System.out.println(iotUsersResList);
 
         return iotUsersResList;
     }
 
     private String findUserProfileImg(String userEmail){
         String key = "profileImg:" + userEmail;
-        String value = (String) redisTemplate.opsForHash().get(key, "imageData");
+        String value = (String) redisTemplateString.opsForHash().get(key, "imageData");
 
         return value;
     }
