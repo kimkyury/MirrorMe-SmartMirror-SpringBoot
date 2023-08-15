@@ -88,6 +88,7 @@ function App() {
 
     socket.onopen = () => {
       setMessageTextArea(prev => prev + "Server connect...\n");
+      socket.send('react');
     };
     socket.onclose = () => {
       setMessageTextArea(prev => prev + "Server Disconnect...\n");
