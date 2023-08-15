@@ -7,7 +7,7 @@ function Logo(props) {
   return (
     <div className="logo-container">
       <img
-        src="/Logo/MirrorMeLogo.png"
+        src={`${process.env.PUBLIC_URL}/images/Logo/MirrorMeLogo.PNG`}
         alt="Logo"
         className="fade-image"
       />
