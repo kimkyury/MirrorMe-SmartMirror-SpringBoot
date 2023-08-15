@@ -11,7 +11,9 @@ function TodayWeather(props) {
   const [ultraInfo, setUltraInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
-  const [showWeekWeather, setShowWeekWeather] = useState(false);
+  // const [showWeekWeather, setShowWeekWeather] = useState(false);
+
+  const showWeekWeather = props.showWeekWeather;
 
   useEffect(() => {
     const numOfRows = 500;
@@ -126,9 +128,9 @@ function TodayWeather(props) {
   }
 
   // 주간 날씨 정보 펼치기 ///////////////////////////////// 모션 or 음성 연결 필요
-  const handleWeekWeatherClick = () => {
-    setShowWeekWeather(true);
-  };
+  // const handleWeekWeatherClick = () => {
+  //   setShowWeekWeather();
+  // };
 
   return (
     <div>
@@ -159,7 +161,7 @@ function TodayWeather(props) {
               {showWeekWeather ? (
                 <WeekWeather />
               ) : (
-                <Button onClick={handleWeekWeatherClick} variant="contained" color="primary">
+                <Button onClick={showWeekWeather} variant="contained" color="primary">
                   더 보기
                 </Button>
               )}
