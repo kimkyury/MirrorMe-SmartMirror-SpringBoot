@@ -75,32 +75,34 @@ function VideoMessage(props) {
       ) : (
         messageList.length > 0 ? (
           <div>
-            <p>총 {messageList.length}개의 메세지</p>
+            <p style={{ marginLeft: '10px' }}>총 {messageList.length}개의 메세지</p>
             <Button className="btn" onClick={toggleMessageModal}>자세히 보기</Button>
             {isMessageModalOpen && (
-              <div className="modal" style={{ display: 'none' }}>
-                <div className="message-navigation">
-                  <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>
-                    이전 메세지
-                  </button>
-                  <button
-                    onClick={handleNextMessage}
-                    disabled={currentMessageIndex === messageList.length - 1}
-                  >
-                    다음 메세지
-                  </button>
-                </div>
-                <div>
-                  <p>
-                    {messageList[currentMessageIndex].sendUserEmail}님의{' '}
-                    {messageList[currentMessageIndex].type === 'v' ? '영상' : '음성'}메세지
-                  </p>
-                  <VideoMessagePlus 
-                    key={messageKey}
-                    videoId={messageList[currentMessageIndex].videoId}
-                    userAccessToken = {userAccessToken}
-                    userRefreshToken = {userRefreshToken}
-                  />
+              <div className="modal">
+                <div className="message-video">
+                  <div className="message-navigation" style={{ marginLeft: '125px' }}>
+                    <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>
+                      이전 메세지
+                    </button>
+                    <button
+                      onClick={handleNextMessage}
+                      disabled={currentMessageIndex === messageList.length - 1}
+                    >
+                      다음 메세지
+                    </button>
+                  </div>
+                  <div>
+                    <p style={{ marginLeft: '125px' }}>
+                      {messageList[currentMessageIndex].sendUserEmail}님의{' '}
+                      {messageList[currentMessageIndex].type === 'v' ? '영상' : '음성'}메세지
+                    </p>
+                    <VideoMessagePlus 
+                      key={messageKey}
+                      videoId={messageList[currentMessageIndex].videoId}
+                      userAccessToken = {userAccessToken}
+                      userRefreshToken = {userRefreshToken}
+                    />
+                  </div>
                 </div>
               </div>
             )}
