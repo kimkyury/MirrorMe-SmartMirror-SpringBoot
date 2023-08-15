@@ -48,22 +48,67 @@ public class EmotionServiceImpl implements EmotionService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate date = LocalDate.parse(emotionReq.getEmotionDate(), formatter);
 
+        Optional<Emotion> isEmotion = emotionRepository.findByEmotionDateAndUserId(date, emotionReq.getUserId());
+        Long res = null;
+        if(isEmotion.isPresent()) {
+            hasEmotion(isEmotion.get(), emotionReq);
+            res = isEmotion.get().getEmotionId();
+        }
+        else {
+            res = hasNoEmotion(date, emotionReq);
+        }
+        return res;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void hasEmotion(Emotion emotion, EmotionDto.EmotionReq emotionReq) {
+        List<Integer> emotionList = emotionReq.getEmotionList();
+        for(int i=1; i<emotionList.size(); i++) {
+            Integer myEmotion = emotionList.get(i);
+            if(myEmotion == 0) continue;
+
+            Optional<EmotionCount> isPresentEmotionCode = emotionCountRepository.findByEmotionKeyEmotionIdAndEmotionKeyEmotionCode(emotion.getEmotionId(), i);
+
+            EmotionCount emotionCount = null;
+            if(isPresentEmotionCode.isPresent()) {
+                 emotionCount = isPresentEmotionCode.get();
+                int plusCount = emotionCount.getEmotionCount() + myEmotion;
+                emotionCount.update(plusCount);
+                emotionCountRepository.save(emotionCount);
+            }
+            else {
+                EmotionKey emotionKey = EmotionKey.builder()
+                        .emotionId(emotion.getEmotionId())
+                        .emotionCode(i)
+                        .build();
+
+                emotionCount = EmotionCount.builder()
+                        .emotionKey(emotionKey)
+                        .emotionCount(myEmotion).build();
+
+                emotionCountRepository.save(emotionCount);
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Long hasNoEmotion(LocalDate date, EmotionDto.EmotionReq emotionReq) {
         Emotion emotion = Emotion.builder()
-                .emotionCode(emotionReq.getEmotionCode())
                 .emotionDate(date)
+                .emotionCode(0)
                 .userId(emotionReq.getUserId())
                 .createAt(LocalDateTime.now())
                 .build();
         Emotion emotionEntity = emotionRepository.save(emotion);
 
         List<Integer> emotionList = emotionReq.getEmotionList();
-        for(int i=0; i<emotionList.size(); i++) {
+        for(int i=1; i<emotionList.size(); i++) {
             Integer myEmotion = emotionList.get(i);
             if(myEmotion == 0) continue;
 
             EmotionKey emotionKey = EmotionKey.builder()
                     .emotionId(emotionEntity.getEmotionId())
-                    .emotionCode(i+1)
+                    .emotionCode(i)
                     .build();
 
             EmotionCount emotionCount = EmotionCount.builder()
@@ -79,10 +124,10 @@ public class EmotionServiceImpl implements EmotionService {
     @Override
     public List<EmotionDto.EmotionRes> getMyEmotion(Long userId) {
         // 일주일간의 감정 보여주기
-        LocalDate now = LocalDate.now();
-        LocalDate sevenDayAgo = now.minusDays(7);
+        LocalDate oneDayAge = LocalDate.now().minusDays(1);
+        LocalDate eightDayAgo = LocalDate.now().minusDays(8);
 
-        List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(sevenDayAgo, now, userId);
+        List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(eightDayAgo, oneDayAge, userId);
 
         // emotion 1개당 emotion count 조회
         List<EmotionDto.EmotionRes> emotionResList = new ArrayList<>();
@@ -103,8 +148,8 @@ public class EmotionServiceImpl implements EmotionService {
 
     @Override
     public List<EmotionDto.EmotionFamilyResList> getFamilyEmotion(Long userId) {
-        LocalDate now = LocalDate.now();
-        LocalDate sevenDayAgo = now.minusDays(7);
+        LocalDate oneDayAge = LocalDate.now().minusDays(1);
+        LocalDate eightDayAgo = LocalDate.now().minusDays(8);
 
         List<ConnectUser> familyId = connectUserRepository.findByIdUserId(userId);
         System.out.println("familyId.size() = " + familyId.size());
@@ -114,7 +159,7 @@ public class EmotionServiceImpl implements EmotionService {
             Long connectUserId = user.getId().getConnectUserId();
             String connectUserAlias = user.getConnectUserAlias();
 
-            List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(sevenDayAgo, now, connectUserId);
+            List<Emotion> myEmotionList = emotionRepository.findAllByEmotionDateBetweenAndUserId(eightDayAgo, oneDayAge, connectUserId);
 
             List<EmotionDto.EmotionRes> emotionResList = new ArrayList<>();
             for(Emotion emotion: myEmotionList) {
@@ -148,7 +193,7 @@ public class EmotionServiceImpl implements EmotionService {
             Long connectUserId = connectUser.getId().getConnectUserId();
             User user = userRepository.findByUserId(connectUserId).orElseThrow(() -> new NotFoundException("사용자가 없습니다."));
 
-            Optional<Emotion> emotion = emotionRepository.findAllByEmotionDateAndUserId(oneDayAgo, connectUserId);
+            Optional<Emotion> emotion = emotionRepository.findByEmotionDateAndUserId(oneDayAgo, connectUserId);
 
             if(emotion.isPresent()) {
                 if(emotion.get().getEmotionCode() == 3 || emotion.get().getEmotionCode() == 4) {
