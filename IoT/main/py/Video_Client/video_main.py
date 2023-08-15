@@ -11,6 +11,7 @@ import time
 import json
 import requests
 from datetime import datetime
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -47,6 +48,7 @@ async def connect():
                 print("신호 대기")
                 recv = await ws.recv()
 
+# <<<<<<< HEAD
                 recv = json.loads(recv)
                 if recv.get('order', None) == 'video_start':
                     with lock:
@@ -57,8 +59,18 @@ async def connect():
                     do = ''
                 if recv == 'Yo':
                     pass
+# =======
+#                 if recv == 'audio_message_start':
+#                     audio_recoding.recordingAudio(my_name, "1")
+#                     do = None
+#                 if recv == 'video_message_start':
+#                     stop_gesture = 0
+#                     video_recoding.recordingVideo(my_name, "1")
+#                     stop_gesture = 1
+#                     do = None
+# >>>>>>> develop
                 if recv == 'EXIT':
-                    exit(0)
+                    do = None
 
     except websockets.exceptions.ConnectionClosed:
         print("error")
@@ -114,6 +126,7 @@ def preprocess_image(image):
 
 def getgesture():
     global stop_gesture
+# <<<<<<< HEAD
     with lock:
         if stop_gesture == 1:
             video_recoding.recordingVideo(recv['query']['send_user'],recv['query']['target_user'])
@@ -125,6 +138,10 @@ def getgesture():
             return
 
 
+# =======
+#     if stop_gesture:
+#         time.sleep(15.5)
+# >>>>>>> develop
     cap = cv2.VideoCapture(0)
 
     mpHands = mp.solutions.hands
@@ -133,8 +150,12 @@ def getgesture():
     compareIndex = [[6,8],[10,12],[14,16],[18,20]]
     open = [True, False, False, False, (0,0)]
     gesture = [[True, True, True, True, (0,0), "5"],
+# <<<<<<< HEAD
             [True, True, False, False, (0,0), "V"],
-            # [True, False, False, True, (0,0), "A"],
+# =======
+#             [True, True, False, False, (0,0), "video_message_start"],
+# >>>>>>> develop
+            [True, False, False, True, (0,0), "A"],
             [False, False, False, False, (0,0), "exit"]]
     
     result = deque([None for _ in range(26)])
@@ -246,15 +267,26 @@ def get_gesture():
 
         if do != None and websocket != None:
             loop.run_until_complete(websocket.send(do))
+
             print(do)
 
+# <<<<<<< HEAD
+            # 여기는 주석처리 되어있네요 일단 그대로 두겠습니다.
             # if do == 'V':
             #     stop_gesture = 1
             #     video_recoding.recordingVideo(my_name, "1")
             #     stop_gesture = 0
+# =======
+#             if do == 'video_message_start':
+#                 video_recoding.recordingVideo(my_name, "1")
+            
+#             do = None
+# >>>>>>> develop
 
 if __name__ == "__main__":
     # Web socket connect
+
+    video_recoding.recordingVideo(my_name, "1")
 
     ges = threading.Thread(target=get_gesture)
     ges.start()
