@@ -2,6 +2,7 @@ import cv2
 import pyaudio
 import wave
 import time
+import os
 from Message import merge_video
 
 def recording(duration, output_path_video, output_path_audio):
@@ -18,7 +19,7 @@ def recording(duration, output_path_video, output_path_audio):
     frames = []
 
     # Video recording settings
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'H264')  # Change the codec to H.264
     fps = 22.0
     frame_width = int(cap.get(3))
@@ -44,7 +45,6 @@ def recording(duration, output_path_video, output_path_audio):
         frames.append(data)
 
     print("video recording finished!! ")
-
     # Release video and audio resources
     cap.release()
     out.release()
@@ -53,7 +53,7 @@ def recording(duration, output_path_video, output_path_audio):
     stream.stop_stream()
     stream.close()
     audio.terminate()
-
+    
     # Save the recorded audio as a WAV file
     wav_file = wave.open(output_path_audio, 'wb')
     wav_file.setnchannels(CHANNELS)
