@@ -62,6 +62,6 @@ def getUserName():
             name = calculateEmbedding(image, known)
             if name is not None:
                 maybe.append(name)
-                if len(maybe) >= 5:
+                if len(maybe) >= 1:
                     return max(set(maybe), key=maybe.count)
     cap.release()
