@@ -70,6 +70,11 @@ flutter:
     - lib/assets/homeicon.png
     - lib/assets/familyicon.png
     - lib/assets/settingicon.png
+    - lib/assets/newsiconcolor.png
+    - lib/assets/emotioniconcolor.png
+    - lib/assets/homeiconcolor.png
+    - lib/assets/familyiconcolor.png
+    - lib/assets/settingiconcolor.png
 
 
   # The following line ensures that the Material Icons font is
