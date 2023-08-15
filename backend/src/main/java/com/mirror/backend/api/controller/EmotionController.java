@@ -23,7 +23,7 @@ public class EmotionController {
     private EmotionService emotionService;
 
     @GetMapping
-    @Operation(summary = "나의 감정 조회", description = "나의 일주일간의 감정을 조회합니다.")
+    @Operation(summary = "나의 감정 조회", description = "나의 일주일간의 감정을 조회합니다. token이 필요합니다.")
     public ApiUtils.ApiResult<List<EmotionDto.EmotionRes>> getMyEmotion(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
         return success(emotionService.getMyEmotion(userId));
@@ -31,7 +31,7 @@ public class EmotionController {
 
     // 가족 감정 조회
     @GetMapping("/family")
-    @Operation(summary = "가족 감정 조회", description = "가족의 일주일간의 감정을 조회합니다.")
+    @Operation(summary = "가족 감정 조회", description = "가족의 일주일간의 감정을 조회합니다. token이 필요합니다.")
     public ApiUtils.ApiResult<List<EmotionDto.EmotionFamilyResList>> getMyFamilyEmotion(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
         return success(emotionService.getFamilyEmotion(userId));
