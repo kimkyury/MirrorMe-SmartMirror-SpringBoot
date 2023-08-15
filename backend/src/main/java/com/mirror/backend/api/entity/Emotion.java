@@ -30,4 +30,8 @@ public class Emotion {
         this.userId = userId;
         this.createAt = createAt;
     }
+
+    public void update(int emotionCode) {
+        this.emotionCode = emotionCode;
+    }
 }
