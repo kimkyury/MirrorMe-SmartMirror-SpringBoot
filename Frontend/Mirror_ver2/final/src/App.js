@@ -131,6 +131,8 @@ function App() {
             params: { userEmail: userEmail },
           });
           const response = tokenResponse.data.response;
+            // console.log(response.accessToken);
+            // console.log(response.refreshToken);
             getUserAccessToken(response.accessToken);
             getUserRefreshToken(response.refreshToken);
 
@@ -168,6 +170,8 @@ function App() {
               youtubeKey={youtubeKey}
               userEmail={userEmail}
               messageReceiver={messageReceiver}
+              userAccessToken={userAccessToken}
+              userRefreshToken={userRefreshToken}
             />
             <Snackbars
               commandMessage={snackbarsCommandMessage}
@@ -177,9 +181,11 @@ function App() {
               userRefreshToken={userRefreshToken}
             />
           </div>
-          <button onClick={toggleVisibility}>
-            {isVisible ? 'PresentCard 숨기기' : 'PresentCard 보이기'}
-          </button>
+          <div style={{ display: 'none' }}>
+            <button onClick={toggleVisibility}>
+              {isVisible ? 'PresentCard 숨기기' : 'PresentCard 보이기'}
+            </button>
+          </div>
           <div>
             <CSSTransition
               in={isVisible}
@@ -196,24 +202,26 @@ function App() {
             {/* <CommandHelp /> */}
             {/* <GestureHelp /> */}
           </div>
-          <form className="socket">
-            <input
-              id="textMessage"
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <input onClick={sendMessage} value="Send" type="button" />
-            <input onClick={() => webSocket.close()} value="Disconnect" type="button" />
-          </form>
-          <br />
-          <textarea
-            id="messageTextArea"
-            rows="10"
-            cols="50"
-            value={messageTextArea}
-            readOnly
-          ></textarea>
+          <div style={{ display: 'none' }}>
+            <form className="socket">
+              <input
+                id="textMessage"
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <input onClick={sendMessage} value="Send" type="button" />
+              <input onClick={() => webSocket.close()} value="Disconnect" type="button" />
+            </form>
+            <br />
+            <textarea
+              id="messageTextArea"
+              rows="10"
+              cols="50"
+              value={messageTextArea}
+              readOnly
+            ></textarea>
+          </div>
           <div className="voice-animation">
             {mirrorSaying && <VoiceAnimation />}
           </div>
