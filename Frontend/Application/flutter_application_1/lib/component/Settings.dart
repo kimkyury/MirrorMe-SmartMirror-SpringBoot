@@ -53,7 +53,7 @@ class Settings extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xff111111),
                       fontSize: 20,
-                      fontFamily: 'NanumSquareRoundOTFEB',
+                      fontFamily: 'NanumSquareRoundEB',
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.normal,
                     ),
@@ -63,7 +63,7 @@ class Settings extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xff111111),
                       fontSize: 10,
-                      fontFamily: 'NanumSquareRoundOTFR',
+                      fontFamily: 'NanumSquareRoundEB',
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.normal,
                     ),
@@ -73,7 +73,7 @@ class Settings extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xff111111),
                       fontSize: 10,
-                      fontFamily: 'NanumSquareRoundOTFR',
+                      fontFamily: 'NanumSquareRoundEB',
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.normal,
                     ),
@@ -120,7 +120,7 @@ class Settings extends StatelessWidget {
                       style: TextStyle(
                         color: Color(0xff111111),
                         fontSize: 20,
-                        fontFamily: 'NanumSquareRoundOTFEB',
+                        fontFamily: 'NanumSquareRoundEB',
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                       ),
@@ -165,7 +165,7 @@ class Settings extends StatelessWidget {
                       style: TextStyle(
                         color: Color(0xff111111),
                         fontSize: 20,
-                        fontFamily: 'NanumSquareRoundOTFEB',
+                        fontFamily: 'NanumSquareRoundEB',
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                       ),
