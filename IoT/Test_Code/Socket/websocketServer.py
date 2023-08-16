@@ -64,11 +64,6 @@ data = {
             "content": "오늘 비가오네요 우산 챙겨가세요",
             "type": "weather"
         }
-    }),
-
-    "say_end_mirror": json.dumps({
-        "order": "TTS_end",
-        "query": None
     })
 
 }

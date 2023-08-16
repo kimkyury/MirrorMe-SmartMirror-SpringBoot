@@ -10,9 +10,14 @@ import com.mirror.backend.common.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static com.mirror.backend.common.utils.ApiUtils.success;
@@ -114,5 +119,12 @@ public class IotController {
     @Operation(summary = "오늘 감정 저장", description = "iot와 통신하여 오늘의 감정을 저장합니다.")
     public ApiUtils.ApiResult<Long> postEmotion(@RequestBody @Valid EmotionDto.EmotionReq emotionReq) {
         return ApiUtils.success(emotionService.saveEmotion(emotionReq));
+    }
+
+    @GetMapping("/message")
+    @Operation(summary = "회원 영상 조회", description = "영상 메시지 전체에서 얻은 videoId로 영상을 조회합니다. token이 필요합니다.")
+    public Resource getOneMessage(@RequestParam Long videoId) throws IOException {
+        FileInputStream videoDetail = iotService.getVideoDetail(videoId);
+        return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
     }
 }
