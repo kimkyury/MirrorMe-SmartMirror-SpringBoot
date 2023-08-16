@@ -122,8 +122,10 @@ async def accept(websocket, path):
     if role != "react":
         await websocket.send(session_id)
     # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
-    else:
+    if role == "video":
         await appear()
+    # else:
+    #     await appear()
 
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
@@ -184,7 +186,7 @@ async def doOrder():
         # 명령을 받아 옴
         received_event = await order.get()
         commend, *arg = received_event.split("\n\r")
-        print(commend + "test")
+        print(commend)
         # if commend == "disappear!" and STATUS == SCREEN_OFF:
         #     continue
         # if commend == "appear!" and STATUS != SCREEN_OFF:
@@ -218,15 +220,18 @@ async def messageSend(*arg):
     STATUS = MESSAGE_CAP
     # 보내는 대상은  target에 저장되어 있음
     target = arg[0]
+    print(target)
 
     send_data = {
         "order" : "MESSAGESENDSTART",
         "query" : {
-            "target" : target
+            "receiver" : target
         }
     }
+    print("리엑트에 전송")
     # 리엑트가 접속 했을 때만 전송
     await websocketSend('react', json.dumps(send_data))
+    print("리엑트에 전송완료")
     
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
@@ -387,12 +392,12 @@ async def appear(*arg):
     # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
     # os.system("xset dpms force standby")
     # os.system("xset dpms force suspend")
-    print("appear로 잘 들어옴!")
-    return
+    # print("appear로 잘 들어옴!")
+    # return
 
     global STATUS
-    # if STATUS != SCREEN_OFF:
-    #     return
+    if STATUS != SCREEN_OFF:
+        return
     
     # 얼굴 인식
     # 유저이름 인코딩 중요!
@@ -407,17 +412,19 @@ async def appear(*arg):
     global user_email, user_name, user_id
     user_name = find_user.getUserName()
     print("user :", user_name)
+    user_name = "신성환"
 
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
         for user in user_data:
-            if user["userEmail"] == user_name:
+            if user["userName"] == user_name:
                 user_id = user["userId"]
                 user_email = user["userEmail"]
                 break
 
         del user_data
 
+    print(user_email)
     # 인식된 사람에게 해줄 말을 정보 비동기로 받아오기
     task = asyncio.create_task(callSpeech(user_email))
 
@@ -436,7 +443,7 @@ async def appear(*arg):
         "order" : "userInfo",
         "query" : {
             "userId" : user_id,
-            "email" : user_email
+            "userEmail" : user_email
         }
     }
     
@@ -491,13 +498,15 @@ async def callSpeech(user_email):
 
     URL_MENT = "http://i9e101.p.ssafy.io:8080/api/iot/text/first?userEmail="
 
-
     response = requests.get(URL_MENT + user_email)
+    response = response.json()
 
-    if response.json()['success']:
-        if response.json()["response"] != None:
-            text_code = response.json()["response"]["textCode"]
-            text_content = response.json()["response"]["textContent"]
+    print(response)
+
+    if response.get('success'):
+        if response["response"] != None:
+            text_code = response["response"]["textCode"]
+            text_content = response["response"]["textContent"]
 
             return {
                 "content" : text_content,
@@ -563,7 +572,7 @@ order_fun = {"CALL" : call,
             "CANTUNDERSTAND" : chatgpt,
             "left": left,
             "right": right,
-            "end_video": messageEnd,
+            "recoding_end": messageEnd,
             "appear": appear,
             "disappear": disappear,
             "exit" : mainUI
