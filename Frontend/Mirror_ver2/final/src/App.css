@@ -185,6 +185,11 @@ h4 {
   align-items: flex-end;
 }
 
+.message-video {
+  margin-top: -650px;
+  margin-left: -100px;
+};
+
 /* 나눔스퀘어 폰트 */
 @font-face {
   font-family: "NanumSquare";

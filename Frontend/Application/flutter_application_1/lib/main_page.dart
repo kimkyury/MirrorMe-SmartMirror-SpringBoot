@@ -89,17 +89,42 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(15),
           height: 80,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildNavItem(Image.asset('lib/assets/newsicon.png'), 0),
-              buildNavItem(Image.asset('lib/assets/emotionicon.png'), 1),
-              buildNavItem(Image.asset('lib/assets/homeicon.png'), 2),
-              buildNavItem(Image.asset('lib/assets/familyicon.png'), 3),
-              buildNavItem(Image.asset('lib/assets/settingicon.png'), 4),          
+              buildNavItem(
+                _currentIndex == 0
+                    ? Image.asset('lib/assets/newsiconcolor.png') // 선택된 화면에 맞는 이미지
+                    : Image.asset('lib/assets/newsicon.png'),
+                0,
+              ),
+              buildNavItem(
+                _currentIndex == 1
+                    ? Image.asset('lib/assets/emotioniconcolor.png') // 선택된 화면에 맞는 이미지
+                    : Image.asset('lib/assets/emotionicon.png'),
+                1,
+              ),
+              buildNavItem(
+                _currentIndex == 2
+                    ? Image.asset('lib/assets/homeiconcolor.png') // 선택된 화면에 맞는 이미지
+                    : Image.asset('lib/assets/homeicon.png'),
+                2,
+              ),
+              buildNavItem(
+                _currentIndex == 3
+                    ? Image.asset('lib/assets/familyiconcolor.png') // 선택된 화면에 맞는 이미지
+                    : Image.asset('lib/assets/familyicon.png'),
+                3,
+              ),
+              buildNavItem(
+                _currentIndex == 4
+                    ? Image.asset('lib/assets/settingiconcolor.png') // 선택된 화면에 맞는 이미지
+                    : Image.asset('lib/assets/settingicon.png'),
+                4,
+              ),
             ],
           ),
         ),
