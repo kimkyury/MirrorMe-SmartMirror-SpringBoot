@@ -48,7 +48,7 @@ class _MessageListViewState extends State<MessageListView> {
     // String refreshToken = '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo';
 
     var headers = {
-      'access_token': 'ya29.a0AfB_byCmBwoBOWVXL7vcYhEZw4px7ODJdl7NytuivM8vecoBDLWA6v8JuKkU21VgIeRTcVLIcRn9KKWV6PNMj6OPWikt7RdaQG2QB3DYs0fe4-LPKeZIff8cfaWXz80JfyXESR-vnQ0RlKooqARj3jmCNyDzOqiVaCgYKAZ0SARISFQHsvYlsn0FA9yg0LEHiN2k_TlL7sw0167', // access_token 추가
+      'access_token': 'ya29.a0AfB_byAtQFrmC7N1ho6S8qUcj5UXjin1MNzOXdZThDIMKS7Tq5TzueRt_H9lpfHcT36QhSrXRypnZmZL_knk2R7BwStocQdKVmM4yxnfkCx_vHZFVXwkiHEWZZ8-vyoJl82Yjup583THaCyCC39LTYMSj0L5CFu4Pi-BcNpuTwaCgYKARoSARISFQHsvYlssKoPXSgSAR9qqJJTB8yESQ0177', // access_token 추가
     };
 
     var cookies = {
@@ -151,6 +151,7 @@ class _MessageListViewState extends State<MessageListView> {
               '메세지',
               style: TextStyle(
                 fontSize: 24,
+                fontFamily: 'NanumSquareRoundEB',
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -173,8 +174,9 @@ class _MessageListViewState extends State<MessageListView> {
                       width: 390,
                       height: 73,
                       child: ListTile(
-                        title: Text('Video ID: $videoId'),
-                        subtitle: Text('Sent by: $sendUserEmail'),
+                        title: Text('$sendUserEmail',
+                          style: TextStyle(fontFamily: 'NanumSquareRoundEB',)),
+                        subtitle: Text('영상메세지'),
                         onTap: () {
                           _playVideo(videoId, sendUserEmail);
                         },
