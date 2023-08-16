@@ -19,10 +19,20 @@ class TodayWeather extends StatelessWidget {
               Container(
                 child: Row(
                   children: [
-                  // 좌표 아이콘
-                  Text('부산광역시, 대한민국'),
+                    Container(
+                      // 좌표 사진으로 바꾸기
+                      width: 15,
+                      height: 15,
+                      color: Colors.black,
+                    ),
+                    Text('부산광역시, 대한민국'),
                   ]
                 )
+              ),
+              Container(
+                child: Row(
+                  
+                ),
               )
             ],
           )
