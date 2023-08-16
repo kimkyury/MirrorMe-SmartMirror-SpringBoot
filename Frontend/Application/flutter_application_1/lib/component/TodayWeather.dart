@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class TodayWeather extends StatefulWidget {
   @override
@@ -25,26 +26,32 @@ class _TodayWeatherState extends State<TodayWeather> {
     final pageNo = '1';
     final numOfRows = '500';
     var baseTime = '0200';
-    var day = '';
+    var nowday = '';
 
-    DateTime currentTime = DateTime.now(); // 현재 시간 가져오기
-    String year = currentTime.year.toString();
-    String month = currentTime.month.toString().padLeft(2, '0');
-    var currentHour = currentTime.hour;
+    DateTime currentTime = DateTime.now();
 
-    // 02:45 이전 날짜 처리
-    if (currentHour > 3) {
-      day = currentTime.day.toString().padLeft(2, '0');
-    } else if (currentHour == 2 && currentTime.minute > 45) {
-      day = currentTime.day.toString().padLeft(2, '0');
+    var koreanTime = currentTime.toUtc().add(Duration(hours: 9));
+
+    String year = koreanTime.year.toString();
+    String month = koreanTime.month.toString().padLeft(2, '0');
+    var currentHour = koreanTime.hour;
+    var currentMin = koreanTime.minute;
+    var date;
+
+    if (currentHour < 2 || (currentHour == 2 && currentMin < 45)) {
+      // 02:45 이전인 경우 어제 날짜로 설정
+      date = koreanTime.subtract(Duration(days: 1));
     } else {
-      day = (currentTime.day - 1).toString().padLeft(2, '0');
+      date = koreanTime;
     }
 
-    var baseDate = '$year$month$day';
-    String today = '$year$month${currentTime.day}';
+    var today = '${koreanTime.year}${koreanTime.month.toString().padLeft(2, '0')}${koreanTime.day.toString().padLeft(2, '0')}';
+    var baseDate = '${koreanTime.year}${koreanTime.month.toString().padLeft(2, '0')}${koreanTime.day.toString().padLeft(2, '0')}';
+    
+    // print('currentHour = $currentHour');
+    // print('baseDate = $baseDate');
+    // print('today = $today');
 
-    print('baseDate: $baseDate');
     try {
       final Map<String, String> params = {
         'baseDate': baseDate,
@@ -63,42 +70,51 @@ class _TodayWeatherState extends State<TodayWeather> {
         final todayWeatherList =
             List<Map<String, dynamic>>.from(responseData['response']);
 
-        print('Response Data: ${response.body}');
+        // print('Response Data: ${response.body}');
 
         // 데이터 처리
         final List<dynamic> todayWeather = todayWeatherList
             .where((data) => data['fcstDate'] == today)
             .toList();
 
-        final tempertureMin = todayWeather.firstWhere(
-          (data) => data['category'] == 'TMN',
-        )['fcstValue'];
+        print('Filtered Weather Data: $todayWeather');
 
-        final tempertureMax = todayWeather.firstWhere(
-          (data) => data['category'] == 'TMX',
-        )['fcstValue'];
+        final tempertureMinData = todayWeather
+          .where((data) => data['category'] == 'TMN')
+          .toList();
+        final tempertureMin = tempertureMinData.first['tmn'];
 
-        final popInfo = todayWeather.firstWhere(
-          (data) => data['category'] == 'POP',
-        )['fcstValue'];
+        final tempertureMaxData = todayWeather
+          .where((data) => data['category'] == 'TMX')
+          .toList();
+        final tempertureMax = tempertureMaxData.first['tmx'];
 
-        final ptyInfo = todayWeather.firstWhere(
-          (data) => data['category'] == 'PTY',
-        )['fcstValue'];
+        final popData = todayWeather
+          .where((data) => data['category'] == 'POP')
+          .toList();
+        final pop = popData.first['pop'];
 
-        final skyInfo = todayWeather.firstWhere(
-          (data) => data['category'] == 'SKY',
-        )['fcstValue'];
+        final ptyData = todayWeather
+          .where((data) => data['category'] == 'PTY')
+          .toList();
+        final pty = ptyData.first['pty'];
+
+        final skyData = todayWeather
+          .where((data) => data['category'] == 'SKY')
+          .toList();
+          print('skyData = $skyData');
+        final sky = skyData.first['sky'];
 
         // 날씨 정보를 저장
         setState(() {
           weatherInfo['tmn'] = tempertureMin;
           weatherInfo['tmx'] = tempertureMax;
-          weatherInfo['pop'] = popInfo;
-          weatherInfo['pty'] = ptyInfo;
-          weatherInfo['sky'] = skyInfo;
+          weatherInfo['pop'] = pop;
+          weatherInfo['pty'] = pty;
+          weatherInfo['sky'] = sky;
           isLoading = false; // 데이터 로딩 완료
         });
+        // print('weatherInfo = $weatherInfo');
       } else {
         throw Exception('API 호출 실패');
       }
