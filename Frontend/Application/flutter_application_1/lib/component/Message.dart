@@ -11,7 +11,7 @@ class Message extends StatefulWidget {
 
 class _MessageState extends State<Message> {
   VideoPlayerController? _controller; // Nullable로 변경
-
+  
   @override
   void initState() {
     super.initState();
