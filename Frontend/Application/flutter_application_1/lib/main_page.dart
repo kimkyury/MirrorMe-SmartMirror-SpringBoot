@@ -4,11 +4,14 @@ import './component/Emotions.dart';
 import './component/Home.dart';
 import './component/Family.dart';
 import './component/Settings.dart';
-import './component/Message.dart';
+import 'component/Message.dart';
 import './component/Connect.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  // final String accessToken;
+  // final String refreshToken;
+
+  // MyHomePage({required this.accessToken, required this.refreshToken});
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
