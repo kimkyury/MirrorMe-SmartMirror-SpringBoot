@@ -21,6 +21,7 @@ class News extends StatelessWidget {
                         Text('스포츠', style: TextStyle(
                           color: Colors.black,
                           fontSize: 23,
+                          fontFamily: 'NanumSquareRoundEB',
                           fontWeight: FontWeight.w500
                         ),),
                       ],
@@ -76,6 +77,7 @@ class News extends StatelessWidget {
                         Text('IT/과학', style: TextStyle(
                           color: Colors.black,
                           fontSize: 23,
+                          fontFamily: 'NanumSquareRoundEB',
                           fontWeight: FontWeight.w500
                         ),),
                       ],
