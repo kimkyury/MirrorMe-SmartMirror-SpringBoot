@@ -19,6 +19,8 @@ import random
 import json
 
 import requests
+
+
 ###############################################################################################
 ###############################################################################################
 # 서버에서 유저 데이터 받아오기
@@ -54,7 +56,7 @@ user_info_list = rdata['response']
 for user in user_info_list:
     if user["profileImage"] != None:
         img_out = decode_base64_image(user["profileImage"])
-        save_image_as_png(img_out, f'/home/ssafy/바탕화면/temp/S09P12E101/IoT/main/py/Video_Client/Recognition/Image/{user["userName"]}.png')
+        save_image_as_png(img_out, f'/home/ssafy/바탕화면/S09P12E101/IoT/main/py/Video_Client/Recognition/Image/{user["userName"]}.png')
         # save_image_as_png(img_out, f'./Video_client/Recognition/Image/{user["userName"]}.png')
 
     user.pop("profileImage",None)
@@ -77,7 +79,6 @@ client_role = {}
 # 클라이언트 접속이 되면 호출되고 종료되면 연결이 끊어진다.
 async def accept(websocket, path):
     # 클라이언트 연결 시 2초 이내로 신호를 보내야됨
-    print("뭔가 연결됨")
     try:
         role = await asyncio.wait_for(websocket.recv(), timeout = 3)
 
@@ -87,6 +88,13 @@ async def accept(websocket, path):
         print("연결시간 초과")
         await websocket.send("연결시간 초과")
         await websocket.close()
+        return
+
+    if role == "arduino":
+        print("아두이노 연결됨")
+        person_is_sen = await websocket.recv()
+        await order.put(person_is_sen)
+        await websocket.wait_closed()
         return
 
     # 우리가 지정한 코드가 아니면 연결 끊어버림
@@ -110,11 +118,12 @@ async def accept(websocket, path):
     connect_check[role].set()
     client_role[role] = session_id
     # 세션 코드 발급
+    # 리엑트 안 보내줌
     if role != "react":
         await websocket.send(session_id)
     # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
-    # else:
-    #     await appear()
+    else:
+        await appear()
 
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
@@ -125,6 +134,7 @@ async def accept(websocket, path):
 
 user_email = ""
 user_name = ""
+user_id = ""
 
 SCREEN_OFF = 0
 WAITTING = 1
@@ -133,7 +143,7 @@ YOUTUBE = 101
 MESSAGE_CAP = 102
 MESSAGE_SHOW = 103
 
-STATUS = WAITTING
+STATUS = SCREEN_OFF
 
 
 # 명령이 쌓이게 되는 큐
@@ -174,9 +184,14 @@ async def doOrder():
         # 명령을 받아 옴
         received_event = await order.get()
         commend, *arg = received_event.split("\n\r")
-        print(commend)
+        print(commend + "test")
+        # if commend == "disappear!" and STATUS == SCREEN_OFF:
+        #     continue
+        # if commend == "appear!" and STATUS != SCREEN_OFF:
+        #     continue
 
         if order_fun.get(commend, False):
+            # print("여긴오나?")
             asyncio.create_task(order_fun[commend](*arg))
 
         
@@ -372,6 +387,9 @@ async def appear(*arg):
     # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
     # os.system("xset dpms force standby")
     # os.system("xset dpms force suspend")
+    print("appear로 잘 들어옴!")
+    return
+
     global STATUS
     # if STATUS != SCREEN_OFF:
     #     return
@@ -386,7 +404,7 @@ async def appear(*arg):
         pass
     
     print("find user")
-    global user_email, user_name
+    global user_email, user_name, user_id
     user_name = find_user.getUserName()
     print("user :", user_name)
 
@@ -490,6 +508,8 @@ async def callSpeech(user_email):
 
 
 async def disappear(*arg):
+    print("disappear로 잘 들어옴!")
+    return
     global STATUS
     if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
@@ -502,7 +522,6 @@ async def disappear(*arg):
             "query" : None
         }
         await websocketSend('video', json.dumps(send_data))
-
 
 
         STATUS = SCREEN_OFF
@@ -545,19 +564,11 @@ order_fun = {"CALL" : call,
             "left": left,
             "right": right,
             "end_video": messageEnd,
-            "appear!": appear,
-            "disappear!": disappear,
+            "appear": appear,
+            "disappear": disappear,
             "exit" : mainUI
             }
 
-
-# async def serialArduino():
-#     py_serial = serial.Serial(port="COM4", baudrate=9600,)
-
-#     while True:
-#         if py_serial.readable():
-#             response = py_serial.readline()
-#             order.put(response.decode())
 
 
 
@@ -566,7 +577,6 @@ async def main():
         hearOrder("audio"),
         hearOrder("video"),
         doOrder(),
-        # serialArduino(),
     )
 
 ###############################################################################################
@@ -589,6 +599,7 @@ async def main():
 # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다. 
 start_server = websockets.serve(accept, "localhost", 9998)
 # 비동기로 서버를 대기한다.
+# threading.Thread(target = serialArduino).start()
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_until_complete(main())
 asyncio.get_event_loop().run_forever()

@@ -121,8 +121,9 @@ function WeekWeather(props) {
     });
 
     // 18시 기준으로 baseDate 설정
+    day = String(currentTime.getDate()).padStart(2, '0');
     baseDate = currentHour < 18 ? `${year}${month}${String(Number(day) - 1).padStart(2, '0')}` : `${year}${month}${day}`
-    
+
     axios.get("weather/mid/rain", {
       params: { baseDate:baseDate, numOfRows: numOfRows, pageNo: pageNo }
     }).then((res) => {
@@ -133,8 +134,23 @@ function WeekWeather(props) {
     })
   }, []);
 
-  const skyImages = {1: '/weather/008.png', 2: '/weather/009.png', 3: '/weather/010.png', 4: '/weather/011.png', 5: '/weather/012.png', 6: '/weather/013.png', 7: '/weather/014.png', '맑음': '/weather/008.png', '구름많음': '/weather/009.png', '흐림': '/weather/010.png', '흐리고 비': '/weather/011.png', '눈 비': '/weather/012.png', '눈': '/weather/013.png', '소나기': '/weather/014.png'};
-
+  const skyImages = {
+    1: `${process.env.PUBLIC_URL}/images/weather/001.png`,
+    2: `${process.env.PUBLIC_URL}/images/weather/002.png`,
+    3: `${process.env.PUBLIC_URL}/images/weather/003.png`,
+    4: `${process.env.PUBLIC_URL}/images/weather/004.png`,
+    5: `${process.env.PUBLIC_URL}/images/weather/005.png`,
+    6: `${process.env.PUBLIC_URL}/images/weather/006.png`,
+    7: `${process.env.PUBLIC_URL}/images/weather/007.png`,
+    '맑음': `${process.env.PUBLIC_URL}/images/weather/001.png`,
+    '구름많음': `${process.env.PUBLIC_URL}/images/weather/002.png`,
+    '흐림': `${process.env.PUBLIC_URL}/images/weather/003.png`,
+    '흐리고 비': `${process.env.PUBLIC_URL}/images/weather/004.png`,
+    '눈 비': `${process.env.PUBLIC_URL}/images/weather/005.png`,
+    '눈': `${process.env.PUBLIC_URL}/images/weather/006.png`,
+    '소나기': `${process.env.PUBLIC_URL}/images/weather/007.png`,
+  };
+  
   return (
     <div>
       {/* 주간 날씨 테이블 */}
