@@ -57,7 +57,15 @@ function TodayWeather(props) {
           sky: skyInfo.sky,
         });
 
-        const skyImages = ['/weather/001.png', '/weather/002.png', '/weather/003.png', '/weather/004.png', '/weather/005.png', '/weather/006.png', '/weather/007.png'];
+        const skyImages = [
+          `${process.env.PUBLIC_URL}/images/weather/001.png`,
+          `${process.env.PUBLIC_URL}/images/weather/002.png`,
+          `${process.env.PUBLIC_URL}/images/weather/003.png`,
+          `${process.env.PUBLIC_URL}/images/weather/004.png`,
+          `${process.env.PUBLIC_URL}/images/weather/005.png`,
+          `${process.env.PUBLIC_URL}/images/weather/006.png`,
+          `${process.env.PUBLIC_URL}/images/weather/007.png`
+        ];
         const imagePromises = skyImages.map((src) => {
           return new Promise((resolve, reject) => {
             const img = new Image();
@@ -66,7 +74,7 @@ function TodayWeather(props) {
             img.onerror = reject;
           });
         });
-
+        
         Promise.all(imagePromises)
           .then(() => {
             setImageLoading(false); // 이미지 로딩 완료
@@ -75,6 +83,7 @@ function TodayWeather(props) {
             console.error(error);
             setIsLoading(false);
           });
+
       })
       .catch((error) => {
         console.log(error);
@@ -107,30 +116,8 @@ function TodayWeather(props) {
   // 아이콘 출력을 위한 화면 상태
   let todaySky = '';
 
-  if (weatherInfo.pty === 0) { // 비, 눈 비해당
-    if (weatherInfo.sky === 1) {
-      todaySky = '/weather/001.png';
-    } else if (weatherInfo.sky === 3) {
-      todaySky = '/weather/002.png';
-    } else if (weatherInfo.sky === 4) {
-      todaySky = '/weather/003.png';
-    }
-  } else { // 비, 눈 해당
-    if (weatherInfo.pty === 1) {
-      todaySky = '/weather/004.png';
-    } else if (weatherInfo.pty === 2) {
-      todaySky = '/weather/005.png';
-    } else if (weatherInfo.pty === 3) {
-      todaySky = '/weather/006.png';
-    } else if (weatherInfo.pty === 4) {
-      todaySky = '/weather/007.png';
-    }
-  }
-
-  // 주간 날씨 정보 펼치기 ///////////////////////////////// 모션 or 음성 연결 필요
-  // const handleWeekWeatherClick = () => {
-  //   setShowWeekWeather();
-  // };
+  const skyicons = {1: '001.png', 2: '002.png', 3: '003.png', 4: '004.png', 5: '005.png', 6: '006.png', 7: '007.png'};
+  const skys = {1: '맑음', 2: '구름많음', 3: '흐림', 4: '비', 5: '눈/비', 6: '눈', 7: '소나기'};
 
   return (
     <div>
@@ -144,7 +131,8 @@ function TodayWeather(props) {
           <div>
             <div className="weather-content">
               <div className="weather-icon">
-                <img src={todaySky} alt="weather icon" width="100%"/>
+                <img src={`${process.env.PUBLIC_URL}/images/weather/${skyicons[weatherInfo.sky-1]}`} alt="weather icon" width="100%"/>
+                <h2>{skys[weatherInfo.sky-1]}</h2>
               </div>
               <div className="weather-info">
                 <h2>{ultraInfo.t1H}℃</h2>
