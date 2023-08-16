@@ -76,6 +76,7 @@ public class WeatherController {
         UltraShortTermForecast ultraShortTermForecast = weatherService.getUltraShortTermForecast(weatherInfo);
 
         ultraShortTermForecast.setDate(date);
+        ultraShortTermForecast.setRegion(userLocation.getRegion());
         return success(ultraShortTermForecast);
     }
 
