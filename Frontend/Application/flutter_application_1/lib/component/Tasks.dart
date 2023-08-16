@@ -1,97 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:convert';
 
-class Tasks extends StatelessWidget {
+class Tasks extends StatefulWidget {
+  const Tasks({super.key});
+
+  @override
+  _TasksState createState() => _TasksState();
+}
+class _TasksState extends State<Tasks> {
+  List<Map<String, dynamic>> tasks = []; // 일정을 저장할 리스트
+
+  // initState 메소드를 이용하여 페이지가 로드될 때 한 번 실행
+  @override
+  void initState() {
+    super.initState();
+    _fetchData(); // 페이지가 로드될 때 데이터를 가져오도록 설정
+  }
+
+  Future<void> _fetchData() async {
+    final url = 'http://i9e101.p.ssafy.io:8080/tasks'; 
+    
+    // String accessToken = 'ya29.a0AfB_byDgekAtBNbBvXv2U_k2beWGeFig1riSIwnUMjGsMrNPeLvobC8SzflAAahddaOwSaAQCrCYTO61T873QelF9wnfmZsYfJam5w0zb892BFKcJiG0KdEvaWhS0pe2GHIFPWu44VlkCfIFZYtIl2jXrDxdVK3saCgYKAYoSARISFQHsvYlscmPmaHddHNDhwF2EReRftA0167';
+    // String refreshToken = '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo';
+
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'access_token': 'ya29.a0AfB_byAtQFrmC7N1ho6S8qUcj5UXjin1MNzOXdZThDIMKS7Tq5TzueRt_H9lpfHcT36QhSrXRypnZmZL_knk2R7BwStocQdKVmM4yxnfkCx_vHZFVXwkiHEWZZ8-vyoJl82Yjup583THaCyCC39LTYMSj0L5CFu4Pi-BcNpuTwaCgYKARoSARISFQHsvYlssKoPXSgSAR9qqJJTB8yESQ0177', // access_token 추가
+    };
+
+    var cookies = {
+      'refresh_token': '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo', // refresh_token을 쿠키에 추가
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+        // cookie: cookies,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(utf8.decode(response.bodyBytes));
+        final newTasks = List<Map<String, dynamic>>.from(responseData['response']);
+
+        setState(() {
+          tasks = newTasks; // 메시지 리스트 업데이트
+        });
+
+        print('Response Data: ${response.body}');
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      // 할 일
-      padding: EdgeInsets.all(10),
-      height: 150,
-      margin: EdgeInsets.only(
-        left: 20,
-        right: 20,
-      ),
-      child: Column(
-        children: [
-          Container(
-            // 제목
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Todo',
-                  style: TextStyle(
-                    color: Color(0xff111111),
-                    fontSize: 20,
-                    fontFamily: 'NanumSquareRoundEB',
-                    fontWeight: FontWeight.w400,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-              ],
-            ),
+          // 오늘 일정
+          padding: EdgeInsets.all(10),
+          height: 150,
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
           ),
-          Container(
-            // 일정 한 개
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Row(children: [
-                    Icon(
-                      Icons.circle,
-                      color: Colors.red,
-                      size: 15,
+          child: Column(
+            children: [
+              Container(
+                // 제목
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('ToDo',
+                      style: TextStyle(
+                        color: Color(0xff111111),
+                        fontSize: 20,
+                        fontFamily: 'NanumSquareRoundEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
                     ),
-                    Text('일정1'),
-                  ]),
+                  ],
                 ),
-                Text('마감일?'),
-              ],
-            ),
+              ),
+              // Expanded( // 리스트뷰가 남은 공간을 모두 차지할 수 있도록 Expanded 위젯을 추가합니다.
+              //   child: ListView.builder(
+              //     itemCount: tasks.length,
+              //     itemBuilder: (BuildContext context, int index) {
+              //       final task = tasks[index];
+              //       return Container(
+              //         // 일정 한 개
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             Container(
+              //               child: Row(children: [
+              //                 Icon(
+              //                   Icons.circle,
+              //                   color: Colors.red,
+              //                   size: 10,
+              //                 ),
+              //                 Text(task['title'], 
+              //                 style: TextStyle(
+              //                   color: Color(0xff111111),
+              //                   fontSize: 12,
+              //                   fontFamily: 'NanumSquareRoundEB',
+              //                   fontWeight: FontWeight.w400,
+              //                   fontStyle: FontStyle.normal,
+              //                 ),
+              //                 ) // 일정 제목 표시
+              //               ]),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
+            ],
           ),
-          Container(
-            // 일정 한 개
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Row(
-                    children: [
-                    Icon(
-                      Icons.circle,
-                      color: Colors.red,
-                      size: 15,
-                    ),
-                    Text('일정2'),
-                  ]),
-                ),
-                Text('마감일?'),
-              ],
-            ),
-          ),
-          Container(
-            // 일정 한 개
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Row(children: [
-                    Icon(
-                      Icons.circle,
-                      color: Colors.red,
-                      size: 15,
-                    ),
-                    Text('일정3'),
-                  ]),
-                ),
-                Text('마감일?'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+        );
   }
 }
