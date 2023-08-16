@@ -165,6 +165,7 @@ public class WeatherServiceImpl implements WeatherService {
         HouseholdDto.HouseHoldLocationRes houseHoldRes = HouseholdDto.HouseHoldLocationRes.builder()
                 .gridNy(household.getGridNy())
                 .gridNx(household.getGridNx())
+                .region(household.getRegion())
                 .build();
         return houseHoldRes;
     }

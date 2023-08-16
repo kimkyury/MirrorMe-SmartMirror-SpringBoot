@@ -58,11 +58,13 @@ public class HouseholdDto {
     public static class HouseHoldLocationRes {
         private int gridNx;
         private int gridNy;
+        private String region;
 
         @Builder
-        public HouseHoldLocationRes(int gridNx, int gridNy) {
+        public HouseHoldLocationRes(int gridNx, int gridNy, String region) {
             this.gridNx = gridNx;
             this.gridNy = gridNy;
+            this.region = region;
         }
     }
 }
