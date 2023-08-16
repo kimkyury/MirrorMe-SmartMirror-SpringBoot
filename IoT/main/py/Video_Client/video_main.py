@@ -26,7 +26,10 @@ cur_email = 'woneee99@gmail.com'
 send_message_to_server = ''
 recv = ''
 websocket = None
+
+end_check = False
 lock = threading.Lock()
+video_event = threading.Event()
 
 
 target_size = (256, 256)
@@ -43,6 +46,9 @@ async def connect():
             await ws.send("video")
             session_id = await ws.recv()
             websocket = ws
+            
+            global end_check
+            end_check = True
             while True:
                 print("신호 대기")
                 recv = await ws.recv()
@@ -53,19 +59,30 @@ async def connect():
                     cur_user = int(recv['query']['userId'])
                     cur_email = recv['query']['userEmail']
                     print('login')
+                    # 이벤트 발생시키고, 
+                    video_event.set()
+                    with lock:
+                        end_check = 0
 
                 elif recv.get('order', None) == 'logout':
                     cur_user = -1
                     cur_email = ''
+                    video_event.clear()
+                    with lock:
+                        end_check = 1
                     print('logout')
 
                 elif recv.get('order', None) == 'video_start':
-                    video_recoding.recordingVideo(cur_email, recv['query']['target_user'])
-                    send_message_to_server = 'recoding_end'
+                    # video_event.clear()
+                    with lock:
+                        end_check = 2
 
                 elif recv.get('order', None) == 'audio_start':
-                    audio_recoding.recordingAudio(cur_email, recv['query']['target_user'])
-                    send_message_to_server = 'recoding_end'
+                    with lock:
+                        end_check = 2
+
+
+
 
     except websockets.exceptions.ConnectionClosed:
         print("error")
@@ -120,7 +137,7 @@ def preprocess_image(image):
 
 
 def getgesture():
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     mpHands = mp.solutions.hands
     my_hands = mpHands.Hands()
@@ -140,6 +157,12 @@ def getgesture():
     emotion_list = []
     
     while True:
+        # 여기에서 체크해서 종료 넣기
+        with lock:
+            global end_check
+            if end_check:
+                break
+
         result.popleft()
 
         success, img = cap.read()
@@ -197,10 +220,12 @@ def getgesture():
             ret = max(set(distance), key=distance.count)
             if ret == "remain":
                 continue
+            cap.release()
             return ret
         elif ret == None:
             pass
         else:
+            cap.release()
             return ret
     
     cap.release()
@@ -229,9 +254,30 @@ def get_gesture():
     loop = asyncio.new_event_loop()
 
     while True:
-        global websocket, send_message_to_server
+        global websocket, send_message_to_server, end_check
         # GESTURE
-        send_message_to_server = getgesture()
+        # 여기서 이벤트 체크해서 대기
+        video_event.wait()
+        if end_check == 0:
+            send_message_to_server = getgesture()
+
+        elif end_check == 1:
+            continue
+
+        elif end_check == 2:
+            video_recoding.recordingVideo(cur_email, recv['query']['target_user'])
+            send_message_to_server = 'recoding_end'
+
+            with lock:
+                end_check = 0
+            
+        elif end_check == 3:
+            audio_recoding.recordingAudio(cur_email, recv['query']['target_user'])
+            send_message_to_server = 'recoding_end'
+
+            with lock:
+                end_check = 0
+
 
         if send_message_to_server != None and websocket != None:
             loop.run_until_complete(websocket.send(send_message_to_server))
