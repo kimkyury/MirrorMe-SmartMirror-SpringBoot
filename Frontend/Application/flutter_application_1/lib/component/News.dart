@@ -27,6 +27,7 @@ class News extends StatelessWidget {
                           child: Row(
                             children: [
                               Icon(Icons.sports_football, color: Colors.black,),
+                              SizedBox(width: 10,),
                               Text('스포츠', style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 23,
@@ -104,10 +105,12 @@ class News extends StatelessWidget {
                         Container(
                           child: Row(
                             children: [
-                              Icon(Icons.sports_football, color: Colors.black,),
-                              Text('스포츠', style: TextStyle(
+                              Icon(Icons.computer, color: Colors.black,),
+                              SizedBox(width: 10,),
+                              Text('IT/과학', style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 23,
+                                fontFamily: 'NanumSquareRoundEB',
                                 fontWeight: FontWeight.w500
                               ),),
                             ],
