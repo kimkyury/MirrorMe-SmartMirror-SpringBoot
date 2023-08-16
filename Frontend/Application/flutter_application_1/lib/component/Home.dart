@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import './Tasks.dart';
 import './Schedules.dart';
-import './todayweather.dart';
-import './weekweather.dart';
+import './TodayWeather.dart';
+import './WeekWeather.dart';
 
 
 class Home extends StatelessWidget {
