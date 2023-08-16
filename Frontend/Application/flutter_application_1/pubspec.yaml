@@ -76,6 +76,13 @@ flutter:
     - lib/assets/familyiconcolor.png
     - lib/assets/settingiconcolor.png
     - lib/assets/weather/path.png
+    - lib/assets/weather/001.png
+    - lib/assets/weather/002.png
+    - lib/assets/weather/003.png
+    - lib/assets/weather/004.png
+    - lib/assets/weather/005.png
+    - lib/assets/weather/006.png
+    - lib/assets/weather/007.png
 
 
   # The following line ensures that the Material Icons font is
