@@ -63,5 +63,6 @@ def getUserName():
             if name is not None:
                 maybe.append(name)
                 if len(maybe) >= 1:
+                    cap.release()
                     return max(set(maybe), key=maybe.count)
     cap.release()
