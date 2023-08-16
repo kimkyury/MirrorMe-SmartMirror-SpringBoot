@@ -15,6 +15,7 @@ function VideoMessage(props) {
   const userEmail = props.userEmail;
   const commandMessage = props.commandMessage;
   const userAccessToken = props.userAccessToken;
+
   const userRefreshToken = props.userRefreshToken;
 
   useEffect(() => {
