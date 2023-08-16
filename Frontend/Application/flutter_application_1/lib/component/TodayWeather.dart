@@ -40,6 +40,7 @@ class TodayWeather extends StatelessWidget {
                       width: 80,
                       height: 80,
                       color: Colors.red,
+                      child: Text('날씨 아이콘'),
                     ),
                     Container( // 기온
                       child: Text('기온'),
