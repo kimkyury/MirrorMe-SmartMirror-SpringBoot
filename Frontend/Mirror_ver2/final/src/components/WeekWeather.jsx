@@ -121,8 +121,9 @@ function WeekWeather(props) {
     });
 
     // 18시 기준으로 baseDate 설정
+    day = String(currentTime.getDate()).padStart(2, '0');
     baseDate = currentHour < 18 ? `${year}${month}${String(Number(day) - 1).padStart(2, '0')}` : `${year}${month}${day}`
-    
+
     axios.get("weather/mid/rain", {
       params: { baseDate:baseDate, numOfRows: numOfRows, pageNo: pageNo }
     }).then((res) => {
