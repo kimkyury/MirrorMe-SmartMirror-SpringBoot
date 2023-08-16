@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../component/weather.dart';
 
 class Home extends StatelessWidget {
 
@@ -26,6 +27,13 @@ class Home extends StatelessWidget {
                 blurRadius: 6,
                 spreadRadius: 0,
               ),
+            ],
+          ),
+          child: Column( // Column으로 감싸서 여러 자식 위젯을 나란히 나열합니다.
+            children: [
+              SizedBox(height: 20,),
+              Weather(), // 날씨 컴포넌트
+              SizedBox(height: 20,),
             ],
           ),
         ),
