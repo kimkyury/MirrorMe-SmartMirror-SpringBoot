@@ -30,26 +30,6 @@ void main() async {
   //   print("Error: $e");
   // }
 
-  const baseUrl = "http://i9e101.p.ssafy.io:8080";
-  final queryParams = {
-    'userEmail' : 'kkrt7777@gmail.com',
-  };
-
-  final uri =
-      Uri.parse('$baseUrl/oauth/tokens').replace(queryParameters: queryParams);
-
-  try {
-    var response = await http.get(uri);
-    var statusCode = response.statusCode;
-    var responseHeaders = response.headers;
-    var responseBody = response.body;
-
-    print("statusCode: $statusCode");
-    print("responseHeaders: $responseHeaders");
-    print("responseBody: $responseBody");
-  } catch (e) {
-    print("Error: $e");
-  }
 }
 
 class MyApp extends StatelessWidget {

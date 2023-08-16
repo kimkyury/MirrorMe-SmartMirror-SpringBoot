@@ -61,6 +61,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    # fonts
+    # - lib/assets/fonts/NanumSquareRoundEB.ttf
+
+    # images
     - lib/assets/MirrorMe_Splash.png
     - lib/assets/MirrorMe_Main.png
     - lib/assets/messageicon.png
@@ -83,6 +87,12 @@ flutter:
     - lib/assets/weather/005.png
     - lib/assets/weather/006.png
     - lib/assets/weather/007.png
+    - lib/assets/back.png
+
+  fonts:
+      - family: NanumSquareRoundEB
+        fonts:
+          - asset: lib/assets/fonts/NanumSquareRoundEB.ttf
 
 
   # The following line ensures that the Material Icons font is
