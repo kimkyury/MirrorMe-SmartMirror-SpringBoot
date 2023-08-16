@@ -110,6 +110,7 @@ async def accept(websocket, path):
     connect_check[role].set()
     client_role[role] = session_id
     # 세션 코드 발급
+    # 리엑트 안 보내줌
     if role != "react":
         await websocket.send(session_id)
     # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
@@ -125,6 +126,7 @@ async def accept(websocket, path):
 
 user_email = ""
 user_name = ""
+user_id = ""
 
 SCREEN_OFF = 0
 WAITTING = 1
@@ -175,6 +177,8 @@ async def doOrder():
         received_event = await order.get()
         commend, *arg = received_event.split("\n\r")
         print(commend)
+        if commend == "disappear!" and STATUS == SCREEN_OFF:
+            continue
 
         if order_fun.get(commend, False):
             asyncio.create_task(order_fun[commend](*arg))
@@ -386,7 +390,7 @@ async def appear(*arg):
         pass
     
     print("find user")
-    global user_email, user_name
+    global user_email, user_name, user_id
     user_name = find_user.getUserName()
     print("user :", user_name)
 
