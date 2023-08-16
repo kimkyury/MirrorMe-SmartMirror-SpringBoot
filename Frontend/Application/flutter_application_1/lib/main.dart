@@ -32,12 +32,11 @@ void main() async {
 
   const baseUrl = "http://i9e101.p.ssafy.io:8080";
   final queryParams = {
-    'numOfRows': '100',
-    'pageNo': '1',
+    'userEmail' : 'kkrt7777@gmail.com',
   };
 
   final uri =
-      Uri.parse('$baseUrl/weather/mid').replace(queryParameters: queryParams);
+      Uri.parse('$baseUrl/oauth/tokens').replace(queryParameters: queryParams);
 
   try {
     var response = await http.get(uri);
