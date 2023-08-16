@@ -122,7 +122,7 @@ public class IotController {
     }
 
     @GetMapping("/message")
-    @Operation(summary = "회원 영상 조회", description = "영상 메시지 전체에서 얻은 videoId로 영상을 조회합니다. token이 필요합니다.")
+    @Operation(summary = "회원 영상 조회", description = "영상 메시지 전체에서 얻은 videoId로 영상을 조회합니다. ")
     public Resource getOneMessage(@RequestParam Long videoId) throws IOException {
         FileInputStream videoDetail = iotService.getVideoDetail(videoId);
         return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
