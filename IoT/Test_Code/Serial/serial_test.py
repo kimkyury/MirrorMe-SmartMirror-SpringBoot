@@ -1,6 +1,8 @@
-import serial
 
-py_serial = serial.Serial(port="COM4", baudrate=9600,)
+
+from serial import Serial
+
+py_serial = Serial(port="/dev/ttyACM0", baudrate=9600,)
 
 
 while True:

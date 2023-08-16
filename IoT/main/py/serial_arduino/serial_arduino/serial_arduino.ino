@@ -13,6 +13,10 @@ bool distance(float cut, bool before){
   digitalWrite(trig, LOW);  // trig핀(2)에 0입력
   int sen_distance = pulseIn(echo, HIGH)*340 / 2 / 10000; 
 
+//  Serial.print("distance");
+//  Serial.print(" : ");
+//  Serial.println(sen_distance);
+
   if (sen_distance < cut) return true;
   else if (sen_distance > cut + 30) return false;
   else return before;
@@ -32,21 +36,29 @@ void loop() {
   }
 
   // 사라졌을 때
-  elif (before && !now) 
+  else if (before && !now) 
   {
     set_time = millis();
   }
 
   // 나타난 상태가 유지
-  elif (before && now)
+  else if (before && now)
   {
-    if(millis() - set_time >= 1000) Serial.print("appear!/n/r")
+    if(millis() - set_time >= 1000) 
+    {
+      Serial.print("appear\n\r");
+      set_time = millis();
+    }
   }
 
   // 사라진 상태가 유지
-  elif (!before && !now)
+  else if (!before && !now)
   {
-    if(millis() - set_time >= 10000) Serial.print("disappear!/n/r")
+    if(millis() - set_time >= 10000) 
+    {
+      Serial.print("disappear\n\r");
+      set_time = millis();
+    }
   }
 
   before = now;
