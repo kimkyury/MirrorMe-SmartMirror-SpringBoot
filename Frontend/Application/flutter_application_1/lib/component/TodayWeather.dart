@@ -14,7 +14,18 @@ class TodayWeather extends StatelessWidget {
         ),
       child: Container(
           // 오늘 날씨 정보 넣자
-          child: Text('일간 날씨'),
+          child: Column(
+            children: [
+              Container(
+                child: Row(
+                  children: [
+                  // 좌표 아이콘
+                  Text('부산광역시, 대한민국'),
+                  ]
+                )
+              )
+            ],
+          )
         ),
       );
   }
