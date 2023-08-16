@@ -34,7 +34,10 @@ class Home extends StatelessWidget {
           // 오늘 일정
           padding: EdgeInsets.all(10),
           height: 150,
-          color: const Color.fromARGB(255, 239, 110, 153),
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
+          ),
           child: Column(
             children: [
               Container(
@@ -43,18 +46,15 @@ class Home extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.schedule,
-                      color: Colors.black,
-                    ),
-                    Text(
-                      '오늘의 일정',
+                    Text('Today ',
                       style: TextStyle(
-                          // 오늘 날짜도 추가할 지 논의 필요
-                          color: Colors.black,
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500),
-                    )
+                        color: Color(0xff111111),
+                        fontSize: 20,
+                        fontFamily: 'NanumSquareRoundOTFEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -123,7 +123,10 @@ class Home extends StatelessWidget {
           // 할 일
           padding: EdgeInsets.all(10),
           height: 150,
-          color: Color.fromARGB(255, 110, 198, 239),
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
+          ),
           child: Column(
             children: [
               Container(
@@ -132,17 +135,15 @@ class Home extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.schedule,
-                      color: Colors.black,
-                    ),
-                    Text(
-                      '할 일',
+                    Text('Todo',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500),
-                    )
+                        color: Color(0xff111111),
+                        fontSize: 20,
+                        fontFamily: 'NanumSquareRoundOTFEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
                   ],
                 ),
               ),

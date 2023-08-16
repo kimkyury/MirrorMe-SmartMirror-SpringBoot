@@ -19,7 +19,6 @@ import random
 import json
 
 import requests
-
 ###############################################################################################
 ###############################################################################################
 # 서버에서 유저 데이터 받아오기
@@ -55,8 +54,12 @@ user_info_list = rdata['response']
 for user in user_info_list:
     if user["profileImage"] != None:
         img_out = decode_base64_image(user["profileImage"])
-        save_image_as_png(img_out,f'./Video_client/Recognition/Image/{user["userName"]}.png')
+        save_image_as_png(img_out, f'/home/ssafy/바탕화면/temp/S09P12E101/IoT/main/py/Video_Client/Recognition/Image/{user["userName"]}.png')
+        # save_image_as_png(img_out, f'./Video_client/Recognition/Image/{user["userName"]}.png')
+
     user.pop("profileImage",None)
+
+get_user_face.getUserFaceImage()
 
 # Create a JSON file
 info_json = json.dumps(user_info_list)
@@ -74,11 +77,14 @@ client_role = {}
 # 클라이언트 접속이 되면 호출되고 종료되면 연결이 끊어진다.
 async def accept(websocket, path):
     # 클라이언트 연결 시 2초 이내로 신호를 보내야됨
+    print("뭔가 연결됨")
     try:
         role = await asyncio.wait_for(websocket.recv(), timeout = 3)
 
     # 시간초과시 연결 끊기
-    except TimeoutError:
+    except asyncio.exceptions.TimeoutError:
+    # except TimeoutError:
+        print("연결시간 초과")
         await websocket.send("연결시간 초과")
         await websocket.close()
         return
@@ -104,7 +110,11 @@ async def accept(websocket, path):
     connect_check[role].set()
     client_role[role] = session_id
     # 세션 코드 발급
-    await websocket.send(session_id)
+    if role != "react":
+        await websocket.send(session_id)
+    # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
+    # else:
+    #     await appear()
 
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
@@ -112,6 +122,9 @@ async def accept(websocket, path):
     
 ###############################################################################################
 ###############################################################################################
+
+user_email = ""
+user_name = ""
 
 SCREEN_OFF = 0
 WAITTING = 1
@@ -187,6 +200,7 @@ async def messageSend(*arg):
         print(f"현재 상태 : {STATUS}")
         return
     
+    STATUS = MESSAGE_CAP
     # 보내는 대상은  target에 저장되어 있음
     target = arg[0]
 
@@ -197,14 +211,43 @@ async def messageSend(*arg):
         }
     }
     # 리엑트가 접속 했을 때만 전송
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
+    
+    with open("./user_data.json", "r") as f:
+        user_data = json.load(f)
+        global user_email
+        for user in user_data:
+            check = False
+            if user["userEmail"] == user_email:
+                for friend in user["aliases"]:
+                    if friend["connectUserAlias"] == target:
+                        target = friend["connectUserEmail"]
+                        check = True
+                        break
+            
+            if check:
+                break
 
-    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.")
-    STATUS = MESSAGE_CAP
-    # 메세지 녹화 동기로 실행
+        del user_data
+
     # audio와 video측에 알려서 연결을 끊고 녹화를 시작하도록함
-    # 그 다음 종료시 다시 audio와 video측에서 다시 연결
+    await websocketSend('audio', 'audio_end')
+
+    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.") 
+    send_data = {
+        "order" : "video_start",
+        "query" : {
+            "target_user" : target
+        }
+    }
+    await websocketSend('video', json.dumps(send_data))
+
+async def messageEnd(*arg):
+    global STATUS
+    if STATUS != MESSAGE_CAP:
+        return
+
+    await websocketSend('audio', "audio_restart")
 
     # 메세지 녹화 종료를 리엑트로 알림
     send_data = {
@@ -212,12 +255,10 @@ async def messageSend(*arg):
         "query" :None
     }
 
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
 
-
-    # 이후 저장된 영상데이터를 백엔드 측으로 보내 줘야 됨
     STATUS = WAITTING
+
 # 메세지 확인하기
 async def messageShow(*arg):
     global STATUS
@@ -230,8 +271,7 @@ async def messageShow(*arg):
         "query" : None
     }
 
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
 
     STATUS = MESSAGE_SHOW
     tts("메세지를 보여드릴게요")
@@ -290,8 +330,8 @@ async def weather(*arg):
         "order" : "WEATHER",
         "query" : None
     }
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
+
 
     tts("오늘의 날씨 입니다.")
 
@@ -327,13 +367,14 @@ async def chatgpt(*arg):
 ###############################################################################################
 ###############################################################################################
 # 아두이노 연결 처리 함수들
+
 async def appear(*arg):
     # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
     # os.system("xset dpms force standby")
     # os.system("xset dpms force suspend")
     global STATUS
-    if STATUS != SCREEN_OFF:
-        return
+    # if STATUS != SCREEN_OFF:
+    #     return
     
     # 얼굴 인식
     # 유저이름 인코딩 중요!
@@ -345,30 +386,86 @@ async def appear(*arg):
         pass
     
     print("find user")
-    user_email = find_user.getUserName()
-    print("user :", user_email)
+    global user_email, user_name
+    user_name = find_user.getUserName()
+    print("user :", user_name)
 
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
         for user in user_data:
-            if user["userEmail"] == user_email:
-                user_name = user["userName"]
+            if user["userEmail"] == user_name:
+                user_id = user["userId"]
+                user_email = user["userEmail"]
                 break
 
         del user_data
 
-    task = asyncio.create_task(user_email)
+    # 인식된 사람에게 해줄 말을 정보 비동기로 받아오기
+    task = asyncio.create_task(callSpeech(user_email))
 
-    tts(user_name + "님 안녕하세요!")
+    ## 리엑트로 유저정보 보내기
+    send_data = {
+        "order" : "USERINFO",
+        "query" : {
+            "email" : user_email
+        }
+    }
 
+    await websocketSend('react', json.dumps(send_data))
+
+    # 비디오로 유저정보 보내기
+    send_data = {
+        "order" : "userInfo",
+        "query" : {
+            "userId" : user_id,
+            "email" : user_email
+        }
+    }
+    
+    await websocketSend('video', json.dumps(send_data))
+
+
+    # 사람에게 해줄말을 받아올 때까지 대기
     speech = await task
 
+    # 해줄말이 있다면 내용 리엑트로 전달하고, tts시키기
     if speech:
-        if client_role.get("react", False):
-            await client[client_role["react"]].send(speech)
-        tts(speech["conetent"])
+        send_data = {
+            "order" : "TTS",
+            "query" : speech
+        }
+        await websocketSend('react', json.dumps(send_data))
+        tts(speech["content"])
+        send_data = {
+                        "order" : "TTS_end",
+                        "query" : None
+                    }
+        await websocketSend('react', json.dumps(send_data))
 
+    # 해줄말이 없다면 그냥 인사만
+    else :
+        send_data = {
+            "order" : "TTS",
+            "query" : {
+                "content" : "TTS",
+                "query" : {
+                    "content" : f"{user_name}님 안녕하세요",
+                    "type" : "hello"
+                }
 
+            }
+        }
+        await websocketSend('react', json.dumps(send_data))
+
+        tts(f"{user_name}님 안녕하세요")
+
+        send_data = {
+                "order" : "TTS_end",
+                "query" : None
+            }
+        await websocketSend('react', json.dumps(send_data))
+
+    # 드디어 대기모드
     STATUS = WAITTING
 
 async def callSpeech(user_email):
@@ -380,35 +477,63 @@ async def callSpeech(user_email):
     response = requests.get(URL_MENT + user_email)
 
     if response.json()['success']:
-        text_code = response.json()["response"]["textCode"]
-        text_content = response.json()["response"]["textContent"]
+        if response.json()["response"] != None:
+            text_code = response.json()["response"]["textCode"]
+            text_content = response.json()["response"]["textContent"]
 
-        return {
-            "content" : text_content,
-            "type" : text_code
-        }
+            return {
+                "content" : text_content,
+                "type" : text_code
+            }
     
     return False
 
 
 async def disappear(*arg):
     global STATUS
-    if STATUS != WAITTING:
+    if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
         # os.system("xset dpms force off")
+        print("screen_off")
         # 스피커와 카메라로 사용 종료 보내기
-
+        await websocketSend('audio', 'audio_end')
+        send_data = {
+            "order" : "logout",
+            "query" : None
+        }
+        await websocketSend('video', json.dumps(send_data))
 
 
 
         STATUS = SCREEN_OFF
 
 async def left(*arg):
-    pass
+    send_data = {
+        "order" : "LEFT",
+        "query" : None
+    }
+
+    await websocketSend('react', json.dumps(send_data))
 
 async def right(*arg):
-    pass
+    send_data = {
+        "order" : "RIGHT",
+        "query" : None
+    }
 
+    await websocketSend('react', json.dumps(send_data))
+
+async def mainUI(*arg):
+    send_data = {
+        "order" : "EXIT",
+        "query" : None
+    }
+
+    await websocketSend('react', json.dumps(send_data))
+
+async def websocketSend(target, data):
+    if client_role.get(target):
+        await client[client_role[target]].send(data)
 
 order_fun = {"CALL" : call,
             "MESSAGESEND" : messageSend,
@@ -417,10 +542,12 @@ order_fun = {"CALL" : call,
             "NEWS" : news,
             "YOUTUBE" : youtube,
             "CANTUNDERSTAND" : chatgpt,
-            "LEFT": left,
-            "RIGHT": right,
+            "left": left,
+            "right": right,
+            "end_video": messageEnd,
             "appear!": appear,
             "disappear!": disappear,
+            "exit" : mainUI
             }
 
 

@@ -11,7 +11,7 @@ import java.util.List;
 public interface VideoService {
     int matchVideo(String text);
     List<VideoMessage> getVideo(String userEmail);
-    FileInputStream getVideoDetail(Long videoId) throws FileNotFoundException;
+    String getStringFromHash(String hashKey, String innerKey);
     List<MessageDto.ResponseMessageCountFamily> getMessageCountFamily(Long userId, int month);
     List<MessageDto.ResponseMessageDetail> unReadMessageList(String userEmail);
 }

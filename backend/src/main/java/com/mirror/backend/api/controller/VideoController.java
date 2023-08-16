@@ -40,12 +40,6 @@ public class VideoController {
         return success(video);
     }
 
-    @GetMapping("/message")
-    @Operation(summary = "회원 영상 조회", description = "영상 메시지 전체에서 얻은 videoId로 영상을 조회합니다. token이 필요합니다.")
-    public Resource getOneMessage(@RequestParam Long videoId, HttpServletRequest request) throws IOException {
-        FileInputStream videoDetail = videoService.getVideoDetail(videoId);
-        return new ByteArrayResource(FileCopyUtils.copyToByteArray(videoDetail));
-    }
 
     @GetMapping( "/message/count")
     @Operation(summary = "가족 영상 주고받은 개수 전체 조회", description = "마음의 온도(나와 가족들의 주고받은 횟수)를 조회합니다. token이 필요합니다.")
