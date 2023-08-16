@@ -13,15 +13,25 @@ function VideoMessage(props) {
   const [messageKey, setMessageKey] = useState(Date.now());
 
   const userEmail = props.userEmail;
+<<<<<<< HEAD
   const commandMessage = props.commandMessage;
   const userAccessToken = props.userAccessToken;
+=======
+  const accessToken = props.userAccessToken;
+>>>>>>> 343c3da3d9544ac8d334b673dc739a3e40af235a
   const userRefreshToken = props.userRefreshToken;
 
   useEffect(() => {
     const fetchMessageList = async () => {
       try {
+<<<<<<< HEAD
         const res = await axios.get('/video', {
           headers: { access_token: userAccessToken },
+=======
+        const res = await axios.get('video', {
+          headers: { access_token: `${accessToken}` },
+          params: { userEmail: userEmail },
+>>>>>>> 343c3da3d9544ac8d334b673dc739a3e40af235a
           withCredentials: true,
         });
         setMessageList(res.data.response);
