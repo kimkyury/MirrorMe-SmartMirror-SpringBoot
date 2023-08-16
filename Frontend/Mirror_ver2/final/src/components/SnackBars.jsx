@@ -153,7 +153,10 @@ function Snackbars(props) {
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={openWeatherSnackbar}
             autoHideDuration={10000}
-            onClose={handleSnackbarClose}
+            onClose={() => {
+              handleSnackbarClose();
+              setOpenWeatherSnackbar(false);
+            }}
             message={
               <div>
                 <TodayWeather
