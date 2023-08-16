@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../component/weather.dart';
+import './todayweather.dart';
+import './weekweather.dart';
 
 class Home extends StatelessWidget {
 
@@ -29,10 +30,11 @@ class Home extends StatelessWidget {
               ),
             ],
           ),
-          child: Column( // Column으로 감싸서 여러 자식 위젯을 나란히 나열합니다.
+          child: Column(
             children: [
               SizedBox(height: 20,),
-              Weather(), // 날씨 컴포넌트
+              TodayWeather(), // 날씨 컴포넌트
+              WeekWeather(),
               SizedBox(height: 20,),
             ],
           ),
