@@ -10,6 +10,8 @@ class TodayWeather extends StatefulWidget {
 
 class _TodayWeatherState extends State<TodayWeather> {
   Map<String, dynamic> weatherInfo = {}; // 날씨 정보 저장
+  List<Map<String, dynamic>> ultraInfo = []; // 초단기 날씨 정보 저장
+  
   bool isLoading = true; // 로딩 완료 확인
 
   @override
@@ -115,16 +117,66 @@ class _TodayWeatherState extends State<TodayWeather> {
           isLoading = false; // 데이터 로딩 완료
         });
         // print('weatherInfo = $weatherInfo');
+
+        ////////////////////////////하늘 정보 분기 필요////////////////////////////
+
+      // ultra
+      final ultraUrl = 'http://i9e101.p.ssafy.io:8080/weather/ultra';
+
+      // baseTime
+      var ultrabasetime;
+      if (currentMin > 45) {
+        ultrabasetime = '${('${(currentHour).toString().padLeft(2, '0')}30')}';
       } else {
-        throw Exception('API 호출 실패');
+        ultrabasetime = '${('${(currentHour - 1).toString().padLeft(2, '0')}30')}';
       }
-    } catch (error) {
-      print('에러 발생: $error');
-      setState(() {
-        isLoading = false;
-      });
+
+      var houseHoldId = '1';
+      final pageNo = '1';
+      final numOfRows = '500';
+
+
+      final Map<String, String> params = {
+        'baseTime': ultrabasetime,
+        'numOfRows': numOfRows,
+        'pageNo': pageNo,
+        'houseHoldId': houseHoldId.toString(),
+      };
+
+      final ultraResponse = await http.get(
+        Uri.parse(ultraUrl).replace(queryParameters: params), // 필요한 파라미터 추가
+      );
+
+      if (ultraResponse.statusCode == 200) {
+        // 두 번째 API 응답 처리
+        // final ultraResponseData = json.decode(ultraResponse.body);
+        final ultraResponseData = json.decode(utf8.decode(ultraResponse.bodyBytes)); // 한글깨짐 해결
+        final ultraWeatherList = [ultraResponseData['response']];
+      
+        // final ultraWeatherList = List<Map<String, dynamic>>.from(ultraResponseData['response']);
+        
+        print('Response Ultra Data: ${ultraResponse.body}');
+        print('Response Ultra Data: $ultraWeatherList');
+
+        setState(() {
+          ultraInfo = ultraWeatherList;
+        });
+
+      } else {
+        throw Exception('두 번째 API 호출 실패');
+      }
+    } else {
+      throw Exception('첫 번째 API 호출 실패');
     }
+  } catch (error) {
+    print('에러 발생: $error');
+    setState(() {
+      isLoading = false;
+    });
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
