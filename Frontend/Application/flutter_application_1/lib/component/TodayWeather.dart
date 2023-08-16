@@ -4,7 +4,6 @@ class TodayWeather extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.amber,
       width: 350,
       height: 150,
       margin: EdgeInsets.only(
@@ -20,13 +19,14 @@ class TodayWeather extends StatelessWidget {
               Container(
                 child: Row(
                   children: [
-                    Container(
-                      // 좌표 사진으로 바꾸기
-                      width: 15,
-                      height: 15,
-                      color: Colors.black,
-                    ),
-                    Text('부산광역시, 대한민국'),
+                    Image.asset('lib/assets/weather/path.png', // path icon
+                    width: 10),
+                    SizedBox(width: 8),
+                    Text('부산광역시, 대한민국', style: TextStyle(
+                      color: Color(0xffb2b2b2),
+                      fontSize: 10,
+                      fontFamily: 'NanumSquareRoundOTFR',
+                    ),), // 하드코딩 하지말고 내용 받아서 바꾸기!!!!!!
                   ]
                 )
               ),
@@ -46,7 +46,16 @@ class TodayWeather extends StatelessWidget {
                       child: Text('기온'),
                     ),
                     Container( // 최고, 최저 기온
-                      child: Text('최고/최저 기온'),
+                      child: Column(
+                        children: [
+                          Container( // 나중에 Sizedbox로 바꾸기
+                            color: Colors.brown,
+                            width: 30,
+                            height: 20,
+                          ),
+                          Text('최고/최저 기온')
+                        ],
+                      )
                     ),
                     Container( // 우측 정보들
                       child: Column(
