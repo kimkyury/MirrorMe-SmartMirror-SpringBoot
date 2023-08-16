@@ -11,4 +11,5 @@ public class UltraShortTermForecast {
     private int RN1; // 1시간 강수량
     private double REH; // 습도
     private int PTY; // 강수형태
+    private String region; // 해당 미러 지역
 }
