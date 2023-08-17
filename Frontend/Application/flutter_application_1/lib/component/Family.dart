@@ -18,6 +18,9 @@ class _FamilyMemberState extends State<Family> {
   PageController _pageController = PageController();
   int _currentPage = 0;
 
+  List<int> temperatures = [];
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -47,9 +50,14 @@ class _FamilyMemberState extends State<Family> {
         final responseData = json.decode(utf8.decode(response.bodyBytes));
         final newMembers = List<Map<String, dynamic>>.from(responseData['response']);
 
+        final List<int> newTemperatures = newMembers.map<int>((member) {
+          return Random().nextInt(100);
+        }).toList();
 
         setState(() {
           members = newMembers;
+          temperatures = newTemperatures;
+          isLoading = false;
         });
 
         print('Response Data: ${response.body}');
@@ -58,6 +66,7 @@ class _FamilyMemberState extends State<Family> {
       }
     } catch (e) {
       print('Error during HTTP request: $e');
+      isLoading = false;
     }
   }
 
@@ -101,7 +110,19 @@ class _FamilyMemberState extends State<Family> {
                 ),
               ),
               Expanded(
-                child: Column(
+                child: isLoading
+                ? Center(child: CircularProgressIndicator()) // 로딩 중일 때 CircularProgressIndicator 표시
+                : members.isEmpty
+                  ? Center(child: Text('등록된 가족이 없습니다', 
+                      style: TextStyle(
+                        color: Color(0xff111111),
+                        fontSize: 14,
+                        fontFamily: 'NanumSquareRoundEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ))
+                  : Column(
                   children: [
                     Expanded(
                       child: PageView.builder(
@@ -237,76 +258,89 @@ class _FamilyMemberState extends State<Family> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: members.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final member = members[index];
-                    final int temperature = Random().nextInt(100);
-
-                    return Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Table(
-                        columnWidths: {
-                          0: FlexColumnWidth(1),
-                          1: FlexColumnWidth(2),
-                          2: FlexColumnWidth(1),
-                        },
-                        children: [
-                          TableRow(
-                            children: [
-                              TableCell(
-                                child: Text(
-                                  member['connectUserAlias'],
-                                  style: TextStyle(
-                                    color: Color(0xff111111),
-                                    fontSize: 14,
-                                    fontFamily: 'NanumSquareRoundEB',
-                                    fontWeight: FontWeight.w400,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  height: 15,
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Color(0xff111111), width: 1),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: (temperature / 100) * 100,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red, // 온도 값에 따라 다른 색상 설정
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Text(
-                                  '$temperature ℃',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    color: Color(0xff111111),
-                                    fontSize: 14,
-                                    fontFamily: 'NanumSquareRoundEB',
-                                    fontWeight: FontWeight.w400,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                              ),
-                            ],
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : members.isEmpty
+                      ? Center(child: Text('오늘의 일정이 없습니다', 
+                          style: TextStyle(
+                            color: Color(0xff111111),
+                            fontSize: 14,
+                            fontFamily: 'NanumSquareRoundEB',
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        ))
+                : ListView.builder(
+                    itemCount: members.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final member = members[index];
+                      final temperature = temperatures[index];
+
+
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        child: Table(
+                          columnWidths: {
+                            0: FlexColumnWidth(1),
+                            1: FlexColumnWidth(2),
+                            2: FlexColumnWidth(1),
+                          },
+                          children: [
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  child: Text(
+                                    member['connectUserAlias'],
+                                    style: TextStyle(
+                                      color: Color(0xff111111),
+                                      fontSize: 14,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    height: 15,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Color(0xff111111), width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: (temperature / 100) * 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red, // 온도 값에 따라 다른 색상 설정
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Text(
+                                    '$temperature ℃',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: Color(0xff111111),
+                                      fontSize: 14,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
               ),
             ],
           ),
