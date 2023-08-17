@@ -24,9 +24,6 @@ class _TasksState extends State<Tasks> {
 
   Future<void> _fetchData() async {
     final url = 'http://i9e101.p.ssafy.io:8080/tasks'; 
-    
-    // String accessToken = 'ya29.a0AfB_byDgekAtBNbBvXv2U_k2beWGeFig1riSIwnUMjGsMrNPeLvobC8SzflAAahddaOwSaAQCrCYTO61T873QelF9wnfmZsYfJam5w0zb892BFKcJiG0KdEvaWhS0pe2GHIFPWu44VlkCfIFZYtIl2jXrDxdVK3saCgYKAYoSARISFQHsvYlscmPmaHddHNDhwF2EReRftA0167';
-    // String refreshToken = '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo';
 
     var headers = {
       'Content-Type': 'application/json; charset=utf-8',
