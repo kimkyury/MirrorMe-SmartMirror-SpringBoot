@@ -46,7 +46,7 @@ void loop() {
   {
     if(millis() - set_time >= 1000) 
     {
-      Serial.print("appear\n\r");
+      Serial.write("1\n");
       set_time = millis();
     }
   }
@@ -56,7 +56,7 @@ void loop() {
   {
     if(millis() - set_time >= 10000) 
     {
-      Serial.print("disappear\n\r");
+      Serial.write("0\n");
       set_time = millis();
     }
   }
