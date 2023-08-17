@@ -8,10 +8,10 @@ import 'component/Message.dart';
 import './component/Connect.dart';
 
 class MyHomePage extends StatefulWidget {
-  // final String accessToken;
-  // final String refreshToken;
+  final String accessToken;
+  final String refreshToken;
 
-  // MyHomePage({required this.accessToken, required this.refreshToken});
+  MyHomePage({required this.accessToken, required this.refreshToken});
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -21,13 +21,22 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 2; // 기본 페이지 홈으로 설정
   final PageController _pageController = PageController(initialPage: 2);
 
-  final List<Widget> _pages = [
-    News(),
-    Emotions(),
-    Home(),
-    Family(),
-    Settings(),
-  ];
+  List<Widget> _pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      News(),
+      Emotions(),
+      Home(
+        accessToken: widget.accessToken,
+        refreshToken: widget.refreshToken,
+      ),
+      Family(),
+      Settings(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     PageRouteBuilder(
                       transitionDuration: Duration(milliseconds: 300),
-                      pageBuilder: (_, __, ___) => Message(),
+                      pageBuilder: (_, __, ___) => Message(
+                        accessToken: widget.accessToken,
+                        refreshToken: widget.refreshToken,
+                      ),
                       transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
                         var curveAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
                         return SlideTransition(
