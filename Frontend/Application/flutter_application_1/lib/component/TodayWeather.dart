@@ -238,8 +238,9 @@ class _TodayWeatherState extends State<TodayWeather> {
                               // 기온 정보 표시
                               child: Column(
                                 children: [
-                                  Text('${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
-                                  fontSize: 25
+                                  Text('${ultraInfo['t1H']}℃', style: TextStyle(
+                                  fontSize: 25,
+                                  fontFamily: 'NanumSquareRoundEB',
                                   ),),
                                   SizedBox(height: 7,),
                                   Row(
