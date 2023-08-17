@@ -589,13 +589,10 @@ async def appear(*arg):
         send_data = {
             "order" : "TTS",
             "query" : {
-                "content" : "TTS",
-                "query" : {
-                    "content" : f"{user_name}님 안녕하세요",
-                    "type" : "hello"
-                }
-
+                "content" : f"{user_name}님 안녕하세요",
+                "type" : "hello"
             }
+
         }
         await websocketSend('react', json.dumps(send_data))
 
