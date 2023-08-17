@@ -111,14 +111,15 @@ class _TodayWeatherState extends State<TodayWeather> {
         final sky = skyData.first['sky'];
 
         // 날씨 정보를 저장
-        setState(() {
-          weatherInfo['tmn'] = tempertureMin;
-          weatherInfo['tmx'] = tempertureMax;
-          weatherInfo['pop'] = pop;
-          weatherInfo['pty'] = pty;
-          weatherInfo['sky'] = sky;
-          isLoading = false; // 데이터 로딩 완료
-        });
+        if (mounted) {
+          setState(() {
+            weatherInfo['tmn'] = tempertureMin;
+            weatherInfo['tmx'] = tempertureMax;
+            weatherInfo['pop'] = pop;
+            weatherInfo['pty'] = pty;
+            weatherInfo['sky'] = sky;
+          });
+        }
         // print('weatherInfo = $weatherInfo');
         print('weatherInfo sky = ${weatherInfo['sky']}');
         print('skyicons[weatherInfo sky] gpt = ${skyicons['${weatherInfo['sky']}']}');
@@ -166,7 +167,7 @@ class _TodayWeatherState extends State<TodayWeather> {
           isLoading = false;
         });
         print('Ultra Info: $ultraInfo');
-
+        
       } else { 
         throw Exception('두 번째 API 호출 실패');
       }
