@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:math';
 
 class Family extends StatefulWidget {
   final String accessToken;
@@ -14,6 +15,11 @@ class Family extends StatefulWidget {
 
 class _FamilyMemberState extends State<Family> {
   List<Map<String, dynamic>> members = [];
+  PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  List<int> temperatures = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -44,9 +50,14 @@ class _FamilyMemberState extends State<Family> {
         final responseData = json.decode(utf8.decode(response.bodyBytes));
         final newMembers = List<Map<String, dynamic>>.from(responseData['response']);
 
+        final List<int> newTemperatures = newMembers.map<int>((member) {
+          return Random().nextInt(100);
+        }).toList();
 
         setState(() {
           members = newMembers;
+          temperatures = newTemperatures;
+          isLoading = false;
         });
 
         print('Response Data: ${response.body}');
@@ -55,86 +66,288 @@ class _FamilyMemberState extends State<Family> {
       }
     } catch (e) {
       print('Error during HTTP request: $e');
+      isLoading = false;
     }
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Container(
-      // 오늘 일정
-      padding: EdgeInsets.all(10),
-      height: 150,
-      margin: EdgeInsets.only(
-        left: 20,
-        right: 20,
-      ),
-      child: Column(
-        children: [
-          Container(
-            // 제목
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('우리 가족 목록',
-                  style: TextStyle(
-                    color: Color(0xff111111),
-                    fontSize: 20,
-                    fontFamily: 'NanumSquareRoundEB',
-                    fontWeight: FontWeight.w400,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-              ],
-            ),
+      color: Colors.white,
+      child: ListView(
+      children: [
+        SizedBox(height: 20,),
+        Container(
+          padding: EdgeInsets.all(10),
+          height: 200,
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
           ),
-          Expanded( // 리스트뷰가 남은 공간을 모두 차지할 수 있도록 Expanded 위젯을 추가합니다.
-            child: ListView.builder(
-              itemCount: members.length,
-              itemBuilder: (BuildContext context, int index) {
-                final member = members[index];
-                return Container(
-                  // 일정 한 개
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Row(children: [
-                          Icon(
-                            Icons.circle,
-                            color: Colors.red,
-                            size: 5,
-                          ),
-                          SizedBox(width: 5,),
-                          Text(member['connectUserAlias'], 
-                            style: TextStyle(
-                              color: Color(0xff111111),
-                              fontSize: 12,
-                              fontFamily: 'NanumSquareRoundEB',
-                              fontWeight: FontWeight.w400,
-                              fontStyle: FontStyle.normal,
-                            ),
-                          ), // 일정 제목 표시
-                          Text(member['connectUserName'], 
-                            style: TextStyle(
-                              color: Color(0xff111111),
-                              fontSize: 10,
-                              fontFamily: 'NanumSquareRoundEB',
-                              fontWeight: FontWeight.w400,
-                              fontStyle: FontStyle.normal,
-                            ),
-                          ), // 일정 제목 표시
-                        ]),
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('우리 가족 목록',
+                      style: TextStyle(
+                        color: Color(0xff111111),
+                        fontSize: 20,
+                        fontFamily: 'NanumSquareRoundEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: isLoading
+                ? Center(child: CircularProgressIndicator()) // 로딩 중일 때 CircularProgressIndicator 표시
+                : members.isEmpty
+                  ? Center(child: Text('등록된 가족이 없습니다', 
+                      style: TextStyle(
+                        color: Color(0xff111111),
+                        fontSize: 14,
+                        fontFamily: 'NanumSquareRoundEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ))
+                  : Column(
+                  children: [
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: members.length,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          final member = members[index];
+                          return GestureDetector(
+                            onTap: () {
+                              // Handle tap here
+                              // You can navigate to a detail page or perform an action
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              margin: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
+                              width: 350,
+                              height: 161,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 90,
+                                    height: 90,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage('lib/assets/profile_default.png'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  SizedBox(width: 30),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        member['connectUserAlias'],
+                                        style: TextStyle(
+                                          color: Color(0xff111111),
+                                          fontSize: 20,
+                                          fontFamily: 'NanumSquareRoundEB',
+                                          fontWeight: FontWeight.w400,
+                                          fontStyle: FontStyle.normal,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        member['connectUserName'],
+                                        style: TextStyle(
+                                          color: Color(0xff111111),
+                                          fontSize: 10,
+                                          fontFamily: 'NanumSquareRoundEB',
+                                          fontWeight: FontWeight.w400,
+                                          fontStyle: FontStyle.normal,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List<Widget>.generate(members.length, (int index) {
+                        return Container(
+                          width: 10,
+                          height: 10,
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentPage == index ? Colors.blue : Colors.grey,
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: 20,),
+        Divider(height: 10,),
+        SizedBox(height: 20,),
+        Container(
+          padding: EdgeInsets.all(10),
+          height: 300,
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            children: [
+              Container(
+                // 제목
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('우리 가족 마음 온도',
+                      style: TextStyle(
+                        color: Color(0xff111111),
+                        fontSize: 20,
+                        fontFamily: 'NanumSquareRoundEB',
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : members.isEmpty
+                      ? Center(child: Text('오늘의 일정이 없습니다', 
+                          style: TextStyle(
+                            color: Color(0xff111111),
+                            fontSize: 14,
+                            fontFamily: 'NanumSquareRoundEB',
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ))
+                : ListView.builder(
+                    itemCount: members.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final member = members[index];
+                      final temperature = temperatures[index];
+
+
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        child: Table(
+                          columnWidths: {
+                            0: FlexColumnWidth(1),
+                            1: FlexColumnWidth(2),
+                            2: FlexColumnWidth(1),
+                          },
+                          children: [
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  child: Text(
+                                    member['connectUserAlias'],
+                                    style: TextStyle(
+                                      color: Color(0xff111111),
+                                      fontSize: 14,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    height: 15,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Color(0xff111111), width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: (temperature / 100) * 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red, // 온도 값에 따라 다른 색상 설정
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Text(
+                                    '$temperature ℃',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: Color(0xff111111),
+                                      fontSize: 14,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+              ),
+            ],
+          ),
+        ),
+      ],
+     )
     );
+  
   }
 }
