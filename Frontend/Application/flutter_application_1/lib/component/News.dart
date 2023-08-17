@@ -29,6 +29,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
