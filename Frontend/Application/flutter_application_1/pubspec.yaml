@@ -39,6 +39,7 @@ dependencies:
 
   syncfusion_flutter_charts: ^22.2.9 
   intl: ^0.18.0 # 한국 표준시로 시간 설정
+
   # fl_chart: ^0.63.0 
 
 
