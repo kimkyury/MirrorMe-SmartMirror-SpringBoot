@@ -1,3 +1,5 @@
+# 2. 프로젝트에서 사용하는 외부 서비스 정보 정리 문서
+
 | 외부 API | Key 값 |
 | --- | --- |
 | GoogleOAuth-ClientId | 627028807402-fobgohrdmv1ov823iiij7omtp89p2onb.apps.googleusercontent.com |
