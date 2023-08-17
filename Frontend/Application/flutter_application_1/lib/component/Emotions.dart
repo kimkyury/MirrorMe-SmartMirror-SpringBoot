@@ -6,13 +6,17 @@ import './FamilyEmotion.dart';
 class Emotions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        MyEmotions(),
-        Divider(height: 10,),
-        SizedBox(height: 20,),
-        FamilyEmotion(),
-      ],
+    return Container(
+      color: Colors.white,
+      child: ListView(
+        children: [
+          MyEmotions(),
+          SizedBox(height: 20,),
+          Divider(height: 10,),
+          SizedBox(height: 20,),
+          FamilyEmotion(),
+        ],
+      )
     );
   }
 }
