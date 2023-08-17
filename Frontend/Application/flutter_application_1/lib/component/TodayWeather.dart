@@ -10,7 +10,8 @@ class TodayWeather extends StatefulWidget {
 
 class _TodayWeatherState extends State<TodayWeather> {
   Map<String, dynamic> weatherInfo = {}; // 날씨 정보 저장
-  List<Map<String, dynamic>> ultraInfo = []; // 초단기 날씨 정보 저장
+  Map<String, dynamic> ultraInfo = {}; // 초단기 날씨 정보 저장
+  // List<Map<String, dynamic>> ultraInfo = []; // 초단기 날씨 정보 저장
   
   bool isLoading = true; // 로딩 완료 확인
 
@@ -151,18 +152,17 @@ class _TodayWeatherState extends State<TodayWeather> {
         // 두 번째 API 응답 처리
         // final ultraResponseData = json.decode(ultraResponse.body);
         final ultraResponseData = json.decode(utf8.decode(ultraResponse.bodyBytes)); // 한글깨짐 해결
-        final ultraWeatherList = [ultraResponseData['response']];
+        final ultraWeatherData = ultraResponseData['response'];
       
         // final ultraWeatherList = List<Map<String, dynamic>>.from(ultraResponseData['response']);
         
-        print('Response Ultra Data: ${ultraResponse.body}');
-        print('Response Ultra Data: $ultraWeatherList');
+        print('Response Ultra Data: $ultraWeatherData');
 
         setState(() {
-          ultraInfo = ultraWeatherList;
+          ultraInfo = ultraWeatherData;
         });
-
-      } else {
+        print('Ultra Info: $ultraInfo');
+      } else { 
         throw Exception('두 번째 API 호출 실패');
       }
     } else {
@@ -207,7 +207,8 @@ class _TodayWeatherState extends State<TodayWeather> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              '부산광역시, 대한민국',
+                              '${ultraInfo['region']}',
+                              // '부산광역시, 대한민국',
                               style: TextStyle(
                                 color: Color(0xffb2b2b2),
                                 fontSize: 10,
@@ -233,7 +234,9 @@ class _TodayWeatherState extends State<TodayWeather> {
                             Container(
                               // 기온 정보 표시
                               child: Text(
-                                '기온',
+                                '${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
+                                  fontSize: 30
+                                ),
                               ),
                             ),
                             Container(
@@ -246,7 +249,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                                     width: 30,
                                     height: 20,
                                   ),
-                                  Text('최고/최저 기온'),
+                                  Text('${weatherInfo['tmx'].toInt()}℃ / ${weatherInfo['tmn'].toInt()}℃'),
                                 ],
                               ),
                             ),
