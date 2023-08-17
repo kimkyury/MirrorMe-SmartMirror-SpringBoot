@@ -29,7 +29,6 @@ class _TodayWeatherState extends State<TodayWeather> {
     final pageNo = '1';
     final numOfRows = '500';
     var baseTime = '0200';
-    var nowday = '';
 
     DateTime currentTime = DateTime.now();
 
@@ -235,21 +234,21 @@ class _TodayWeatherState extends State<TodayWeather> {
                               // 기온 정보 표시
                               child: Text(
                                 '${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
-                                  fontSize: 30
+                                  fontSize: 25
                                 ),
                               ),
                             ),
                             Container(
-                              // 최고, 최저 기온
                               child: Column(
                                 children: [
-                                  Container(
-                                    // 나중에 SizedBox로 바꾸기
-                                    color: Colors.brown,
-                                    width: 30,
-                                    height: 20,
-                                  ),
-                                  Text('${weatherInfo['tmx'].toInt()}℃ / ${weatherInfo['tmn'].toInt()}℃'),
+                                  // Container(
+                                  //   // 나중에 SizedBox로 바꾸기
+                                  //   color: Colors.brown,
+                                  //   width: 30,
+                                  //   height: 20,
+                                  // ),
+                                  Text('${weatherInfo['tmx'].toInt()}℃'),
+                                  Text('${weatherInfo['tmn'].toInt()}℃'),
                                 ],
                               ),
                             ),
@@ -259,8 +258,8 @@ class _TodayWeatherState extends State<TodayWeather> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text('하늘 상태'),
-                                  Text('습도'),
-                                  Text('강수확률'),
+                                  Text('습도 :  ${weatherInfo['pop']}%'),
+                                  Text('강수확률 : ${weatherInfo['pop']}%'),
                                 ],
                               ),
                             ),
