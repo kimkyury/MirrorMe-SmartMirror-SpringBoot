@@ -8,7 +8,7 @@ class FamilyEmotion extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 350,
-      height: 220,
+      // height: 220,
       margin: EdgeInsets.only(
         left: 20,
         right: 20,
@@ -33,11 +33,19 @@ class FamilyEmotion extends StatelessWidget {
               ],
             ),
           ),
+          Positioned(
+            top: 0,
+            child: Text(
+              '감정 분포',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
           Container(
             height: 150,
             child: SfCircularChart(
               legend: Legend(isVisible: true),
-              series: <CircularSeries<_ChartData, String>>[
+              series: 
+              <CircularSeries>[
                 DoughnutSeries<_ChartData, String>(
                   dataSource: <_ChartData>[
                     _ChartData('기쁨', 30),
@@ -48,8 +56,22 @@ class FamilyEmotion extends StatelessWidget {
                   xValueMapper: (_ChartData data, _) => data.emotion,
                   yValueMapper: (_ChartData data, _) => data.value,
                   dataLabelSettings: DataLabelSettings(isVisible: true),
+                  name: '감정 분포',
+                ),
+                DoughnutSeries<_ChartData, String>(
+                  dataSource: <_ChartData>[
+                    _ChartData('기쁨', 30),
+                    _ChartData('슬픔', 10),
+                    _ChartData('분노', 50),
+                    _ChartData('무표정', 10),
+                  ],
+                  xValueMapper: (_ChartData data, _) => data.emotion,
+                  yValueMapper: (_ChartData data, _) => data.value,
+                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                  name: '감정 분포',
                 ),
               ],
+              
             ),
           ),
         ],
