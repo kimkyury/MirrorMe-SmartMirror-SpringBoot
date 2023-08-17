@@ -21,9 +21,9 @@ async def connect():
             global websocket
             websocket = ws
             await ws.send("audio")
-            session_id = await ws.recv()
+            # session_id = await ws.recv()
 
-            event.set()
+            # event.set()
 
             while True:
                 recv = await ws.recv()
