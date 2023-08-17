@@ -14,7 +14,8 @@ from tts import text_to_speech as tts
 sys.path.append("./Video_Client/")
 from Recognition import find_user, get_user_face
 
-# import serial
+import subprocess
+
 import random
 import json
 
@@ -503,11 +504,18 @@ async def chatgpt(*arg):
 ###############################################################################################
 ###############################################################################################
 # 아두이노 연결 처리 함수들
+def turn_off_monitor():
+    #command = "xrandr --output HDMI-2 --off"
+    command = "xset dpms force off"
+    subprocess.run(command, shell=True)
 
+def turn_on_monitor():
+    #command = "xrandr --output HDMI-2 --auto"
+    command = "xset dpms force on"
+    subprocess.run(command, shell=True)
+    # print("모니터 켜짐")
 async def appear(*arg):
-    # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
-    # os.system("xset dpms force standby")
-    # os.system("xset dpms force suspend")
+    turn_on_monitor()
     # print("appear로 잘 들어옴!")
     # return
 
@@ -634,7 +642,7 @@ async def disappear(*arg):
     global STATUS
     if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
-        # os.system("xset dpms force off")
+        turn_off_monitor()
         print("screen_off")
         # 스피커와 카메라로 사용 종료 보내기
         await websocketSend('audio', 'audio_end')
