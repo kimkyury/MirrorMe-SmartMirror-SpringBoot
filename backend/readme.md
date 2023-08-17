@@ -32,7 +32,7 @@ MLM 프로젝트는 가족간 소통 촉진을 위한 가정용 SmartMirror프�
 
 
 ## 🙋‍♀️ MLM-Backend 기술스택이에요!
-![title](https://file.notion.so/f/s/fcb2f682-48db-47c4-8f47-f8bf5d038d8c/mlm-TechStack-Diagram.png?id=66016dfb-6103-4915-9072-e94efbecacb4&table=block&spaceId=61cded7e-c471-47f3-ad64-ac3b756c74d0&expirationTimestamp=1692324000000&signature=H7-zh-XGcfrU_pUTFVfYx8od1Ehg3ADxoW1M_GvTOkI&downloadName=mlm-TechStack-Diagram.png)   
+![title](https://file.notion.so/f/s/a21a8465-cd14-4354-b17d-084e3934e735/%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8-%ED%8E%98%EC%9D%B4%EC%A7%80-1.drawio.png?id=8497c5d5-eca6-4f9b-844e-4d5679a3ab18&table=block&spaceId=61cded7e-c471-47f3-ad64-ac3b756c74d0&expirationTimestamp=1692331200000&signature=bIBBl1rNiyeILCCbwwW7fZPEz-hceUOX-S94wTUmh44&downloadName=%EC%A0%9C%EB%AA%A9+%EC%97%86%EB%8A%94+%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8-%ED%8E%98%EC%9D%B4%EC%A7%80-1.drawio.png)   
 
 
 
