@@ -7,6 +7,10 @@ import './WeekWeather.dart';
 
 
 class Home extends StatelessWidget {
+  final String accessToken;
+  final String refreshToken;
+
+  Home({required this.accessToken, required this.refreshToken});
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +55,15 @@ class Home extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20,),
-        Schedules(),
+        Schedules(
+          accessToken: accessToken,
+          refreshToken: refreshToken,         
+        ),
         SizedBox(height: 20,),
-        Tasks(),
+        Tasks(
+          accessToken: accessToken,
+          refreshToken: refreshToken, 
+        ),
       ],
     );
   }

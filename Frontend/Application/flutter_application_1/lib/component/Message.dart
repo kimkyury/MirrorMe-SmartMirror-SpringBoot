@@ -7,6 +7,11 @@ import 'dart:convert';
 
 class Message extends StatelessWidget {
 
+  final String accessToken;
+  final String refreshToken;
+
+  Message({required this.accessToken, required this.refreshToken});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,12 +26,19 @@ class Message extends StatelessWidget {
           },
         ),
       ),
-      body: MessageListView(),
+      body: MessageListView(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      ),
     );
   }
 }
 
 class MessageListView extends StatefulWidget {
+    final String accessToken;
+    final String refreshToken;
+
+    MessageListView({required this.accessToken, required this.refreshToken});
 
   @override
   _MessageListViewState createState() => _MessageListViewState();
@@ -44,15 +56,13 @@ class _MessageListViewState extends State<MessageListView> {
   Future<void> _fetchData() async {
     final url = 'http://i9e101.p.ssafy.io:8080/video'; 
     
-    // String accessToken = 'ya29.a0AfB_byDgekAtBNbBvXv2U_k2beWGeFig1riSIwnUMjGsMrNPeLvobC8SzflAAahddaOwSaAQCrCYTO61T873QelF9wnfmZsYfJam5w0zb892BFKcJiG0KdEvaWhS0pe2GHIFPWu44VlkCfIFZYtIl2jXrDxdVK3saCgYKAYoSARISFQHsvYlscmPmaHddHNDhwF2EReRftA0167';
-    // String refreshToken = '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo';
 
     var headers = {
-      'access_token': 'ya29.a0AfB_byAtQFrmC7N1ho6S8qUcj5UXjin1MNzOXdZThDIMKS7Tq5TzueRt_H9lpfHcT36QhSrXRypnZmZL_knk2R7BwStocQdKVmM4yxnfkCx_vHZFVXwkiHEWZZ8-vyoJl82Yjup583THaCyCC39LTYMSj0L5CFu4Pi-BcNpuTwaCgYKARoSARISFQHsvYlssKoPXSgSAR9qqJJTB8yESQ0177', // access_token 추가
+      'access_token': widget.accessToken, // access_token 추가
     };
 
     var cookies = {
-      'refresh_token': '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo', // refresh_token을 쿠키에 추가
+      'refresh_token': widget.refreshToken, // refresh_token을 쿠키에 추가
     };
 
     try {
@@ -158,120 +168,41 @@ class _MessageListViewState extends State<MessageListView> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final message = messages[index];
+          child: messages.isEmpty // 메세지 리스트가 비어있는 경우
+          ? Center(
+              child: Text('메세지가 없습니다',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'NanumSquareRoundEB',
+                  fontWeight: FontWeight.bold,
+                )
+              ),
+            )
+          :
+            ListView.builder(
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
 
-              final videoId = message['videoId'];
-              final sendUserEmail = message['sendUserEmail'];
+                final videoId = message['videoId'];
+                final sendUserEmail = message['sendUserEmail'];
 
-              return messages.isEmpty
-                  ? Center(
-                      child: Text('메세지가 없습니다'),
-                    )
-                  : Container(
-                      width: 390,
-                      height: 73,
-                      child: ListTile(
-                        title: Text('$sendUserEmail',
-                          style: TextStyle(fontFamily: 'NanumSquareRoundEB',)),
-                        subtitle: Text('영상메세지'),
-                        onTap: () {
-                          _playVideo(videoId, sendUserEmail);
-                        },
-                      ),
-                    );
-            },
-          ),
+                return Container(
+                  width: 390,
+                  height: 73,
+                  child: ListTile(
+                    title: Text('$sendUserEmail',
+                      style: TextStyle(fontFamily: 'NanumSquareRoundEB',)),
+                    subtitle: Text('영상메세지'),
+                    onTap: () {
+                      _playVideo(videoId, sendUserEmail);
+                    },
+                  ),
+                );
+              },
+            ),       
         ),
       ],
     );
   }
 }
-
-// class Message extends StatefulWidget {
-//   @override
-//   _MessageState createState() => _MessageState();
-// }
-
-// class _MessageState extends State<Message> {
-//   VideoPlayerController? _controller; // Nullable로 변경
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     // 비디오 URL 설정
-//     String videoUrl = "http://i9e101.p.ssafy.io:8080/api/iot/message?videoId=10"; // 실제 URL로 변경해야 함
-
-//     // 비디오 데이터 다운로드 후 비디오 재생
-//     _initializeVideoPlayer(videoUrl);
-//   }
-
-//   Future<void> _initializeVideoPlayer(String videoUrl) async {
-//     // 비디오 데이터 다운로드
-//     final response = await http.get(Uri.parse(videoUrl));
-//     final videoData = response.bodyBytes;
-
-//     // 임시 디렉토리 얻기
-//     final tempDir = await getTemporaryDirectory();
-
-//     // 임시 파일 생성
-//     final videoFile = File('${tempDir.path}/tempVideo.mp4');
-//     await videoFile.writeAsBytes(videoData);
-
-//     // VideoPlayerController 초기화 및 재생
-//     _controller = VideoPlayerController.file(videoFile)
-//       ..initialize().then((_) {
-//         setState(() {});
-//         _controller!.play(); // null 체크 후 접근
-//       });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Image.asset('lib/assets/MirrorMe_Main.png'),
-//         backgroundColor: Colors.white,
-//         centerTitle: true,
-//         leading: IconButton(
-//           icon: Image.asset('lib/assets/back.png'), // 원하는 이미지로 대체
-//           onPressed: () {
-//             Navigator.of(context).pop(); // 뒤로 가기 기능 실행
-//           },
-//         ),
-//       ),
-//       body: Center(
-//         child: _controller?.value.isInitialized ?? false
-//             ? AspectRatio(
-//                 aspectRatio: _controller!.value.aspectRatio,
-//                 child: VideoPlayer(_controller!),
-//               )
-//             : CircularProgressIndicator(), // 비디오가 준비되기 전에 로딩 표시
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           if (_controller != null) {
-//             if (_controller!.value.isPlaying) {
-//               _controller!.pause();
-//             } else {
-//               _controller!.play();
-//             }
-//           }
-//         },
-//         child: Icon(
-//           _controller?.value.isPlaying ?? false
-//               ? Icons.pause
-//               : Icons.play_arrow,
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     _controller?.dispose(); // null 체크 후 해제
-//   }
-// }
