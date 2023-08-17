@@ -46,6 +46,7 @@ class MessageListView extends StatefulWidget {
 
 class _MessageListViewState extends State<MessageListView> {
   List<Map<String, dynamic>> messages = []; // 메시지 리스트 초기화
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -78,6 +79,7 @@ class _MessageListViewState extends State<MessageListView> {
 
         setState(() {
           messages = newMessages; // 메시지 리스트 업데이트
+          isLoading = false;
         });
 
         print('Response Data: ${response.body}');
@@ -90,6 +92,9 @@ class _MessageListViewState extends State<MessageListView> {
       }
     } catch (e) {
       print('Error during HTTP request: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -172,17 +177,19 @@ class _MessageListViewState extends State<MessageListView> {
           ),
         ),
         Expanded(
-          child: messages.isEmpty // 메세지 리스트가 비어있는 경우
-          ? Center(
-              child: Text('메세지가 없습니다',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'NanumSquareRoundEB',
-                  fontWeight: FontWeight.bold,
-                )
-              ),
-            )
-          :
+          child: isLoading
+            ? Center(child: CircularProgressIndicator()) // 로딩 중일 때 CircularProgressIndicator 표시
+            : messages.isEmpty // 메세지 리스트가 비어있는 경우
+            ? Center(
+                child: Text('메세지가 없습니다',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'NanumSquareRoundEB',
+                    fontWeight: FontWeight.bold,
+                  )
+                ),
+              )
+            :
             ListView.builder(
               itemCount: messages.length,
               itemBuilder: (context, index) {
@@ -190,6 +197,12 @@ class _MessageListViewState extends State<MessageListView> {
 
                 final videoId = message['videoId'];
                 final sendUserEmail = message['sendUserEmail'];
+                final type = message['type'];
+                final year = message['date'][0];
+                final month = message['date'][1];
+                final day = message['date'][2];
+                final hour = message['date'][3];
+                final minute = message['date'][4];
 
                 return InkWell(
                   onTap: () {
@@ -213,30 +226,47 @@ class _MessageListViewState extends State<MessageListView> {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('$sendUserEmail',
-                              style: TextStyle(
-                                color: Color(0xff111111),
-                                fontSize: 15,
-                                fontFamily: 'NanumSquareRoundEB',
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('$sendUserEmail',
+                                style: TextStyle(
+                                  color: Color(0xff111111),
+                                  fontSize: 15,
+                                  fontFamily: 'NanumSquareRoundEB',
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.normal,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                            Text('영상메세지',
-                              style: TextStyle(
-                                color: Color(0xff111111),
-                                fontSize: 10,
-                                fontFamily: 'NanumSquareRoundEB',
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(type == 'v' ? '영상메세지' : '음성메세지',
+                                    style: TextStyle(
+                                      color: Color(0xff111111),
+                                      fontSize: 10,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$year-$month-$day $hour:$minute', // 날짜를 여기에 추가하거나 변경하세요
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 10,
+                                      fontFamily: 'NanumSquareRoundEB',
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -52,7 +52,7 @@ class _SchedulesState extends State<Schedules> {
 
         setState(() {
           schedules = newSchedules; // 메시지 리스트 업데이트
-          isLoading = true;
+          isLoading = false;
         });
 
         print('Response Data: ${response.body}');
@@ -97,40 +97,54 @@ class _SchedulesState extends State<Schedules> {
                   ],
                 ),
               ),
-              Expanded( // 리스트뷰가 남은 공간을 모두 차지할 수 있도록 Expanded 위젯을 추가합니다.
-                child: ListView.builder(
-                  itemCount: schedules.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final schedule = schedules[index];
-                    return Container(
-                      // 일정 한 개
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            child: Row(children: [
-                              Icon(
-                                Icons.circle,
-                                color: Colors.red,
-                                size: 5,
-                              ),
-                              SizedBox(width: 5,),
-                              Text(schedule['summary'], 
-                              style: TextStyle(
-                                color: Color(0xff111111),
-                                fontSize: 12,
-                                fontFamily: 'NanumSquareRoundEB',
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
-                              ),
-                              ) // 일정 제목 표시
-                            ]),
+              Expanded(
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator()) // 로딩 중일 때 CircularProgressIndicator 표시
+                    : schedules.isEmpty
+                        ? Center(child: Text('오늘의 일정이 없습니다', 
+                          style: TextStyle(
+                            color: Color(0xff111111),
+                            fontSize: 14,
+                            fontFamily: 'NanumSquareRoundEB',
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        )) // 일정이 없을 때 메시지 표시
+                        : ListView.builder(
+                            itemCount: schedules.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final schedule = schedules[index];
+                              return Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.circle,
+                                            color: Colors.red,
+                                            size: 5,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            schedule['summary'],
+                                            style: TextStyle(
+                                              color: Color(0xff111111),
+                                              fontSize: 12,
+                                              fontFamily: 'NanumSquareRoundEB',
+                                              fontWeight: FontWeight.w400,
+                                              fontStyle: FontStyle.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
               ),
             ],
           ),
