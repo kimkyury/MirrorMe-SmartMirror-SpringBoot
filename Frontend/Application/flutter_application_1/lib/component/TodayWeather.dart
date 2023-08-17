@@ -5,7 +5,10 @@ import 'package:intl/intl.dart';
 
 class TodayWeather extends StatefulWidget {
   @override
-  class _TodayWeatherState extends State<TodayWeather> {
+  _TodayWeatherState createState() => _TodayWeatherState();
+}
+
+class _TodayWeatherState extends State<TodayWeather> {
   Map<String, dynamic> weatherInfo = {}; // 날씨 정보 저장
   Map<String, dynamic> ultraInfo = {}; // 초단기 날씨 정보 저장
   // List<Map<String, dynamic>> ultraInfo = []; // 초단기 날씨 정보 저장
@@ -18,6 +21,14 @@ class TodayWeather extends StatefulWidget {
   @override
   void initState() {
     super.initState();
+    _fetchWeatherData();
+  }
+
+  Future<void> _fetchWeatherData() async {
+    final url = 'http://i9e101.p.ssafy.io:8080/weather/short';
+
+    // API 호출에 필요한 파라미터 설정
+    var houseHoldId = 1;
     final pageNo = '1';
     final numOfRows = '500';
     var baseTime = '0200';
@@ -35,20 +46,39 @@ class TodayWeather extends StatefulWidget {
     if (currentHour < 2 || (currentHour == 2 && currentMin < 45)) {
       // 02:45 이전인 경우 어제 날짜로 설정
       date = koreanTime.subtract(Duration(days: 1));
-      } else {
-        date = koreanTime;
-      }
+    } else {
+      date = koreanTime;
+    }
 
     var today = '${koreanTime.year}${koreanTime.month.toString().padLeft(2, '0')}${koreanTime.day.toString().padLeft(2, '0')}';
     var baseDate = '${koreanTime.year}${koreanTime.month.toString().padLeft(2, '0')}${koreanTime.day.toString().padLeft(2, '0')}';
+    
+    // print('currentHour = $currentHour');
+    // print('baseDate = $baseDate');
+    // print('today = $today');
 
     try {
       final Map<String, String> params = {
         'baseDate': baseDate,
+        'baseTime': baseTime,
+        'numOfRows': numOfRows,
+        'pageNo': pageNo,
+        'houseHoldId': houseHoldId.toString(),
+      };
+
+      final response = await http.get(
+        Uri.parse(url).replace(queryParameters: params),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
         final todayWeatherList =
             List<Map<String, dynamic>>.from(responseData['response']);
-            
-            final List<dynamic> todayWeather = todayWeatherList
+
+        // print('Response Data: ${response.body}');
+
+        // 데이터 처리
+        final List<dynamic> todayWeather = todayWeatherList
             .where((data) => data['fcstDate'] == today)
             .toList();
 
@@ -84,10 +114,10 @@ class TodayWeather extends StatefulWidget {
         setState(() {
           weatherInfo['tmn'] = tempertureMin;
           weatherInfo['tmx'] = tempertureMax;
-          eatherInfo['pop'] = pop;
+          weatherInfo['pop'] = pop;
           weatherInfo['pty'] = pty;
           weatherInfo['sky'] = sky;
-          isLoading = false; // 데이터 로딩 완료
+          // isLoading = false; // 데이터 로딩 완료
         });
         // print('weatherInfo = $weatherInfo');
         print('weatherInfo sky = ${weatherInfo['sky']}');
@@ -133,8 +163,10 @@ class TodayWeather extends StatefulWidget {
 
         setState(() {
           ultraInfo = ultraWeatherData;
+          isLoading = false;
         });
         print('Ultra Info: $ultraInfo');
+
       } else { 
         throw Exception('두 번째 API 호출 실패');
       }
@@ -153,6 +185,110 @@ class TodayWeather extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-
+    return Container(
+      width: 350,
+      height: 150,
+      margin: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        bottom: 10,
+      ),
+      child: Container(
+        // 오늘 날씨 정보 넣기
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // 날씨 정보 로딩 중이면 로딩 아이콘 표시
+            isLoading
+                ? CircularProgressIndicator()
+                : Column(
+                    children: [
+                      Container(
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'lib/assets/weather/path.png', // path icon
+                              width: 20,
+                            ),
+                            Text(
+                              '${ultraInfo['region']}',
+                              // '부산광역시, 대한민국',
+                              style: TextStyle(
+                                color: Color(0xffb2b2b2),
+                                fontSize: 10,
+                                fontFamily: 'NanumSquareRoundEB',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 5,),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              // 날씨 아이콘
+                              width: 80,
+                              height: 80,
+                              child: Image.asset('lib/assets/weather/${skyicons[weatherInfo['sky']]}'),
+                            ),
+                            Container(
+                              // 기온 정보 표시
+                              child: Column(
+                                children: [
+                                  Text('${ultraInfo['t1H']}℃', style: TextStyle(
+                                  fontSize: 25
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Row(
+                                    children: [
+                                      Text('${weatherInfo['tmx'].toInt()}℃ / '),
+                                      Text('${weatherInfo['tmn'].toInt()}℃'),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              // child: Text(
+                              //   '${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
+                              //     fontSize: 25
+                              //   ),
+                              // ),
+                            ),
+                            // Container(
+                            //   child: Column(
+                            //     children: [
+                            //       // Container(
+                            //       //   // 나중에 SizedBox로 바꾸기
+                            //       //   color: Colors.brown,
+                            //       //   width: 30,
+                            //       //   height: 20,
+                            //       // ),
+                            //       Text('${weatherInfo['tmx'].toInt()}℃'),
+                            //       Text('${weatherInfo['tmn'].toInt()}℃'),
+                            //     ],
+                            //   ),
+                            // ),
+                            Container(
+                              // 우측 정보들
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('오늘 날씨  : ${skys[weatherInfo['sky']]}'),
+                                  Text('습도 :  ${weatherInfo['pop']}%'),
+                                  Text('강수확률 : ${weatherInfo['pop']}%'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}
