@@ -10,7 +10,9 @@ class window(QtWidgets.QWidget):
         super(window,self).__init__(parent)
 
         self.webview=QtWebEngineWidgets.QWebEngineView(self)
-        self.webview.setUrl(QUrl("http://www.youtube.com"))
+        self.webview.setUrl(QUrl("https://www.youtube.com/"))
+        # self.webview.setUrl(QUrl("http://1ot-mlm.site/"))
+
         self.webview.setGeometry(0,0,1920,1080)
         self.show() 
 
