@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './NewsTab.dart';
 
 class News extends StatelessWidget {
   @override
@@ -45,21 +46,21 @@ class News extends StatelessWidget {
                         Row( // 뉴스 기사 1
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
                         Row( // 뉴스 기사 2
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
                         Row( // 뉴스 기사 3
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
@@ -85,7 +86,7 @@ class News extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20,),
-        // 우리 가족 마음 온도
+
         Container(
           padding: EdgeInsets.all(10), // 수정된 부분
           width: 350,
@@ -125,21 +126,21 @@ class News extends StatelessWidget {
                         Row( // 뉴스 기사 1
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
                         Row( // 뉴스 기사 2
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
                         Row( // 뉴스 기사 3
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('기사 제목 줄여서 출력하기 위한 예시 적기...'),
+                            Text('기사 제목 줄여서 출력하기 위한 예시...'),
                             Text('언론사')
                           ],
                         ),
