@@ -4,7 +4,10 @@ import 'dart:io';
 import 'dart:convert';
 
 class Schedules extends StatefulWidget {
-  const Schedules({super.key});
+  final String accessToken;
+  final String refreshToken;
+
+  Schedules({required this.accessToken, required this.refreshToken});
 
   @override
   _SchedulesState createState() => _SchedulesState();
@@ -12,6 +15,7 @@ class Schedules extends StatefulWidget {
 
 class _SchedulesState extends State<Schedules> {
   List<Map<String, dynamic>> schedules = []; // 일정을 저장할 리스트
+  bool isLoading = true;
 
   // initState 메소드를 이용하여 페이지가 로드될 때 한 번 실행
   @override
@@ -28,11 +32,11 @@ class _SchedulesState extends State<Schedules> {
 
     var headers = {
       'Content-Type': 'application/json; charset=utf-8',
-      'access_token': 'ya29.a0AfB_byAKygNK-Hr13FFGjoWTdqB0nTp8ViD9DaA6tULhfxhAhgFq5hNCA51PKyM4xKZXEaFGSLdYo2_qacBgqjHVZFqz5UjBrlhFEh-mpwADz4vE6k9TeR96qp-O5b3F-6LTZ7IUo1y_a9xmRHYii4b-a1eiwMa7aWbZVj-s3QaCgYKAWUSARISFQHsvYlsRiROD0hl5N93-NwuJlwDDg0177', // access_token 추가
+      'access_token': widget.accessToken, // access_token 추가
     };
 
     var cookies = {
-      'refresh_token': '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo', // refresh_token을 쿠키에 추가
+      'refresh_token': widget.refreshToken, // refresh_token을 쿠키에 추가
     };
 
     try {
@@ -48,6 +52,7 @@ class _SchedulesState extends State<Schedules> {
 
         setState(() {
           schedules = newSchedules; // 메시지 리스트 업데이트
+          isLoading = true;
         });
 
         print('Response Data: ${response.body}');
@@ -56,9 +61,11 @@ class _SchedulesState extends State<Schedules> {
       }
     } catch (e) {
       print('Error during HTTP request: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +112,9 @@ class _SchedulesState extends State<Schedules> {
                               Icon(
                                 Icons.circle,
                                 color: Colors.red,
-                                size: 10,
+                                size: 5,
                               ),
+                              SizedBox(width: 5,),
                               Text(schedule['summary'], 
                               style: TextStyle(
                                 color: Color(0xff111111),
