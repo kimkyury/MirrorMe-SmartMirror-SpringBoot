@@ -43,6 +43,7 @@ class _ConnectState extends State<Connect> with SingleTickerProviderStateMixin {
         ),
       ),
       body: Container(
+        color: Colors.white,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
