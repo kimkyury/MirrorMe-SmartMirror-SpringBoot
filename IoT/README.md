@@ -17,6 +17,18 @@ Device : Lttepanda 3 Delta
 
 Os : Ubuntu 22.04
 
+Python : 3.10.12
+
+opencv-contrib-python : 4.8.0.74
+
+google-api-core : 2.11.1
+
+tensorflow-gpu : 2.9.0
+
+cuda : 11.2
+
+Django : 3.2.18
+
 
 
 ## :bookmark_tabs:Installation
@@ -63,6 +75,14 @@ pip3 install django
 pip3 install tensorflow==2.9.0
 python manage.py runserver
 ```
+
+- ngrok
+
+```
+ngrok http 8000
+```
+
+
 
 ## 📺File Path
 
@@ -113,13 +133,13 @@ Mirror
 
 
 
-## ⚙Tech Stack
+## ⚙Tech
 
 - Open CV와 Face_recognition을 활용한 얼굴 인식 및 사용자 확인
 
-- Open CV와 Mideapipe를 활용한 gesture_recognition 
-
 - Open CV, Pyaudio를 활용한 영상/음성 메세지 녹화 및 Moviepy를 활용한 인코딩
+
+- Open CV와 Mideapipe를 활용한 gesture_recognition 
 
 - Shell script를 활용한 SCP 작성, crontab 스케쥴로 실행하여 ec2서버로 영상/음성메세지 저장
 
@@ -160,7 +180,7 @@ Mirror
   ```
 
 
-![Emotion](https://i.ibb.co/dgLs2ty/GIF-2023-08-16-11-22-03.gif)
+![Emotion](https://i.ibb.co/dgLs2ty/GIF-2023-08-16-11-22-03.gif)  <--- 감정 분석 ai 사용 예
 
 - RSA암호화 및 복호화 알고리즘 작성
 
@@ -193,6 +213,50 @@ def Decryption(Sentence: str, n: int, d: int) -> str:
   - Implementation of AI Speaker
   - Websocket connection to react
   - State management of smart mirror
+
+
+
+## :man_factory_worker:Manufacturing Process
+
+1. 재료 구매
+
+   - 액자, 중고 모니터, 반사필름
+
+     <div class="separator" style="clear: both;">
+     	<img src="https://i.ibb.co/1qP1j1W/Kakao-Talk-20230817-235116487.jpg" alt="case" style="zoom:50%;" />
+     	<img src="https://i.ibb.co/Fbpqrdj/2640371-3.jpg" alt="monitor" style="zoom:40%;" />
+     	<img src="https://i.ibb.co/MNgPqd9/1231323.png" alt="film" style="zoom:40%;" />
+     </div>
+
+2. 모니터 베젤 제거
+
+   <img src="https://i.ibb.co/P95gCp4/1.gif" alt="vezel" style="zoom:67%;" /> 
+
+3. 디스플레이 공간 외 빛 차단
+
+   <img src="https://i.ibb.co/z7kDkQR/2.gif" alt="taping" style="zoom:67%;" /> 
+
+4. 디스플레이 고정
+
+   <img src="https://i.ibb.co/gWZnLVB/3.gif" alt="silicon" style="zoom:67%;" /> 
+
+5. 블럭 부착 및 기판 고정
+
+   <div class="separator" style="clear: both;">
+   	<img src="https://i.ibb.co/HLSnpGM/4.gif" alt="block" style="zoom:67%;" />
+   	<img src="https://i.ibb.co/zXrkqzG/4-5.gif" alt="bolt" style="zoom:67%;" />
+   </div>
+
+6. 빈 공간 메우기
+
+   ![](https://i.ibb.co/0sqBCdN/5.gif) 
+
+7. 완성
+
+   <div class="separator" style="clear: both;">
+   	<img src="https://i.ibb.co/ZWg3Mr0/Kakao-Talk-20230818-004023132.jpg" alt="" style="zoom:10%;" />
+   	<img src="https://i.ibb.co/996Bhrc/Kakao-Talk-20230818-004023132-01.jpg" alt="monitor" style="zoom:10%;" />
+   </div>
 
 
 
