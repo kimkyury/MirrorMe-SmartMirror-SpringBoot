@@ -653,7 +653,7 @@ async def disappear(*arg):
         await websocketSend('video', json.dumps(send_data))
 
         send_data = {
-            "order" : "userOut",
+            "order" : "USEROUT",
             "query" : None
         }
 
