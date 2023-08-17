@@ -36,7 +36,7 @@ class MyEmotions extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.all(10),
-            margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
+            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -55,27 +55,35 @@ class MyEmotions extends StatelessWidget {
           Expanded(
             child: SfCartesianChart(
               primaryXAxis: CategoryAxis(),
+              legend: Legend(
+                isVisible: true,
+                position: LegendPosition.bottom,
+                ), // 범례 활성화
               series: <ChartSeries>[
                 StackedColumnSeries<_ChartData, String>(
                   dataSource: chartData,
                   xValueMapper: (_ChartData data, _) => data.day,
                   yValueMapper: (_ChartData data, _) => data.emotion1,
+                  name: '기쁨',
                 ),
                 StackedColumnSeries<_ChartData, String>(
                   dataSource: chartData,
                   xValueMapper: (_ChartData data, _) => data.day,
                   yValueMapper: (_ChartData data, _) => data.emotion2,
+                  name: '슬픔',
                 ),
                 StackedColumnSeries<_ChartData, String>(
                   dataSource: chartData,
                   xValueMapper: (_ChartData data, _) => data.day,
                   yValueMapper: (_ChartData data, _) => data.emotion3,
+                  name: '분노',
                 ),
                 StackedColumnSeries<_ChartData, String>(
                   dataSource: chartData,
                   xValueMapper: (_ChartData data, _) => data.day,
                   yValueMapper: (_ChartData data, _) => data.emotion4,
-                ),
+                  name: '무표정',
+                ),  
               ],
             ),
           ),
