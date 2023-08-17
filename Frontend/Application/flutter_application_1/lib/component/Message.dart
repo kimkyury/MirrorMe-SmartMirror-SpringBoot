@@ -196,6 +196,7 @@ class _MessageListViewState extends State<MessageListView> {
                     _playVideo(videoId, sendUserEmail);
                   },
                   child: Container(
+                    padding: EdgeInsets.all(15),
                     width: 390,
                     height: 73,
                     child: Row(
