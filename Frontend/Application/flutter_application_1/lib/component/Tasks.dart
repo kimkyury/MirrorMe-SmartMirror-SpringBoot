@@ -4,7 +4,10 @@ import 'dart:io';
 import 'dart:convert';
 
 class Tasks extends StatefulWidget {
-  const Tasks({super.key});
+  final String accessToken;
+  final String refreshToken;
+
+  Tasks({required this.accessToken, required this.refreshToken});
 
   @override
   _TasksState createState() => _TasksState();
@@ -27,11 +30,11 @@ class _TasksState extends State<Tasks> {
 
     var headers = {
       'Content-Type': 'application/json; charset=utf-8',
-      'access_token': 'ya29.a0AfB_byAtQFrmC7N1ho6S8qUcj5UXjin1MNzOXdZThDIMKS7Tq5TzueRt_H9lpfHcT36QhSrXRypnZmZL_knk2R7BwStocQdKVmM4yxnfkCx_vHZFVXwkiHEWZZ8-vyoJl82Yjup583THaCyCC39LTYMSj0L5CFu4Pi-BcNpuTwaCgYKARoSARISFQHsvYlssKoPXSgSAR9qqJJTB8yESQ0177', // access_token 추가
+      'access_token': widget.accessToken, // access_token 추가
     };
 
     var cookies = {
-      'refresh_token': '1//0evNs0GmidlHhCgYIARAAGA4SNwF-L9Ir3sLRMdYucUhG6XF4P0UTM2Erq6hW3sbB7JO88F60_qPdxuf_7dtKNflysCcqWLCrtQo', // refresh_token을 쿠키에 추가
+      'refresh_token': widget.refreshToken, // refresh_token을 쿠키에 추가
     };
 
     try {
@@ -44,6 +47,7 @@ class _TasksState extends State<Tasks> {
       if (response.statusCode == 200) {
         final responseData = json.decode(utf8.decode(response.bodyBytes));
         final newTasks = List<Map<String, dynamic>>.from(responseData['response']);
+
 
         setState(() {
           tasks = newTasks; // 메시지 리스트 업데이트
