@@ -217,10 +217,10 @@ class _TodayWeatherState extends State<TodayWeather> {
                                   SizedBox(height: 7,),
                                   Row(
                                     children: [
-                                      Text('${weatherInfo['tmx']}℃ / ',
+                                      Text('${weatherInfo['tmx'].toInt()}℃ / ',
                                         style: TextStyle(
                                           fontFamily: 'NanumSquareRoundEB',)),
-                                      Text('${weatherInfo['tmn']}℃',
+                                      Text('${weatherInfo['tmn'].toInt()}℃',
                                           style: TextStyle(
                                           fontFamily: 'NanumSquareRoundEB',)
                                         ),
@@ -238,15 +238,33 @@ class _TodayWeatherState extends State<TodayWeather> {
                                       fontFamily: 'NanumSquareRoundEB',
                                     )
                                   ),
-                                  Text('습도 :  ${weatherInfo['pop']}%',
-                                    style: TextStyle(
-                                      fontFamily: 'NanumSquareRoundEB',
-                                    )
+                                  SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.water_drop, size: 16),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        '${ultraInfo['reh'].toInt()}%',
+                                        style: TextStyle(
+                                          fontFamily: 'NanumSquareRoundEB',
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text('강수확률 : ${weatherInfo['pop']}%',
-                                    style: TextStyle(
-                                      fontFamily: 'NanumSquareRoundEB',
-                                    )
+                                  SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.beach_access, size: 16),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        '${weatherInfo['pop'].toInt()}%',
+                                        style: TextStyle(
+                                          fontFamily: 'NanumSquareRoundEB',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
