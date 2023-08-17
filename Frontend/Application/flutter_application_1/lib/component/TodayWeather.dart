@@ -111,14 +111,16 @@ class _TodayWeatherState extends State<TodayWeather> {
         final sky = skyData.first['sky'];
 
         // 날씨 정보를 저장
-        setState(() {
-          weatherInfo['tmn'] = tempertureMin;
-          weatherInfo['tmx'] = tempertureMax;
-          weatherInfo['pop'] = pop;
-          weatherInfo['pty'] = pty;
-          weatherInfo['sky'] = sky;
-          isLoading = false; // 데이터 로딩 완료
-        });
+        if (mounted) {
+          setState(() {
+            weatherInfo['tmn'] = tempertureMin;
+            weatherInfo['tmx'] = tempertureMax;
+            weatherInfo['pop'] = pop;
+            weatherInfo['pty'] = pty;
+            weatherInfo['sky'] = sky;
+            isLoading = false; // 데이터 로딩 완료
+          });
+        }
         // print('weatherInfo = $weatherInfo');
         print('weatherInfo sky = ${weatherInfo['sky']}');
         print('skyicons[weatherInfo sky] gpt = ${skyicons['${weatherInfo['sky']}']}');
@@ -236,14 +238,20 @@ class _TodayWeatherState extends State<TodayWeather> {
                               // 기온 정보 표시
                               child: Column(
                                 children: [
-                                  Text('${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
-                                  fontSize: 25
+                                  Text('${ultraInfo['t1H']}℃', style: TextStyle(
+                                  fontSize: 25,
+                                  fontFamily: 'NanumSquareRoundEB',
                                   ),),
                                   SizedBox(height: 7,),
                                   Row(
                                     children: [
-                                      Text('${weatherInfo['tmx'].toInt()}℃ / '),
-                                      Text('${weatherInfo['tmn'].toInt()}℃'),
+                                      Text('${weatherInfo['tmx']}℃ / ',
+                                        style: TextStyle(
+                                          fontFamily: 'NanumSquareRoundEB',)),
+                                      Text('${weatherInfo['tmn']}℃',
+                                          style: TextStyle(
+                                          fontFamily: 'NanumSquareRoundEB',)
+                                        ),
                                     ],
                                   )
                                 ],
@@ -273,9 +281,21 @@ class _TodayWeatherState extends State<TodayWeather> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('오늘 날씨  : ${skys[weatherInfo['sky']]}'),
-                                  Text('습도 :  ${weatherInfo['pop']}%'),
-                                  Text('강수확률 : ${weatherInfo['pop']}%'),
+                                  Text('${skys[weatherInfo['sky']]}', 
+                                    style: TextStyle(
+                                      fontFamily: 'NanumSquareRoundEB',
+                                    )
+                                  ),
+                                  Text('습도 :  ${weatherInfo['pop']}%',
+                                    style: TextStyle(
+                                      fontFamily: 'NanumSquareRoundEB',
+                                    )
+                                  ),
+                                  Text('강수확률 : ${weatherInfo['pop']}%',
+                                    style: TextStyle(
+                                      fontFamily: 'NanumSquareRoundEB',
+                                    )
+                                  ),
                                 ],
                               ),
                             ),
