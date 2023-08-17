@@ -15,6 +15,9 @@ class _TodayWeatherState extends State<TodayWeather> {
   
   bool isLoading = true; // 로딩 완료 확인
 
+  final skyicons = {1: '001.png', 2: '002.png', 3: '003.png', 4: '004.png', 5: '005.png', 6: '006.png', 7: '007.png'};
+  final skys = {1: '맑음', 2: '구름많음', 3: '흐림', 4: '비', 5: '눈/비', 6: '눈', 7: '소나기'};
+
   @override
   void initState() {
     super.initState();
@@ -117,8 +120,9 @@ class _TodayWeatherState extends State<TodayWeather> {
           isLoading = false; // 데이터 로딩 완료
         });
         // print('weatherInfo = $weatherInfo');
-
-        ////////////////////////////하늘 정보 분기 필요////////////////////////////
+        print('weatherInfo sky = ${weatherInfo['sky']}');
+        print('skyicons[weatherInfo sky] gpt = ${skyicons['${weatherInfo['sky']}']}');
+        print('skyicons[weatherInfo sky] = ${skyicons[weatherInfo['sky']]}');
 
       // ultra
       final ultraUrl = 'http://i9e101.p.ssafy.io:8080/weather/ultra';
@@ -204,7 +208,6 @@ class _TodayWeatherState extends State<TodayWeather> {
                               'lib/assets/weather/path.png', // path icon
                               width: 20,
                             ),
-                            SizedBox(width: 10),
                             Text(
                               '${ultraInfo['region']}',
                               // '부산광역시, 대한민국',
@@ -218,7 +221,6 @@ class _TodayWeatherState extends State<TodayWeather> {
                         ),
                       ),
                       Container(
-                        color: Colors.green,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,8 +229,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                               // 날씨 아이콘
                               width: 80,
                               height: 80,
-                              color: Colors.red,
-                              child: Text('날씨 아이콘'),
+                              child: Image.asset('lib/assets/weather/${skyicons[weatherInfo['sky']]}'),
                             ),
                             Container(
                               // 기온 정보 표시
@@ -257,7 +258,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('하늘 상태'),
+                                  Text('오늘 날씨  : ${skys[weatherInfo['sky']]}'),
                                   Text('습도 :  ${weatherInfo['pop']}%'),
                                   Text('강수확률 : ${weatherInfo['pop']}%'),
                                 ],
