@@ -11,7 +11,7 @@ void main() {
 }
 
 class MyEmotions extends StatelessWidget {
-  const MyEmotions({Key? key});
+  const MyEmotions({Key? key});  
 
   @override
   Widget build(BuildContext context) {
