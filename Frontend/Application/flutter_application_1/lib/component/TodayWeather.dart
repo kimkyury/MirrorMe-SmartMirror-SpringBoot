@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 
 class TodayWeather extends StatefulWidget {
   @override
@@ -236,14 +236,14 @@ class _TodayWeatherState extends State<TodayWeather> {
                               // 기온 정보 표시
                               child: Column(
                                 children: [
-                                  Text('${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
+                                  Text('${ultraInfo['t1H']}℃', style: TextStyle(
                                   fontSize: 25
                                   ),),
                                   SizedBox(height: 7,),
                                   Row(
                                     children: [
-                                      Text('${weatherInfo['tmx'].toInt()}℃ / '),
-                                      Text('${weatherInfo['tmn'].toInt()}℃'),
+                                      Text('${weatherInfo['tmx']}℃ / '),
+                                      Text('${weatherInfo['tmn']}℃'),
                                     ],
                                   )
                                 ],
