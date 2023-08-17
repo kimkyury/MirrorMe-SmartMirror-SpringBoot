@@ -116,6 +116,8 @@ function App() {
         setMirrorSaying(true);
       } else if (data.order === 'TTS_end') { // 거울 말 끝낸다
         setMirrorSaying(false);
+      } else if (data.order === 'USEROUT') {
+        setUserEmail('')
       }
     };
 
