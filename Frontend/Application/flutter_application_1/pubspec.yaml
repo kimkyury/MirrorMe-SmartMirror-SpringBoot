@@ -37,9 +37,10 @@ dependencies:
   video_player: ^2.7.0
   path_provider: ^2.1.0
 
+  syncfusion_flutter_charts: ^22.2.9 
   intl: ^0.17.0 # 한국 표준시로 시간 설정
-
   # fl_chart: ^0.63.0 
+
 
   
 
@@ -92,6 +93,7 @@ flutter:
     - lib/assets/weather/006.png
     - lib/assets/weather/007.png
     - lib/assets/back.png
+    - lib/assets/profile_default.png
 
   fonts:
       - family: NanumSquareRoundEB
