@@ -44,7 +44,7 @@ async def connect():
         async with websockets.connect("ws://localhost:9998") as ws:
             print("연결 성공")
             await ws.send("video")
-            session_id = await ws.recv()
+            # session_id = await ws.recv()
             websocket = ws
             
             global end_check
@@ -60,16 +60,16 @@ async def connect():
                     cur_email = recv['query']['userEmail']
                     print('login')
                     # 이벤트 발생시키고, 
-                    video_event.set()
                     with lock:
                         end_check = 0
+                    video_event.set()
 
                 elif recv.get('order', None) == 'logout':
                     cur_user = -1
                     cur_email = ''
-                    video_event.clear()
                     with lock:
                         end_check = 1
+                    video_event.clear()
                     print('logout')
 
                 elif recv.get('order', None) == 'video_start':
@@ -148,8 +148,8 @@ def getgesture():
             [True, True, False, False, (0,0), "V"],
             [False, False, False, False, (0,0), "exit"]]
     
-    result = deque([None for _ in range(26)])
-    distance = deque(['remain' for _ in range(3)])
+    result = deque([None for _ in range(5)])
+    distance = deque(['remain' for _ in range(5)])
 
     last_x = 0.5
     count = 0
@@ -157,6 +157,7 @@ def getgesture():
     emotion_list = []
     
     while True:
+        # print("감정, 제스처 인식")
         # 여기에서 체크해서 종료 넣기
         with lock:
             global end_check
@@ -211,8 +212,13 @@ def getgesture():
                     result.append(gesture[i][5])
                     break
         
-        if len(result) < 29:
+        if len(result) < 5:
             result.append(None)
+        
+        if len(distance) < 5:
+            distance.append('remain')
+        
+        # print(distance)
 
         ret = max(set(result), key=result.count)
 
@@ -245,7 +251,8 @@ def getgesture():
         data = json.dumps(params)
 
         # JSON 데이터를 포함하여 POST 요청을 보냄
-        response = requests.post("https://f89c-210-217-108-123.ngrok-free.app/emotion/findemotion/", headers=headers, data=data)
+        response = requests.post("https://e821-210-217-108-123.ngrok-free.app/emotion/findemotion/", headers=headers, data=data)
+        print("emotion send")
     except:
         print('send emotion error')
     

@@ -33,7 +33,10 @@ class _MyHomePageState extends State<MyHomePage> {
         accessToken: widget.accessToken,
         refreshToken: widget.refreshToken,
       ),
-      Family(),
+      Family(
+        accessToken: widget.accessToken,
+        refreshToken: widget.refreshToken,
+      ),
       Settings(),
     ];
   }

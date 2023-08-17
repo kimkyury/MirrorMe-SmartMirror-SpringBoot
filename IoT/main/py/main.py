@@ -111,21 +111,14 @@ async def accept(websocket, path):
 
 
     # 조건 충족시 세션코드 발급 후 소켓 저장
-    session_id = str(uuid.uuid4())
-    client[session_id] = websocket
+    # session_id = str(uuid.uuid4())
+    client[role] = websocket
 
     # 연결 되었음을 알리고 역할에 따른 세션아이디 저장
     connect_check[role].set()
-    client_role[role] = session_id
+    client_role[role] = role
     # 세션 코드 발급
     # 리엑트 안 보내줌
-    if role != "react":
-        await websocket.send(session_id)
-    # 아두이노가 없을때 얼굴인식 시작하기용인데 아두이노 연결되면 없애기
-    if role == "video":
-        await appear()
-    # else:
-    #     await appear()
 
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
@@ -266,7 +259,7 @@ async def messageEnd(*arg):
     global STATUS
     if STATUS != MESSAGE_CAP:
         return
-
+    print("메세지 녹화 종료")
     await websocketSend('audio', "audio_restart")
 
     # 메세지 녹화 종료를 리엑트로 알림
@@ -294,13 +287,13 @@ async def messageShow(*arg):
     await websocketSend('react', json.dumps(send_data))
 
     STATUS = MESSAGE_SHOW
-    tts("메세지를 보여드릴게요")
+    tts("메세지를 내역입니다.")
 
     # 메세지 보기 처리
 
     # 리엑트 측으로 부터 영상이 종료되었음을 수신
-    if client_role.get("react", False):
-        await client[client_role["react"]].recv()
+    # if client_role.get("react", False):
+    #     await client[client_role["react"]].recv()
 
     STATUS = WAITTING
 # arg로 유튜브 검색하기
@@ -325,8 +318,8 @@ async def youtube(*arg):
     }
 
     # 리엑트 접속시 링크 보내주기
-    if client_role.get("react", False):
-        await client[client_role["react"]].send(json.dumps(send_data))
+    await websocketSend('react', json.dumps(send_data))
+
 
 
     STATUS = YOUTUBE
@@ -334,8 +327,8 @@ async def youtube(*arg):
     #########################################
     # 유튜브 종료 대기
     # 리엑트 측에서 유튜브 영상이 끝났음을 수신
-    if client_role.get("react", False):
-        await client[client_role["react"]].recv()
+    # if client_role.get("react", False):
+    #     await client[client_role["react"]].recv()
 
     STATUS = WAITTING
     return 
@@ -436,6 +429,7 @@ async def appear(*arg):
         }
     }
 
+    await websocketSend('audio', 'audio_restart')
     await websocketSend('react', json.dumps(send_data))
 
     # 비디오로 유저정보 보내기
@@ -517,8 +511,6 @@ async def callSpeech(user_email):
 
 
 async def disappear(*arg):
-    print("disappear로 잘 들어옴!")
-    return
     global STATUS
     if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
@@ -552,6 +544,8 @@ async def right(*arg):
     await websocketSend('react', json.dumps(send_data))
 
 async def mainUI(*arg):
+    global STATUS
+    STATUS = WAITTING
     send_data = {
         "order" : "EXIT",
         "query" : None
