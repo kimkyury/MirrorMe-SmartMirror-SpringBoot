@@ -121,7 +121,11 @@ class _MessageListViewState extends State<MessageListView> {
                 child: Column(
                   children: [
                     AppBar(
-                      title: Text('$sendUserEmail님의 메세지'),
+                      title: Text('$sendUserEmail님의 메세지', 
+                        style: TextStyle(
+                          fontFamily: 'NanumSquareRoundEB',
+                        )
+                      ),
                       backgroundColor: Colors.transparent, // 투명 배경
                     ),
                     AspectRatio(
@@ -187,16 +191,55 @@ class _MessageListViewState extends State<MessageListView> {
                 final videoId = message['videoId'];
                 final sendUserEmail = message['sendUserEmail'];
 
-                return Container(
-                  width: 390,
-                  height: 73,
-                  child: ListTile(
-                    title: Text('$sendUserEmail',
-                      style: TextStyle(fontFamily: 'NanumSquareRoundEB',)),
-                    subtitle: Text('영상메세지'),
-                    onTap: () {
-                      _playVideo(videoId, sendUserEmail);
-                    },
+                return InkWell(
+                  onTap: () {
+                    _playVideo(videoId, sendUserEmail);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    width: 390,
+                    height: 73,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 45,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('lib/assets/profile_default.png'),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('$sendUserEmail',
+                              style: TextStyle(
+                                color: Color(0xff111111),
+                                fontSize: 15,
+                                fontFamily: 'NanumSquareRoundEB',
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.normal,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text('영상메세지',
+                              style: TextStyle(
+                                color: Color(0xff111111),
+                                fontSize: 10,
+                                fontFamily: 'NanumSquareRoundEB',
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
