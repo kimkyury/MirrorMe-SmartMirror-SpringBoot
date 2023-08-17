@@ -85,7 +85,7 @@ class News extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20,),
-        // 우리 가족 마음 온도
+
         Container(
           padding: EdgeInsets.all(10), // 수정된 부분
           width: 350,
