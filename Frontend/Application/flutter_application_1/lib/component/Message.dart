@@ -121,7 +121,11 @@ class _MessageListViewState extends State<MessageListView> {
                 child: Column(
                   children: [
                     AppBar(
-                      title: Text('$sendUserEmail님의 메세지'),
+                      title: Text('$sendUserEmail님의 메세지', 
+                        style: TextStyle(
+                          fontFamily: 'NanumSquareRoundEB',
+                        )
+                      ),
                       backgroundColor: Colors.transparent, // 투명 배경
                     ),
                     AspectRatio(
