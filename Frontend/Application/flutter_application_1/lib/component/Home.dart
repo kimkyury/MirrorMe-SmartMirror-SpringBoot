@@ -50,7 +50,7 @@ class Home extends StatelessWidget {
                   indent: 15, // 선 좌측 여백
                   endIndent: 15, // 선 우측 여백
                 ),
-                WeekWeather(), // 주간 날씨
+                // WeekWeather(), // 주간 날씨
                 SizedBox(height: 10,), ////////////////////// 상세 조정 필요////////////////////////
               ],
             ),
