@@ -233,26 +233,40 @@ class _TodayWeatherState extends State<TodayWeather> {
                             ),
                             Container(
                               // 기온 정보 표시
-                              child: Text(
-                                '${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
-                                  fontSize: 25
-                                ),
-                              ),
-                            ),
-                            Container(
                               child: Column(
                                 children: [
-                                  // Container(
-                                  //   // 나중에 SizedBox로 바꾸기
-                                  //   color: Colors.brown,
-                                  //   width: 30,
-                                  //   height: 20,
-                                  // ),
-                                  Text('${weatherInfo['tmx'].toInt()}℃'),
-                                  Text('${weatherInfo['tmn'].toInt()}℃'),
+                                  Text('${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
+                                  fontSize: 25
+                                  ),),
+                                  SizedBox(height: 10,),
+                                  Row(
+                                    children: [
+                                      Text('${weatherInfo['tmx'].toInt()}℃ / '),
+                                      Text('${weatherInfo['tmn'].toInt()}℃'),
+                                    ],
+                                  )
                                 ],
                               ),
+                              // child: Text(
+                              //   '${ultraInfo['t1H'].toInt()}℃', style: TextStyle(
+                              //     fontSize: 25
+                              //   ),
+                              // ),
                             ),
+                            // Container(
+                            //   child: Column(
+                            //     children: [
+                            //       // Container(
+                            //       //   // 나중에 SizedBox로 바꾸기
+                            //       //   color: Colors.brown,
+                            //       //   width: 30,
+                            //       //   height: 20,
+                            //       // ),
+                            //       Text('${weatherInfo['tmx'].toInt()}℃'),
+                            //       Text('${weatherInfo['tmn'].toInt()}℃'),
+                            //     ],
+                            //   ),
+                            // ),
                             Container(
                               // 우측 정보들
                               child: Column(
