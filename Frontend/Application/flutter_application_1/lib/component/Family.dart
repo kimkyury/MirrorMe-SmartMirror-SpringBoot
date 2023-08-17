@@ -46,7 +46,7 @@ class _FamilyMemberState extends State<Family> {
 
 
         setState(() {
-          members = newMembers; // 메시지 리스트 업데이트
+          members = newMembers;
         });
 
         print('Response Data: ${response.body}');
