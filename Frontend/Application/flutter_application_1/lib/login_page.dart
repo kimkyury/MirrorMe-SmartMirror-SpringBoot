@@ -44,7 +44,10 @@ class LoginPage extends StatelessWidget {
 
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MyHomePage()),
+            MaterialPageRoute(builder: (context) => MyHomePage(
+              accessToken: accessToken,
+              refreshToken: refreshToken,)
+            ),
           );
         } else {
           showDialog(
