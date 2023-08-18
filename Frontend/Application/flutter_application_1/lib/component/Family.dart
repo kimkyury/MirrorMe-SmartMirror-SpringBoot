@@ -314,7 +314,14 @@ class _FamilyMemberState extends State<Family> {
                                         Container(
                                           width: (temperature / 100) * 100,
                                           decoration: BoxDecoration(
-                                            color: Colors.red, // 온도 값에 따라 다른 색상 설정
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Color.fromRGBO(83, 174, 191, 1.0),  // 시작색
+                                                Color.fromRGBO(110, 132, 210, 1.0), // 중간색
+                                                Color.fromRGBO(123, 113, 219, 1.0), // 마지막 색
+                                              ],
+                                              stops: [0.0, 0.5, 1.0], // 각 색상의 위치
+                                            ),
                                             borderRadius: BorderRadius.circular(10),
                                           ),
                                         ),
