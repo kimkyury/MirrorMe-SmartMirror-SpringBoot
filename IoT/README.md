@@ -47,6 +47,34 @@ pip3 install -r aispeaker_requirement.txt
 python3 AISpeaker_Client/aispeaker.py
 ```
 
+
+- google 인증
+```
+Google Cloud Platform Console에서 프로젝트를 만듭니다. 아직 프로젝트를 만들지 않았다면 지금 만드세요. 프로젝트를 사용하면 배포, 액세스 제어, 청구, 서비스를 포함하여 앱의 모든 Google Cloud Platform 리소스를 관리할 수 있습니다.
+
+[클라우드 플랫폼 콘솔](https://console.cloud.google.com/)을 엽니다 .
+상단의 드롭다운 메뉴에서 프로젝트 만들기를 선택합니다.
+프로젝트에 이름을 지정하십시오.
+프로젝트 이름과 다를 수 있는 프로젝트 ID를 기록해 둡니다. 프로젝트 ID는 명령 및 구성에서 사용됩니다.
+프로젝트에 대한 결제를 활성화합니다 . 프로젝트에 대한 결제를 아직 활성화하지 않은 경우 [지금 결제를 활성화하십시오](https://console.cloud.google.com/project/_/settings) . 청구를 활성화하면 애플리케이션이 Speech API 호출과 같은 청구 가능한 리소스를 사용할 수 있습니다. [결제 설정에 대한 자세한 내용은 Cloud Platform 콘솔 도움말](https://support.google.com/cloud/answer/6288653)을 참조하세요 .
+
+프로젝트에 대한 API를 활성화합니다 . [여기를 클릭](https://console.cloud.google.com/flows/enableapi?apiid=speech&showconfirmation=true)하여 Cloud Platform Console을 방문하고 Speech API를 사용 설정하세요.
+
+필요한 경우 결제 프로젝트를 재정의합니다 . [인증을 위해 사용자 계정을](https://cloud.google.com/docs/authentication#principals) 사용하는 경우 GOOGLE_CLOUD_CPP_USER_PROJECT 환경 변수를 이전 단계에서 생성한 프로젝트로 설정해야 합니다 . serviceusage.services.use프로젝트에 대한 권한이 있어야 합니다 . 또는 다음에 설명된 대로 서비스 계정을 사용합니다.
+
+서비스 계정 사용자 인증 정보를 다운로드합니다 . 이러한 샘플은 인증을 위해 서비스 계정을 사용할 수 있습니다.
+
+[Cloud Console](http://cloud.google.com/console)을 방문 하고 다음으로 이동합니다. API Manager > Credentials > Create credentials > Service account key
+서비스 계정 에서 을 선택합니다 New service account.
+서비스 계정 이름 아래에 선택한 서비스 계정 이름을 입력합니다. 예를 들어, transcriber.
+역할 에서 을 선택합니다 Project > Owner.
+키 유형 아래에서 선택된 상태로 둡니다 JSON.
+만들기를 클릭하여 새 서비스 계정을 만들고 json 자격 증명 파일을 다운로드합니다.
+GOOGLE_APPLICATION_CREDENTIALS다운로드한 서비스 계정 자격 증명을 가리키도록 환경 변수를 설정합니다 .
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials-key.json
+자세한 내용은 [Cloud Platform 인증 가이드](https://cloud.google.com/docs/authentication#developer_workflow)를 참조하세요 .
+```
+
 - Video 연결
 
 ```bash
