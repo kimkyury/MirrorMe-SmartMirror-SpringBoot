@@ -307,7 +307,8 @@ class _FamilyMemberState extends State<Family> {
                                     width: 100,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: Color(0xff111111), width: 1),
+                                      // border: Border.all(color: Color(0xff111111), width: 1),
+                                      border: Border.all(color: Color(0xffb2b2b2), width: 1),
                                     ),
                                     child: Row(
                                       children: [
