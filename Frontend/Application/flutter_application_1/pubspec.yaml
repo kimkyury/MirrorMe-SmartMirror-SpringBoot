@@ -98,6 +98,7 @@ flutter:
     - lib/assets/profile_default.png
     - lib/assets/icons/done.png
     - lib/assets/icons/notyet.png
+    - lib/assets/icons/blue.png
 
   fonts:
       - family: NanumSquareRoundEB

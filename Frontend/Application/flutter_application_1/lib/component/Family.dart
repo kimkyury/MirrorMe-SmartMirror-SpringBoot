@@ -161,12 +161,13 @@ class _FamilyMemberState extends State<Family> {
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 90,
-                                    height: 90,
+                                    margin: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                                    width: 65,
+                                    height: 65,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: AssetImage('lib/assets/profile_default.png'),
-                                        fit: BoxFit.cover,
+                                        fit: BoxFit.contain,
                                       ),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -303,17 +304,25 @@ class _FamilyMemberState extends State<Family> {
                                 TableCell(
                                   child: Container(
                                     height: 15,
-                                    width: 100,
+                                    width: double.infinity,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: Color(0xff111111), width: 1),
+                                      // border: Border.all(color: Color(0xff111111), width: 1),
+                                      border: Border.all(color: Color(0xffb2b2b2), width: 1),
                                     ),
                                     child: Row(
                                       children: [
                                         Container(
                                           width: (temperature / 100) * 100,
                                           decoration: BoxDecoration(
-                                            color: Colors.red, // 온도 값에 따라 다른 색상 설정
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Color.fromRGBO(83, 174, 191, 1.0),  // 시작색
+                                                Color.fromRGBO(110, 132, 210, 1.0), // 중간색
+                                                Color.fromRGBO(123, 113, 219, 1.0), // 마지막 색
+                                              ],
+                                              stops: [0.0, 0.5, 1.0], // 각 색상의 위치
+                                            ),
                                             borderRadius: BorderRadius.circular(10),
                                           ),
                                         ),
