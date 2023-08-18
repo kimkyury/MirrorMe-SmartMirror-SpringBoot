@@ -62,7 +62,7 @@ class Home extends StatelessWidget {
               refreshToken: refreshToken,         
             ),
             Divider(height: 10,),
-            SizedBox(height: 20,),
+            SizedBox(height: 10,),
             Tasks(
               accessToken: accessToken,
               refreshToken: refreshToken, 

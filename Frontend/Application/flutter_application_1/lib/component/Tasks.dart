@@ -69,7 +69,7 @@ class _TasksState extends State<Tasks> with AutomaticKeepAliveClientMixin<Tasks>
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
-      height: 500,
+      height: 300,
       margin: EdgeInsets.only(
         left: 20,
         right: 20,
