@@ -304,7 +304,7 @@ class _FamilyMemberState extends State<Family> {
                                 TableCell(
                                   child: Container(
                                     height: 15,
-                                    width: 100,
+                                    width: double.infinity,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       // border: Border.all(color: Color(0xff111111), width: 1),
