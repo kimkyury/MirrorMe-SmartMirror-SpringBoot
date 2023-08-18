@@ -161,12 +161,13 @@ class _FamilyMemberState extends State<Family> {
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 90,
-                                    height: 90,
+                                    margin: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                                    width: 65,
+                                    height: 65,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: AssetImage('lib/assets/profile_default.png'),
-                                        fit: BoxFit.cover,
+                                        fit: BoxFit.contain,
                                       ),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
