@@ -114,14 +114,17 @@ function App() {
         setMessageReceiver(data.query.receiver);
       } else if (data.order === 'TTS') { // 거울 말 시작한다
         setMirrorSaying(true);
-      } else if (data.order === 'TTS_end') { // 거울 말 끝낸다
+      } 
+      if (mirrorSaying && data.order === 'TTS_end') { // 거울 말 끝낸다
         setMirrorSaying(false);
-      } else if (data.order === 'USEROUT') {
-        setUserEmail('')
+      } 
+      if (userEmail && data.order === 'USEROUT') {
+        setUserEmail(null);
+        // console.log(!userEmail);
       }
     };
 
-    console.log(userEmail);
+    console.log(!userEmail);
 
     return () => {
       socket.close();
