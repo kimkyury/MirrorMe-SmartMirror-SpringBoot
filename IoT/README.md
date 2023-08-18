@@ -49,7 +49,7 @@ python3 AISpeaker_Client/aispeaker.py
 
 
 - google 인증
-```
+
 Google Cloud Platform Console에서 프로젝트를 만듭니다. 아직 프로젝트를 만들지 않았다면 지금 만드세요. 프로젝트를 사용하면 배포, 액세스 제어, 청구, 서비스를 포함하여 앱의 모든 Google Cloud Platform 리소스를 관리할 수 있습니다.
 
 [클라우드 플랫폼 콘솔](https://console.cloud.google.com/)을 엽니다 .
@@ -73,7 +73,7 @@ Google Cloud Platform Console에서 프로젝트를 만듭니다. 아직 프로�
 GOOGLE_APPLICATION_CREDENTIALS다운로드한 서비스 계정 자격 증명을 가리키도록 환경 변수를 설정합니다 .
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials-key.json
 자세한 내용은 [Cloud Platform 인증 가이드](https://cloud.google.com/docs/authentication#developer_workflow)를 참조하세요 .
-```
+
 
 - Video 연결
 
