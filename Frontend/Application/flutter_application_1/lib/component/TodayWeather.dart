@@ -195,7 +195,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(height: 8,),
                       Container(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -213,7 +213,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                                   fontSize: 25,
                                   fontFamily: 'NanumSquareRoundEB',
                                   ),),
-                                  SizedBox(height: 7,),
+                                  SizedBox(height: 10,),
                                   Row(
                                     children: [
                                       Text('${weatherInfo['tmx'].toInt()}℃ / ',
