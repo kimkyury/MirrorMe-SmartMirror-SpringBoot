@@ -33,14 +33,15 @@ public class BackendApplication {
         SpringApplication.run(BackendApplication.class, args);
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "* * * * * *")
     public void run() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        LocalDateTime minusMinuteDate = LocalDateTime.now().minusMinutes(1);
-        String dateMinusNow = minusMinuteDate.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
+//        LocalDateTime minusMinuteDate = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime minusDate = LocalDateTime.now();
+        String dateNow = minusDate.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
 
-        String folderPath = "/message/" + dateMinusNow;
+        String folderPath = "/message/" + dateNow;
 
         File fileDirectory = Optional.of(new File(folderPath))
                 .orElseThrow(() -> new FailConvertException("잘못된 파일입니다."));
@@ -55,7 +56,7 @@ public class BackendApplication {
                 String videoPath = folderPath + "/" + videoMessage.getFileName();
                 VideoMessage vm = VideoMessage.builder()
                         .requestMessage(videoMessage)
-                        .date(minusMinuteDate)
+                        .date(minusDate)
                         .build();
 
                 Long videoId = videoRepository.save(vm).getVideoId();
