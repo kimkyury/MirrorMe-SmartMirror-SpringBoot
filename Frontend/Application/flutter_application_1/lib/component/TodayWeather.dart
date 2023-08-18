@@ -228,6 +228,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                                 ],
                               ),
                             ),
+                            SizedBox(width: 7,),
                             Container(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -241,7 +242,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.water_drop, size: 16),
+                                      Icon(Icons.water_drop, size: 16, color: Color.fromRGBO(110, 132, 210, 1.0)),
                                       SizedBox(width: 8),
                                       Text(
                                         '${ultraInfo['reh'].toInt()}%',
@@ -255,7 +256,7 @@ class _TodayWeatherState extends State<TodayWeather> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.beach_access, size: 16),
+                                      Icon(Icons.beach_access, size: 16, color: Color.fromRGBO(110, 132, 210, 1.0)),
                                       SizedBox(width: 8),
                                       Text(
                                         '${weatherInfo['pop'].toInt()}%',
