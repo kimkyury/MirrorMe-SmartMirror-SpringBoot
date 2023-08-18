@@ -14,7 +14,8 @@ from tts import text_to_speech as tts
 sys.path.append("./Video_Client/")
 from Recognition import find_user, get_user_face
 
-# import serial
+import subprocess
+
 import random
 import json
 
@@ -110,6 +111,7 @@ async def accept(websocket, path):
         return
 
 
+
     # 조건 충족시 세션코드 발급 후 소켓 저장
     # session_id = str(uuid.uuid4())
     client[role] = websocket
@@ -120,6 +122,8 @@ async def accept(websocket, path):
     # 세션 코드 발급
     # 리엑트 안 보내줌
 
+    if role == "react":
+        await appear()
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
     del client[session_id]
@@ -199,9 +203,28 @@ async def call(*arg):
         print(f"현재 상태 : {STATUS}")
         return
 
-    answer = ["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"]
+    answer =  random.choice(["네", "네, 무엇을 도와드릴까요?", "부르셨나요?"])
     # 대답 후 상태 변경
-    tts(random.choice(answer))
+
+
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : answer,
+            "type" : "answer"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+    tts(answer)
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+
     STATUS = CALL_MIRROR
 # arg로 메세지 보내기
 async def messageSend(*arg):
@@ -246,7 +269,24 @@ async def messageSend(*arg):
     # audio와 video측에 알려서 연결을 끊고 녹화를 시작하도록함
     await websocketSend('audio', 'audio_end')
 
-    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.") 
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : f"{target}님께 보낼 영상메세지 촬영을 시작합니다.",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+    tts(f"{target}님께 보낼 영상메세지 촬영을 시작합니다.")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+
     send_data = {
         "order" : "video_start",
         "query" : {
@@ -259,7 +299,26 @@ async def messageEnd(*arg):
     global STATUS
     if STATUS != MESSAGE_CAP:
         return
-    print("메세지 녹화 종료")
+
+
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : "메세지를 전송합니다",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+    tts("메세지를 전송합니다")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+
     await websocketSend('audio', "audio_restart")
 
     # 메세지 녹화 종료를 리엑트로 알림
@@ -287,7 +346,23 @@ async def messageShow(*arg):
     await websocketSend('react', json.dumps(send_data))
 
     STATUS = MESSAGE_SHOW
+
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : "메세지를 내역입니다.",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
     tts("메세지를 내역입니다.")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
 
     # 메세지 보기 처리
 
@@ -323,7 +398,24 @@ async def youtube(*arg):
 
 
     STATUS = YOUTUBE
-    tts(f"{youtube_key}관련 유튜브 영상을 재생해 드릴게요")
+
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : "관련 유튜브 영상을 재생해 드릴게요",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
+    tts("관련 유튜브 영상을 재생해 드릴게요")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+    
     #########################################
     # 유튜브 종료 대기
     # 리엑트 측에서 유튜브 영상이 끝났음을 수신
@@ -345,8 +437,24 @@ async def weather(*arg):
     }
     await websocketSend('react', json.dumps(send_data))
 
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : "오늘의 날씨 입니다.",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
 
     tts("오늘의 날씨 입니다.")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+    
+
 
     # 날씨관련 받아서
     # 음성으로 출력하기
@@ -373,18 +481,41 @@ async def chatgpt(*arg):
         print(f"현재 상태 : {STATUS}")
         return
 
+    send_data = {
+        "order" : "TTS",
+        "query" : {
+            "content" : "무슨 말씀이신지 이해하지 못했어요",
+            "type" : "info"
+        }
+    }
+    await websocketSend('react', json.dumps(send_data))
+
     tts("무슨 말씀이신지 이해하지 못했어요")
+
+    send_data = {
+        "order" : "TTS_end",
+        "query" : None
+    }
+    await websocketSend('react', json.dumps(send_data))
+    
 
     STATUS = WAITTING
 
 ###############################################################################################
 ###############################################################################################
 # 아두이노 연결 처리 함수들
+def turn_off_monitor():
+    #command = "xrandr --output HDMI-2 --off"
+    command = "xset dpms force off"
+    subprocess.run(command, shell=True)
 
+def turn_on_monitor():
+    #command = "xrandr --output HDMI-2 --auto"
+    command = "xset dpms force on"
+    subprocess.run(command, shell=True)
+    # print("모니터 켜짐")
 async def appear(*arg):
-    # 둘중에 어느게 화면 켜는건지 모르겠다. 일단 해보고 처리
-    # os.system("xset dpms force standby")
-    # os.system("xset dpms force suspend")
+    turn_on_monitor()
     # print("appear로 잘 들어옴!")
     # return
 
@@ -466,13 +597,10 @@ async def appear(*arg):
         send_data = {
             "order" : "TTS",
             "query" : {
-                "content" : "TTS",
-                "query" : {
-                    "content" : f"{user_name}님 안녕하세요",
-                    "type" : "hello"
-                }
-
+                "content" : f"{user_name}님 안녕하세요",
+                "type" : "hello"
             }
+
         }
         await websocketSend('react', json.dumps(send_data))
 
@@ -514,7 +642,7 @@ async def disappear(*arg):
     global STATUS
     if STATUS == WAITTING:
         # 이건 리눅스에서만 기능한다.
-        # os.system("xset dpms force off")
+        turn_off_monitor()
         print("screen_off")
         # 스피커와 카메라로 사용 종료 보내기
         await websocketSend('audio', 'audio_end')
@@ -523,6 +651,13 @@ async def disappear(*arg):
             "query" : None
         }
         await websocketSend('video', json.dumps(send_data))
+
+        send_data = {
+            "order" : "USEROUT",
+            "query" : None
+        }
+
+        await websocketSend('react', json.dumps(send_data))
 
 
         STATUS = SCREEN_OFF
