@@ -48,7 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('lib/assets/MirrorMe_Main.png'),
+        title: Container(
+          width: 120,
+          child: Image.asset('lib/assets/MirrorMe_Main.png'),
+        ),
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,  // 뒤로가기 화살표 제거
         actions: [
