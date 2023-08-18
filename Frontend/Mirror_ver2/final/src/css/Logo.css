@@ -1,0 +1,23 @@
+.fade-image {
+    animation: fadeAnimation 4s infinite;
+  }
+  
+  @keyframes fadeAnimation {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}

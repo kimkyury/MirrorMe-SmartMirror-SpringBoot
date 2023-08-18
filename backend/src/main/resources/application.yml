@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://i9e101.p.ssafy.io:3306/mlm
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+  redis:
+    host: i9e101.p.ssafy.io
+    port: 6379
+    password: ${REDIS_PASSWORD}
+  jpa:
+    generate-ddl: true
+    show-sql: true
+
+google:
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
+  redirect-uri: http://i9e101.p.ssafy.io:8080/oauth/auth
+
+iot:
+  N: ${N}
+  E: ${E}
+  D: ${D}
+
+server:
+  address: 0.0.0.0
+  port: 8090
+
+data:
+  service-key: ${SERVICE_KEY}
+
+chatgpt:
+  api-key: ${CHAT}

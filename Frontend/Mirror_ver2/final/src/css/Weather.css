@@ -1,0 +1,53 @@
+/* TodayWeather */
+.weather-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border: 3px solid blue; */
+}
+
+.weather-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 280px;
+  margin: 0 auto;
+  /* border: 3px solid red; */
+}
+
+.weather-icon {
+  flex: 1.5;
+  text-align: center;
+  justify-content: space-evenly;
+  margin-top: 20px;
+  padding: 10px;
+  /* border: 3px solid white; */
+}
+
+.weather-info {
+  flex: 1;
+  padding: 10px;
+  /* border: 3px solid white; */
+}
+
+
+/* WeekWeather */
+.weather-table {
+  width: 100%;
+  border-collapse: collapse; /* 셀 경계 제거 */
+}
+
+.weather-table th,
+.weather-table td {
+  padding: 8px;
+  text-align: center;
+  color: white;
+}
+
+.table-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  /* 이미지 수정 필요 */
+}
