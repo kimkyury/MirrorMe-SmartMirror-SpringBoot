@@ -122,11 +122,11 @@ async def accept(websocket, path):
     # 세션 코드 발급
     # 리엑트 안 보내줌
 
-    if role == "react":
-        await appear()
+    # if role == "react":
+    #     await appear()
     # 따로 서버가 끊길때 까지 대기
     await websocket.wait_closed()
-    del client[session_id]
+    del client[role]
     
 ###############################################################################################
 ###############################################################################################
@@ -536,7 +536,7 @@ async def appear(*arg):
     global user_email, user_name, user_id
     user_name = find_user.getUserName()
     print("user :", user_name)
-    user_name = "신성환"
+    # user_name = "신성환"
 
     with open("./user_data.json", "r") as f:
         user_data = json.load(f)
