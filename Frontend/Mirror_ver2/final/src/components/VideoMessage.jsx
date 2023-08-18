@@ -81,7 +81,7 @@ function VideoMessage(props) {
             {isMessageModalOpen && (
               <div className="modal">
                 <div className="message-video">
-                  <div className="message-navigation" style={{ marginLeft: '125px' }}>
+                  <div className="message-navigation" style={{ marginLeft: '125px'}}>
                     <button onClick={handlePrevMessage} disabled={currentMessageIndex === 0}>
                       이전 메세지
                     </button>

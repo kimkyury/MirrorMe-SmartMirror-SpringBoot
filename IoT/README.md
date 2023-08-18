@@ -149,6 +149,29 @@ pip3 install tensorflow==2.9.0
 python manage.py runserver
 ```
 
+- ngrok
+
+```
+ngrok http 8000
+```
+
+- Wayland off (관리자 권한으로 /root/etc/gdm3 위치에서)
+
+```
+vi custum.conf
+```
+
+```bash
+[demon]
+...
+
+WaylandEnable=false        # <-add
+
+...
+```
+
+
+
 
 
 ## 📺File Path
