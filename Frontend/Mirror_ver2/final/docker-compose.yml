@@ -2,14 +2,13 @@ version: "3.7"
 
 services:
   nginx:
-    image: woneee99/nginx
     restart: always
     container_name: nginx
     build:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "80:3000"
     networks:
       - frontend
   client:
@@ -18,8 +17,9 @@ services:
       dockerfile: Dockerfile
     networks:
       - frontend
-  
+    ports:
+      - "3000"
+
 networks:
   frontend:
     driver: bridge
-

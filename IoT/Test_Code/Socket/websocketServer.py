@@ -64,6 +64,16 @@ data = {
             "content": "오늘 비가오네요 우산 챙겨가세요",
             "type": "weather"
         }
+    }),
+    
+    "tts_end": json.dumps({
+        "order": "TTS_end",
+        "query": None
+    }),
+
+    "user_out": json.dumps({
+        "order": "USEROUT",
+        "query": None
     })
 
 }
