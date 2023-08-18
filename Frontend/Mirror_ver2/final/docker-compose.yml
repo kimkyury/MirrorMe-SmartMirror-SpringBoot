@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  nginx:
+    restart: always
+    container_name: nginx
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "80:3000"
+    networks:
+      - frontend
+  client:
+    build:
+      context: ./ 
+      dockerfile: Dockerfile
+    networks:
+      - frontend
+    ports:
+      - "3000"
+
+networks:
+  frontend:
+    driver: bridge
