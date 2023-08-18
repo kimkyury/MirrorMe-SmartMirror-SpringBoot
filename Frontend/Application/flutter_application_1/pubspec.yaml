@@ -96,6 +96,8 @@ flutter:
     - lib/assets/weather/007.png
     - lib/assets/back.png
     - lib/assets/profile_default.png
+    - lib/assets/icons/done.png
+    - lib/assets/icons/notyet.png
 
   fonts:
       - family: NanumSquareRoundEB
