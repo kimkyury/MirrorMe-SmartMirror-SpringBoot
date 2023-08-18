@@ -42,7 +42,7 @@ class Home extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 10,), ////////////////////// 상세 조정 필요////////////////////////
+                  // SizedBox(height: 10,),
                   TodayWeather(), // 일간 날씨
                   // Divider( // 가로 선 추가
                   //   color: Color(0xFF171717),
@@ -52,7 +52,7 @@ class Home extends StatelessWidget {
                   //   endIndent: 15, // 선 우측 여백
                   // ),
                   // WeekWeather(), // 주간 날씨
-                  SizedBox(height: 10,), ////////////////////// 상세 조정 필요////////////////////////
+                  // SizedBox(height: 10,),
                 ],
               ),
             ),
