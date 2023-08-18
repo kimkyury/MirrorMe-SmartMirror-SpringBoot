@@ -63,7 +63,7 @@ class _SchedulesState extends State<Schedules> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
-      height: 150,
+      height: 230,
       margin: EdgeInsets.only(
         left: 20,
         right: 20,
