@@ -12,15 +12,15 @@ class Tasks extends StatefulWidget {
   @override
   _TasksState createState() => _TasksState();
 }
-class _TasksState extends State<Tasks> with AutomaticKeepAliveClientMixin<Tasks> {
-  List<String> tasks = []; // 일정을 저장할 리스트
-  List<bool> isCheckedList = [];  // 체크 상태를 저장하는 리스트
 
-  // initState 메소드를 이용하여 페이지가 로드될 때 한 번 실행
+class _TasksState extends State<Tasks> with AutomaticKeepAliveClientMixin<Tasks> {
+  List<String> tasks = [];
+  List<bool> isCheckedList = [];
+
   @override
   void initState() {
     super.initState();
-    _fetchData(); // 페이지가 로드될 때 데이터를 가져오도록 설정
+    _fetchData();
   }
 
   Future<void> _fetchData() async {
@@ -65,81 +65,91 @@ class _TasksState extends State<Tasks> with AutomaticKeepAliveClientMixin<Tasks>
   @override
   bool get wantKeepAlive => true;
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
-          // 오늘 일정
-          padding: EdgeInsets.all(10),
-          height: 500,
-          margin: EdgeInsets.only(
-            left: 20,
-            right: 20,
-          ),
-          child: Column(
-            children: [
-              Container(
-                // 제목
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('ToDo',
-                      style: TextStyle(
-                        color: Color(0xff111111),
-                        fontSize: 20,
-                        fontFamily: 'NanumSquareRoundEB',
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                  ],
+      padding: EdgeInsets.all(10),
+      height: 500,
+      margin: EdgeInsets.only(
+        left: 20,
+        right: 20,
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'ToDo',
+                  style: TextStyle(
+                    color: Color(0xff111111),
+                    fontSize: 20,
+                    fontFamily: 'NanumSquareRoundEB',
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                  ),
                 ),
-              ),
-              Expanded( // 리스트뷰가 남은 공간을 모두 차지할 수 있도록 Expanded 위젯을 추가합니다.
-                child: ListView.builder(
-                  itemCount: tasks.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final task = tasks[index];
-                    bool isChecked = isCheckedList[index];
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (BuildContext context, int index) {
+                final task = tasks[index];
+                bool isChecked = isCheckedList[index];
 
-                    return Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            child: Row(children: [
-                              Checkbox(
-                                value: isChecked,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    isCheckedList[index] = value ?? false;  // 해당 항목의 체크 상태 변경
-                                  });
-                                },
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              Text(
-                                task,
-                                style: TextStyle(
-                                  color: isChecked ? Colors.grey : Color(0xff111111),
-                                  fontSize: 12,
-                                  fontFamily: 'NanumSquareRoundEB',
-                                  fontWeight: isChecked ? FontWeight.w700 : FontWeight.w400,  // 밑줄 적용 여부에 따라 폰트 무게 변경
-                                  fontStyle: FontStyle.normal,
-                                  decoration: isChecked ? TextDecoration.lineThrough : TextDecoration.none,  // 밑줄 추가 여부
-                                ),
-                                softWrap: true,
-                              )// 일정 제목 표시
-                            ]),
+                return Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: Row(children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isCheckedList[index] = !isCheckedList[index];
+                              });
+                            },
+                            child: Image.asset(
+                              isChecked
+                                  ? 'lib/assets/icons/done.png'
+                                  : 'lib/assets/icons/notyet.png',
+                              width: 15,
+                              height: 15,
+                            ),
                           ),
-                        ],
+                          SizedBox(width: 5,),
+                          Text(
+                            task,
+                            style: TextStyle(
+                              color:
+                                  isChecked ? Colors.grey : Color(0xff111111),
+                              fontSize: 12,
+                              fontFamily: 'NanumSquareRoundEB',
+                              fontWeight: isChecked
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                              fontStyle: FontStyle.normal,
+                              decoration: isChecked
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                            softWrap: true,
+                          )
+                        ]),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        );
+        ],
+      ),
+    );
   }
 }
