@@ -1,0 +1,9 @@
+vcpkg/
+WiringPi/
+cpp-samples/
+captured_audio.pcm
+a.out/
+python-docs-samples/
+venv/
+*.mp4
+*.wav
