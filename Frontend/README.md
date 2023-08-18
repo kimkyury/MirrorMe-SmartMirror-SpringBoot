@@ -8,6 +8,7 @@
 3. socket.io | 4.7.1
 4. node.js | 18.16.1
 5. axios | 1.4.0
+6. Figma
 
 
 ## Mirror
