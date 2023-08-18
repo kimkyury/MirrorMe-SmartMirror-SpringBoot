@@ -93,7 +93,7 @@ function Snackbars(props) {
   return (
     <div>
       {/* <Button onClick={handleVideoMessageButtonClick} variant="contained" color="inherit">메세지</Button> */}
-      <div style={{ display: 'none' }}>
+      <div style={{ visibility: 'hidden' }}>
         <Button onClick={handleWeatherButtonClick} variant="contained" color="inherit">날씨</Button>
         <Button onClick={handleTasks} variant="contained" color="inherit">할일</Button>
         <Button onClick={handleSchedules} variant="contained"  color="inherit">일정</Button>
@@ -152,7 +152,7 @@ function Snackbars(props) {
           <Snackbar
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={openWeatherSnackbar}
-            autoHideDuration={10000}
+            autoHideDuration={30000}
             onClose={() => {
               handleSnackbarClose();
               setOpenWeatherSnackbar(false);
