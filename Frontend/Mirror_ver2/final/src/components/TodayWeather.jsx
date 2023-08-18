@@ -149,7 +149,7 @@ function TodayWeather(props) {
               {showWeekWeather ? (
                 <WeekWeather />
               ) : (
-                <Button onClick={showWeekWeather} variant="contained" color="primary">
+                <Button onClick={showWeekWeather} variant="contained" color="primary" style={{ display: 'none' }}>
                   더 보기
                 </Button>
               )}
