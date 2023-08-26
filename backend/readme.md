@@ -28,11 +28,11 @@ MLM 프로젝트는 가족간 소통 촉진을 위한 가정용 SmartMirror프�
     - ✔ *사용자의 영상메시지 촬영 요구시 수행*
 
 ## 👀동작과정 시퀀스 다이어그램이에요!
-![title](https://file.notion.so/f/s/e07fbc0c-8ebb-45bc-9b2a-5c471dbcefdc/Mirror-1-INIT.png?id=744b633a-6340-4268-99ad-8769217ffa0c&table=block&spaceId=61cded7e-c471-47f3-ad64-ac3b756c74d0&expirationTimestamp=1692331200000&signature=NKRXOlfH5A6sVI0N_iwe_wCOegfJd4Wb1Q-LThbhoK0&downloadName=Mirror-1-INIT.png)   
+![title](../imgForReadme/MLM-SequenceDiagram.png)   
 
 
 ## 🙋‍♀️ MLM-Backend 기술스택이에요!
-![title](https://file.notion.so/f/s/a21a8465-cd14-4354-b17d-084e3934e735/%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8-%ED%8E%98%EC%9D%B4%EC%A7%80-1.drawio.png?id=8497c5d5-eca6-4f9b-844e-4d5679a3ab18&table=block&spaceId=61cded7e-c471-47f3-ad64-ac3b756c74d0&expirationTimestamp=1692331200000&signature=bIBBl1rNiyeILCCbwwW7fZPEz-hceUOX-S94wTUmh44&downloadName=%EC%A0%9C%EB%AA%A9+%EC%97%86%EB%8A%94+%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8-%ED%8E%98%EC%9D%B4%EC%A7%80-1.drawio.png)   
+![title](../imgForReadme/MLM-SkillDiagram.png)  
 
 
 
