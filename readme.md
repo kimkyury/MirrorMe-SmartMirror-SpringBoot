@@ -1,5 +1,5 @@
 # <center>  Outline of MirrorMe </center>
-- 제작기간 : 2023년 6월 4일 2023(Tue) ~ 2023년 8월 18일(Fri)
+- 제작기간 : 2023년 7월 4일 2023(Tue) ~ 2023년 8월 18일(Fri)
 - 프로젝트 주제: **가족 소통**을 위한 **스마트미러**
 - 팀 명: 1OT(One of Team)
 - 서비스명: *MirrorMe (MLM)*
