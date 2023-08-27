@@ -74,6 +74,10 @@ public class TextVideoViewTextScheduler implements TextSchedulerHandler {
         }
 
         System.out.println("------------ Finish Scheduler ----------");
+
+        if ( nextHandler != null){
+            nextHandler.execute();
+        }
     }
 
     public String getTextVideoView(String receiveUserName, String sendUserName){
