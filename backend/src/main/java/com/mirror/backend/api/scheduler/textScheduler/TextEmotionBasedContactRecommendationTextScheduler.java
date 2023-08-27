@@ -65,6 +65,10 @@ public class TextEmotionBasedContactRecommendationTextScheduler implements TextS
         }
 
         System.out.println("------------ Finish Scheduler ----------");
+
+        if ( nextHandler != null){
+            nextHandler.execute();
+        }
     }
 
     private String getTextEmotionBasedContactRecommendation(String userName, String angryUserAlias){
