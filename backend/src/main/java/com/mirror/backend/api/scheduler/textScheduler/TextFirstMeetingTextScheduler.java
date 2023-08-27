@@ -87,6 +87,10 @@ public class TextFirstMeetingTextScheduler implements TextSchedulerHandler {
         }
 
         System.out.println("------------ Finish Scheduler ----------");
+
+        if ( nextHandler != null){
+            nextHandler.execute();
+        }
     }
 
     private void saveRedisFirstText(String textCode, String isRainyText, String  userEmail) {
