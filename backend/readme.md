@@ -52,5 +52,5 @@ MLM 프로젝트는 가족간 소통 촉진을 위한 가정용 SmartMirror프�
 
 
 ## ✔ DB스키마
-![title](https://file.notion.so/f/s/e5423423-c8cb-455b-9f7c-96d5d21f36ae/SmartMirror.png?id=ae061157-48c2-4d6c-947b-9c1652b723e9&table=block&spaceId=61cded7e-c471-47f3-ad64-ac3b756c74d0&expirationTimestamp=1692331200000&signature=gPbzZHYHlXregdrAZoFC9bF9FliWaJGIMuFRmTiUhKc&downloadName=SmartMirror.png)   
+![title](../imgForReadme/MLM_DBTable.png)   
 
