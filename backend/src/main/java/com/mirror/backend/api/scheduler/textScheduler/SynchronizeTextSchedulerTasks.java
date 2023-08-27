@@ -33,7 +33,7 @@ public class SynchronizeTextSchedulerTasks {
     private final ChatGptUtil chatGptUtil;
     private final TokenUtil tokenUtil;
 
-//     @Scheduled(cron = "0 9 * * * ?") // Develop
+//     @Scheduled(cron = "0 43 * * * ?") // Develop
    @Scheduled(cron = "0 0 0 * * ?") // Deploy
     private void midnightJob(){
 

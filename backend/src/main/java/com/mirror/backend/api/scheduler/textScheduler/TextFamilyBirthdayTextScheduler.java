@@ -86,6 +86,10 @@ public class TextFamilyBirthdayTextScheduler implements TextSchedulerHandler {
         }
 
         System.out.println("------------ Finish Scheduler ----------");
+
+        if ( nextHandler != null){
+            nextHandler.execute();
+        }
     }
 
     private String getBirthDayUserUpcomingEventsProcedure(User todayBirthUser) {
